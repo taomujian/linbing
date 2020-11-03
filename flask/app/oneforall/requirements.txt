@@ -1,0 +1,25 @@
+-i https://mirrors.aliyun.com/pypi/simple/
+beautifulsoup4
+bs4
+certifi
+chardet
+colorama ; sys_platform == 'win32'
+dnspython
+exrex
+fire
+future
+idna
+loguru
+pysocks
+requests-file
+requests
+six
+soupsieve
+sqlalchemy
+tenacity
+termcolor
+tldextract
+tqdm
+treelib
+urllib3
+win32-setctime ; sys_platform == 'win32'

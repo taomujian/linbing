@@ -1,0 +1,268 @@
+<template>
+  <div>
+    <Card>
+      <Table   border  editable searchable search-place="top" :data="tableData" :columns="columns"/>
+      <Page
+          class="page" 
+          :current="this.page.pageNum" 
+          :page-size="this.page.pageSize" 
+          :total="this.page.count" 
+          :page-size-opts="[5,10]"
+          show-sizer
+          show-elevator
+          show-total
+          @on-change="handlePage"
+          @on-page-size-change="handlePageSize">
+      </Page>
+    </Card>
+  </div>
+</template>
+
+<script>
+import RSA  from '@/libs/crypto'
+import http  from '@/libs/http'
+import {getToken } from '@/libs/util'
+export default {
+  inject: ['reload'],
+  name: 'tables_page',
+  data () {
+    return {
+      token: getToken(),
+      page: {
+          pageNum: 1,
+          pageSize: 5,
+          count: 0
+      },
+      columns: [
+        {
+          title: '目标',
+          key: 'target',
+          sortable: true,
+          resizable: true,
+          width: 150
+        },
+        {
+          title: '描述',
+          key: 'description',
+          sortable: true,
+          resizable: true,
+          width: 260
+        },
+        {
+          title: 'IP:PORT', 
+          key: 'ip_port',
+          resizable: true,
+          width: 260
+        },
+        {
+          title: '漏洞名称',
+          key: 'vulner_name',
+          resizable: true,
+          width: 150
+        },
+        { 
+          title: '漏洞描述',
+          key: 'vulner_descrip',
+          resizable: true,
+          width: 150
+        },
+        {
+          title: '操作',
+          key: 'action',
+          resizable: true,
+          width: 250,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+                h('Button', {
+                    props: {
+                        type: 'primary',
+                        size: 'small'
+                    },
+                    style: {
+                        marginRight: '20px'
+                    },
+                    on: {
+                        click: () => {
+                            this.restore(params)
+                        }
+                    }
+                }, '恢复'),
+                h('Button', {
+                    props: {
+                        type: 'error',
+                        size: 'small'
+                    },
+                    on: {
+                        click: () => {
+                            this.delete(params)
+                        }
+                    }
+                }, '彻底删除')
+            ]);
+        }
+      }
+      ],
+      tableData: []
+    }
+  },
+  methods: {
+    getTableData () {
+      let flag = {
+        'type': 'vulner',
+        'data': '1'
+      }
+      let data = {
+        'pagenum': this.page.pageNum,
+        'pagesize': this.page.pageSize,
+        'flag': flag,
+        'token': this.token.trim()
+      }
+      data = JSON.stringify(data)
+      let params = {'data': RSA.Encrypt(data)}
+      http.post('/api/vulnerlist', params).then((res) => {
+        res.data = eval('(' + res.data + ')')
+        switch(res.data.code ){
+          case'Z1000':
+          if (res.data.data.result !== ""){
+            this.tableData = res.data.data.result
+          }
+          this.page.count = res.data.data.total
+          break
+          case 'Z1001':
+          this.$Notice.error({
+              title: '获取数据失败',
+              desc: '系统发生异常,请稍后再次尝试'
+          })
+          break
+          case 'Z1002':
+          this.$Notice.error({
+              title: '获取数据失败',
+              desc: '系统发生异常,请稍后再次尝试'
+          })
+          break
+          case 'Z1004':
+          this.$Notice.error({
+              title: '获取数据失败',
+              desc: '认证失败,请稍后再次尝试'
+          })
+          break
+          case 'Z1009':
+          this.$Notice.info({
+              title: '数据为空',
+              desc: '数据为空,请新建笔记'
+          })
+          break
+          default:
+          break
+        }
+      })
+    },
+    restore (params) {
+      let flag = {
+        'type': 'target',
+        'data': '0',
+        'id': params.row.id
+      }
+      let data = {
+        'target': params.row.target,
+        'flag': flag,
+        'token': this.token.trim()
+      }
+      data = JSON.stringify(data)
+      let req_params = {'data': RSA.Encrypt(data)}
+      http.post('/api/setflag', req_params).then((res) => {
+        res.data = eval('(' + res.data + ')')
+        switch(res.data.code ){
+          case'Z1000':
+          this.reload()
+          break
+          case 'Z1001':
+          this.$Notice.error({
+              title: '请求失败',
+              desc: '系统发生异常,请稍后再次尝试'
+          })
+          break
+          case 'Z1002':
+          this.$Notice.error({
+              title: '请求失败',
+              desc: '系统发生异常,请稍后再次尝试'
+          })
+          break
+          case 'Z1004':
+          this.$Notice.error({
+              title: '请求失败',
+              desc: '认证失败,请稍后再次尝试'
+          })
+          break
+          default:
+          break
+        }
+      })
+    },
+    delete (params) {
+      let flag = {
+        'type': 'vulner',
+        'id': params.row.id,
+      }
+      let data = {
+        'flag': flag,
+        'target': params.row.target,
+        'token': this.token.trim()
+      }
+      data = JSON.stringify(data)
+      let req_params = {'data': RSA.Encrypt(data)}
+      http.post('/api/delete', req_params).then((res) => {
+        res.data = eval('(' + res.data + ')')
+        switch(res.data.code ){
+          case'Z1000':
+          this.reload()
+          break
+          case 'Z1001':
+          this.$Notice.error({
+              title: '请求失败',
+              desc: '系统发生异常,请稍后再次尝试'
+          })
+          break
+          case 'Z1002':
+          this.$Notice.error({
+              title: '请求失败',
+              desc: '系统发生异常,请稍后再次尝试'
+          })
+          break
+          case 'Z1004':
+          this.$Notice.error({
+              title: '请求失败',
+              desc: '认证失败,请稍后再次尝试'
+          })
+          break
+          default:
+          break
+        }
+      })
+    },
+    handlePage (pageNum) {
+      this.page.pageNum = pageNum
+      this.getTableData()
+    },
+    handlePageSize (pageSize) {
+      this.page.pageSize = pageSize
+      this.getTableData()
+    }
+  },
+  mounted () {
+    this.getTableData()
+  },
+}
+</script>
+
+<style>
+ .page{
+    border-radius: 100px;
+    padding: 10px;
+    text-align:center;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

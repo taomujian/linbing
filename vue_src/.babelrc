@@ -1,0 +1,9 @@
+{
+  "presets": [
+    "@vue/app"
+  ],
+  "ignore": [
+    "./node_modules/mavon-editor*.js"
+  ],
+  "plugins": ["transform-remove-strict-mode"]
+}

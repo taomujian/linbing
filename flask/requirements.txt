@@ -1,0 +1,42 @@
+-i https://mirrors.aliyun.com/pypi/simple/
+cx-Oracle
+dnspython
+Flask
+Flask-Cors
+IPy
+kazoo
+paramiko
+pycryptodome
+pyDes
+pymongo
+PyMySQL
+pyOpenSSL
+python-masscan
+python-nmap
+requests
+urllib3
+uwsgi
+Werkzeug
+psycopg2
+beautifulsoup4
+bs4
+certifi
+chardet
+colorama ; sys_platform == 'win32'
+exrex
+fire
+future
+idna
+loguru
+pysocks
+requests-file
+six
+soupsieve
+sqlalchemy
+tenacity
+termcolor
+tldextract
+tqdm
+treelib
+urllib3
+win32-setctime ; sys_platform == 'win32'
