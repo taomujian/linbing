@@ -11,11 +11,11 @@ from email.mime.multipart import MIMEMultipart
 from email import encoders
 
 class MailSender:
-    def __init__(self,cc_mail = None):
+    def __init__(self, email_address, secret, cc_mail = None):
         self.smtpserver = "smtp.qq.com"
         self.smtpport = 465
-        self.password = "2323234324242" #16位的QQ邮箱授权码
-        self.from_mail = "1234567890@qq.com" #发送邮件的QQ邮箱账号
+        self.password = secret #16位的QQ邮箱授权码
+        self.from_mail = email_address #发送邮件的QQ邮箱账号
         self.cc_mail = cc_mail
         self.subject = "欢迎注册临兵漏洞扫描系统"
         self.from_name = "欢迎注册临兵漏洞扫描系统"

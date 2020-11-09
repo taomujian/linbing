@@ -6,8 +6,8 @@ from app.mysql import Mysql_db
 from app.aes import Aes_Crypto
 
 class Port_Scan():
-    def __init__(self):
-        self.mysqldb = Mysql_db()
+    def __init__(self, mysqldb):
+        self.mysqldb = mysqldb
         self.aes_crypto = Aes_Crypto()
 
     def nmap_scan(self, username, target, description, target_ip, min_port, max_port):

@@ -39,4 +39,5 @@ tldextract
 tqdm
 treelib
 urllib3
+configparser
 win32-setctime ; sys_platform == 'win32'

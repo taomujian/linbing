@@ -10,8 +10,8 @@ class Mysql_db():
 
     __v=None
 
-    def __init__(self, host = "127.0.0.1", port = 3306, user = "root", passwd = "1234567", charset = "utf8" , maxconn = 20):
-        self.host, self.port, self.user, self.passwd, self.charset = host, port, user, passwd, charset
+    def __init__(self, host, port, user, passwd, charset = "utf8"):
+        self.host, self.port, self.user, self.passwd, self.charset = host, int(port), user, passwd, charset
 
     def get_conn(self):
         """
@@ -483,7 +483,6 @@ class Mysql_db():
         :return: 'ZXXXXX': 状态码
         """
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        print(3453654645)
         sql =  "insert target_port (username, target, description, create_time, scan_time, port, protocol, product, version) values ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (username, target, description, datetime, datetime, port, protocol, product, version)
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)

@@ -9,6 +9,7 @@ import random
 import string 
 import socket
 import hashlib
+import configparser
 from IPy import IP
 from urllib.parse import urlparse
 from flask_cors import *
@@ -33,7 +34,10 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 CORS(app, supports_credentials=True)
-mysqldb = Mysql_db()
+config = configparser.ConfigParser()
+config.read('conf.ini')
+sender = MailSender(config.get('Email', 'email_address'), config.get('Email', 'secret'))
+mysqldb = Mysql_db(config.get('mysql', 'ip'), config.get('mysql', 'port'), config.get('mysql', 'username'), config.get('mysql', 'password'))
 mysqldb.create_database('linbing')
 mysqldb.create_user()
 mysqldb.create_target()
@@ -44,7 +48,7 @@ mysqldb.create_delete_target()
 mysqldb.create_delete_vulnerability()
 aes_crypto = Aes_Crypto()
 rsa_crypto = Rsa_Crypto()
-port_scan = Port_Scan()
+port_scan = Port_Scan(mysqldb)
 
 def parse_target(target):
     """
@@ -172,7 +176,6 @@ def getchecknum ():
             request_data = rsa_crypto.decrypt(request_data['data'])
             request_data = json.loads(request_data)
             email = request_data['data']
-            sender = MailSender()
             send_result = sender.sendMail(email)
             if send_result[0] == 'Z1003':
                 response_data['code'] = send_result[0]
@@ -1282,5 +1285,5 @@ def change_avatar():
         return str(response_data)
 
 if __name__ == '__main__':
-    #app.run(debug = True, port= 5000)
+    # app.run(debug = True, port= 5000)
     app.run(host='0.0.0.0', port= 8000)

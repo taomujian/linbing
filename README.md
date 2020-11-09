@@ -51,6 +51,7 @@
 > 在/etc/nginx目录下放入nginx.conf文件
 > conf配置文件中有注释
 > 把vue目录移到/usr/share/nginx/html中
+> 在flask/conf.ini中配置数据库和发送邮件设置
 
 ### mariadb
 
@@ -69,11 +70,11 @@
 #### 进行数据库配置(如设置密码等)
 
 > mysql_secure_installation(具体步骤略去,可参考<https://www.cnblogs.com/yhongji/p/9783065.html>)
-> 配置数据库密码后需要在flask/app文件夹下的mysql文件中配置连接maridab数据库的用户名,密码等信息
+> 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
 
 ### 邮件
 
-> 我使用的是QQ邮箱发送的邮件,需要授权码,需要自行到flask/app/sendmail.py文件中去设置,参考<https://blog.csdn.net/Momorrine/article/details/79881251>
+> 我使用的是QQ邮箱发送的邮件,需要授权码,需要自行到flask/conf.ini文件中去设置,参考<https://blog.csdn.net/Momorrine/article/details/79881251>
 
 
 ### uwsgi
@@ -104,7 +105,7 @@
 
 ### 配置
 
-> 首先下载项目到本地(https://github.com/taomujian/linbing.git),然后配置flask/app/sendmail.py中发送邮件所用的账号和授权码,然后修改flask/app/mysql.py的mysql数据库账号密码,这个账号密码要和dockerfile中的设置的账号密码保持一致
+> 首先下载项目到本地(https://github.com/taomujian/linbing.git),然后配置flask/conf.ini中发送邮件所用的账号和授权码,然后修改flask/conf.ini的mysql数据库账号密码,这个账号密码要和dockerfile中的设置的账号密码保持一致
 
 ### 编译镜像(进入项目根目录)
 
