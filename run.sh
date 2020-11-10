@@ -27,5 +27,6 @@ if [ "$PIDS" = "" ]; then
 
     nginx
     setsid mysqld_safe &
+    cd /rootflask
     uwsgi --ini /root/flask/uwsgi.ini
 fi
