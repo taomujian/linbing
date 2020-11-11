@@ -17,5 +17,7 @@ if [[ ! -f "${UWSGI_PLUGINS_DIR:?}/python38_plugin.so" ]]; then
     make PROFILE=nolang
     PYTHON=python3 /usr/sbin/uwsgi --build-plugin "plugins/python python38"
     [[ ! -d "${UWSGI_PLUGINS_DIR:?}/" ]] && mkdir -pv "${UWSGI_PLUGINS_DIR:?}/"
-    mv -v python38_plugin.so "${UWSGI_PLUGINS_DIR:?}/"
+    mkdir /usr/lib/uwsgi
+    mkdir /usr/lib/uwsgi/plugins
+    mv -v python38_plugin.so /usr/lib/uwsgi/plugins/
 fi
