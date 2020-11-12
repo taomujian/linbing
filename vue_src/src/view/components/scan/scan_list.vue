@@ -46,7 +46,7 @@ export default {
           key: 'description',
           sortable: true,
           resizable: true,
-          width: 200
+          width: 230
         },
         { 
           title: '扫描开始时间',

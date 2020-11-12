@@ -46,7 +46,7 @@ export default {
           key: 'description',
           sortable: true,
           resizable: true,
-          width: 260
+          width: 340
         },
         {
           title: '创建时间', 

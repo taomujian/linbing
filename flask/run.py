@@ -594,7 +594,7 @@ def start_scan():
                     response_data['message'] = '添加的目标无法解析,请重新输入'
                     return str(response_data)
                 save_result = mysqldb.start_scan(username_result['username'], aes_crypto.encrypt(target))
-                multiply_thread = Multiply_Thread()
+                multiply_thread = Multiply_Thread(mysqldb)
                 scan_data = {
                     'username': username_result['username'],
                     'target': aes_crypto.encrypt(target),

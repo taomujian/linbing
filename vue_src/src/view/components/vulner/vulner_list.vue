@@ -46,7 +46,7 @@ export default {
           key: 'description',
           sortable: true,
           resizable: true,
-          width: 160
+          width: 240
         },
         {
           title: '时间',

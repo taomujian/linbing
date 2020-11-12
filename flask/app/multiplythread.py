@@ -8,15 +8,14 @@ import functools
 import threading
 import importlib
 from app.scan import Port_Scan
-from app.mysql import Mysql_db
 from app.aes import Aes_Crypto
 from app.oneforall.oneforall import OneForAll
 from concurrent.futures import ThreadPoolExecutor
 
 class Multiply_Thread():
-    def __init__(self):
-        self.port_scan = Port_Scan()
-        self.mysqldb = Mysql_db()
+    def __init__(self, mysqldb):
+        self.port_scan = Port_Scan(mysqldb)
+        self.mysqldb = mysqldb
         self.aes_crypto = Aes_Crypto()
         self.plugin_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"plugins")
         if not os.path.isdir(self.plugin_path):

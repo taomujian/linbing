@@ -2,7 +2,6 @@
 
 import nmap
 import masscan
-from app.mysql import Mysql_db
 from app.aes import Aes_Crypto
 
 class Port_Scan():

@@ -46,7 +46,7 @@ export default {
           key: 'description',
           sortable: true,
           resizable: true,
-          width: 260
+          width: 290
         },
         { 
           title: '创建时间', 
@@ -64,7 +64,7 @@ export default {
           title: '扫描状态',
           key: 'scan_schedule',
           resizable: true,
-          width: 100
+          width: 150
         },
         {
           title: '操作',
