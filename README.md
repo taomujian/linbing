@@ -14,7 +14,7 @@
 
 ### 安装依赖
 
-> apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev
+> apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping
 
 > mkdir /root/flask && mkdir /var/log/uwsgi
 

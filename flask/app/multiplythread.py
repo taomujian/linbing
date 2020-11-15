@@ -91,9 +91,9 @@ class Multiply_Thread():
 
     def run(self, *args, **kwargs):
         scan_set = self.mysqldb.get_scan(kwargs['username'], kwargs['target'])
-        '''if kwargs['domain']:
+        if kwargs['domain']:
             self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始子域名检测')
-            self.sub_domain(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['domain'][0])'''
+            self.sub_domain(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['domain'][0])
         if scan_set['scanner'] == 'nmap':
             scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'])
         else:

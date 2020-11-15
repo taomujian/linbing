@@ -6,7 +6,7 @@ MAINTAINER taomujian
 
 RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && apt-get clean && apt update \
 && apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev \
-libpcre3-dev python3-dev && mkdir /root/flask && useradd -s /sbin/nologin -M nginx
+libpcre3-dev python3-dev inetutils-ping && mkdir /root/flask && useradd -s /sbin/nologin -M nginx
 
 RUN cd ~ && export PYTHON=python3.8 && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python38" && mv python38_plugin.so /usr/lib/uwsgi/plugins/python38_plugin.so \
 && chmod 644 /usr/lib/uwsgi/plugins/python38_plugin.so

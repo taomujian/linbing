@@ -744,7 +744,6 @@ def ping(host, path):
     with open(path, "w") as f:
         return subprocess.call(command, stdout=f, stderr=f)
 
-
 def ping_avg_time(nameserver):
     """
 

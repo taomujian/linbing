@@ -54,7 +54,7 @@ def export(target, type='target', db=None, alive=False, limit=None, path=None, f
         if len(domains) > 1:
             utils.export_all(alive, format, path, datas)
     elif type == 'table':
-        database = Database(db, connect_args={'check_same_thread': False})
+        database = Database(db)
         rows = database.export_data(target, alive, limit)
         data = export_data(format, path, rows, show, target, target)
         database.close()
