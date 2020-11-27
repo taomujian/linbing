@@ -2,21 +2,21 @@
   
   <Form ref = "FindpasswordForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
     <FormItem prop = "username"> 
-      <Input  @on-blur = "handleusername()" v-model="form.username" placeholder="请输入用户名">
+      <Input  @on-blur = "handleusername()" v-model="form.username" placeholder="请输入用户名" clearable>
         <span slot="prepend">
           <Icon :size="16" type="ios-contact"></Icon>
         </span>
       </Input>
     </FormItem>
     <FormItem prop="email">
-      <Input  @on-blur = "handlemail()"  v-model="form.email" placeholder="请输入邮箱地址">
+      <Input  @on-blur = "handlemail()"  v-model="form.email" placeholder="请输入邮箱地址" clearable>
         <span slot="prepend">
           <Icon :size="16" type="ios-mail"></Icon>
         </span>
       </Input>
     </FormItem>
     <FormItem prop="checknum">
-      <Input  v-model="form.checknum"  placeholder="请输入验证码"  style="width: 170px">
+      <Input  v-model="form.checknum"  placeholder="请输入验证码"  style="width: 170px" clearable>
         <span slot="prepend">
           <Icon :size="16" type="ios-key"></Icon>
         </span>

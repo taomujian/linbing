@@ -217,6 +217,10 @@
 - 扫描设置中可设置POC检测时协程的并发数量
 - 增加asyncio多协程功能,提高POC扫描速度
 
+## [v1.6] 2020.11.27
+- 修改默认头像,若想替换的话直接flask/images/default.png图片就可以了
+- 优化前端修复一些小BUG
+
 ## 致谢
 
 > 感谢vulhub项目提供的靶机环境:<https://github.com/vulhub/vulhub>,还有<https://hub.docker.com/r/2d8ru/struts2>

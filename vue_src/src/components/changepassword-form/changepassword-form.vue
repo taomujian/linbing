@@ -2,21 +2,21 @@
   
   <Form ref = "ChangepasswordForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
     <FormItem prop="oldpassword">
-      <Input type="password" v-model="form.oldpassword" placeholder="请输入旧密码,8-16位大小写字母或数字">
+      <Input type="password" v-model="form.oldpassword" placeholder="请输入旧密码,8-16位大小写字母或数字" clearable>
         <span slot="prepend">
           <Icon :size="14" type="md-lock"></Icon>
         </span>
       </Input>
     </FormItem>
     <FormItem prop="newpassword">
-      <Input type="password" v-model="form.newpassword" placeholder="请输入新密码,8-16位大小写字母或数字">
+      <Input type="password" v-model="form.newpassword" placeholder="请输入新密码,8-16位大小写字母或数字" clearable>
         <span slot="prepend">
           <Icon :size="14" type="md-lock"></Icon>
         </span>
       </Input>
     </FormItem>
     <FormItem prop="newpasswordconfirm">
-      <Input type="password" v-model="form.newpasswordconfirm" placeholder="请再次输入新密码,8-16位大小写字母或数字">
+      <Input type="password" v-model="form.newpasswordconfirm" placeholder="请再次输入新密码,8-16位大小写字母或数字" clearable>
         <span slot="prepend">
           <Icon :size="14" type="md-lock"></Icon>
         </span>

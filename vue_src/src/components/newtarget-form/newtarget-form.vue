@@ -1,14 +1,14 @@
 <template>
   <Form ref = "NewtargetForm" :model="form" :rules="rules" @submit.native.prevent>
     <FormItem prop="target">
-      <Input type="textarea" v-model="form.target" placeholder="请输入目标,格式如10.0.0.1或http://xxx.com或10.0.0.0/24">
+      <Input type="textarea" v-model="form.target" placeholder="请输入目标,格式如10.0.0.1或http://xxx.com或10.0.0.0/24" clearable>
         <span slot="prepend">
           <Icon :size="14" type="ios-add-circle-outline"/>
         </span>
       </Input>
     </FormItem>
     <FormItem prop="description">
-      <Input type="textarea" v-model="form.description" placeholder="请输入关于目标的描述">
+      <Input type="textarea" v-model="form.description" placeholder="请输入关于目标的描述" clearable>
         <span slot="prepend">
           <Icon :size="14" type="ios-add-circle-outline"/>
         </span>

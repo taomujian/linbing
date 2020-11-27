@@ -91,7 +91,7 @@ class Mysql_db():
         :return:
         """
         flag = 0
-        sql = "create table target (id integer auto_increment primary key, username varchar(50), target varchar(50), description varchar(255), target_ip varchar(50), create_time varchar(50), scan_time varchar(50), scan_schedule varchar(50), vulner_number varchar(50), scan_status varchar(50), trash_flag varchar(50), scanner varchar(50), min_port varchar(50), max_port varchar(50), rate varchar(50), concurren_number varchar(50)) engine = innodb default charset = utf8;"
+        sql = "create table target (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255), target_ip varchar(255), create_time varchar(255), scan_time varchar(255), scan_schedule varchar(255), vulner_number varchar(255), scan_status varchar(255), trash_flag varchar(255), scanner varchar(255), min_port varchar(255), max_port varchar(255), rate varchar(255), concurren_number varchar(255)) engine = innodb default charset = utf8;"
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)
         try:
@@ -118,7 +118,7 @@ class Mysql_db():
         :return:
         """
         flag = 0
-        sql = "create table target_port (id integer auto_increment primary key, username varchar(50), target varchar(50), description varchar(50), create_time varchar(50), scan_time varchar(50), port varchar(50), product varchar(50), protocol varchar(50), version varchar(50)) engine = innodb default charset = utf8;"
+        sql = "create table target_port (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255), create_time varchar(255), scan_time varchar(255), port varchar(255), product varchar(255), protocol varchar(255), version varchar(255)) engine = innodb default charset = utf8;"
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)
         try:
@@ -145,7 +145,7 @@ class Mysql_db():
         :return:
         """
         flag = 0
-        sql = "create table target_domain (id integer auto_increment primary key, username varchar(50), target varchar(50), description varchar(50), create_time varchar(50), scan_time varchar(50), domain varchar(50), domain_ip varchar(65000)) engine = innodb default charset = utf8;"
+        sql = "create table target_domain (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255), create_time varchar(255), scan_time varchar(255), domain varchar(255), domain_ip varchar(255)) engine = innodb default charset = utf8;"
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)
         try:
@@ -172,7 +172,7 @@ class Mysql_db():
         :return:
         """
         flag = 0
-        sql = "create table vulnerability (id integer auto_increment primary key, username varchar(50), target varchar(50), description varchar(255), ip_port varchar(50), vulner_name varchar(50), vulner_descrip varchar(50), trash_flag varchar(50), time varchar(50)) engine = innodb default  charset = utf8;"
+        sql = "create table vulnerability (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255), ip_port varchar(255), vulner_name varchar(255), vulner_descrip varchar(255), trash_flag varchar(255), time varchar(255)) engine = innodb default  charset = utf8;"
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)
         try:
@@ -199,7 +199,7 @@ class Mysql_db():
         :return:
         """
         flag = 0
-        sql = "create table delete_vulnerability (id integer auto_increment primary key, username varchar(50), target varchar(50), description varchar(255), ip_port varchar(50), vulner_name varchar(50), vulner_descrip varchar(50), trash_flag varchar(50), time varchar(50)) engine = innodb default  charset = utf8;"
+        sql = "create table delete_vulnerability (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255), ip_port varchar(255), vulner_name varchar(255), vulner_descrip varchar(255), trash_flag varchar(255), time varchar(255)) engine = innodb default  charset = utf8;"
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)
         try:
@@ -226,7 +226,7 @@ class Mysql_db():
         :return:
         """
         flag = 0
-        sql = "create table delete_target (id integer auto_increment primary key, username varchar(50), target varchar(50), description varchar(255), create_time varchar(50), vulner_number varchar(50), scan_status varchar(50), scanner varchar(50), min_port varchar(50), max_port varchar(50), rate varchar(50)) engine = innodb default  charset = utf8;"
+        sql = "create table delete_target (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255), create_time varchar(255), vulner_number varchar(255), scan_status varchar(255), scanner varchar(255), min_port varchar(255), max_port varchar(255), rate varchar(255)) engine = innodb default  charset = utf8;"
         conn=self.get_conn()
         cursor=conn.cursor(cursor=pymysql.cursors.DictCursor)
         try:

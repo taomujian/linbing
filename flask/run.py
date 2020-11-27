@@ -215,7 +215,7 @@ def register():
             password = aes_crypto.encrypt(request_data['password'])
             user_id = '1'
             access = 'super_admin'
-            avatar  = 'https://file.iviewui.com/dist/a0e88e83800f138b94d2414621bd9704.png'
+            avatar  = 'default.png'
             random_str = ''
             words = ''.join((string.ascii_letters,string.digits))
             for i in range(8):

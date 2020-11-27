@@ -12,8 +12,6 @@ import QS from 'qs'
 import i18n from '@/locale'
 import config from '@/config'
 import importDirective from '@/directive'
-import mavonEditor from 'mavon-editor'
-import 'mavon-editor/dist/css/index.css'
 import { directive as clickOutside } from 'v-click-outside-x'
 import './index.less'
 import '@/assets/icons/iconfont.css'
@@ -29,7 +27,6 @@ Vue.use(ViewUI, {
 })
 Vue.use(TreeTable)
 Vue.use(VOrgTree)
-Vue.use(mavonEditor)
 /**
  * @description 注册admin内置插件
  */
