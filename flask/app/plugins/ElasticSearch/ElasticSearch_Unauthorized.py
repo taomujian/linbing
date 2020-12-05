@@ -6,9 +6,8 @@ description: ElasticSearch 未授权访问漏洞
 '''
 
 import base64
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class ElasticSearch_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -21,7 +20,7 @@ class ElasticSearch_Unauthorized_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            resp = requests.get(self.url + '/_cat', headers = self.headers, verify = False, allow_redirects = False)
+            resp = request.get(self.url + '/_cat', headers = self.headers)
             if '/_cat/master' in resp.text.lower() :
                 print('存在ElasticSearch未授权访问漏洞')
                 return True

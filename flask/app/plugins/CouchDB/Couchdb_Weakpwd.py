@@ -6,7 +6,7 @@ description: CouchDB弱口令漏洞
 '''
 
 import json
-import requests
+from app.lib.utils.request import request
 
 class Couchdb_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -30,7 +30,7 @@ class Couchdb_Weakpwd_BaseVerify:
                     'password': pwd
                     }
                 try:
-                    req = requests.post(url, headers = self.headers, data = data, allow_redirects = False, verify = False)
+                    req = request.post(url, headers = self.headers, data = data)
                     if req.status_code == 200 and 'AuthSession' in req.headers['Set-Cookie'] and json.loads(req.text)['ok'] == True:
                         result = "user: %s pwd: %s" %(user, pwd)
                         print('存在CouchDB弱口令漏洞,弱口令为',result)

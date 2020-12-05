@@ -5,9 +5,8 @@ name: Glassfish弱口令漏洞
 description: Glassfish弱口令漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Glassfish_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -18,7 +17,7 @@ class Glassfish_Weakpwd_BaseVerify:
 
     def check_url(self, url):
         try:
-            req = requests.get(url, headers = self.headers, allow_redirects = False, verify=False)
+            req = request.get(url, headers = self.headers)
             if "GlassFish" in req.text and req.status_code == 200:
                 return url
             else:
@@ -54,7 +53,7 @@ class Glassfish_Weakpwd_BaseVerify:
                     "loginButton.DisabledHiddenField":"true"
                 }
                 try:
-                    req = requests.post(valid_url, headers = self.headers, data = post_data, allow_redirects = False, verify=False)
+                    req = request.post(valid_url, headers = self.headers, data = post_data)
                     if req.status_code == 302:
                         print("存在Glassfish弱口令, user: %s pwd: %s"%(user, pwd))
                         return True

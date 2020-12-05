@@ -40,33 +40,33 @@ export default {
           key: 'target',
           sortable: true,
           resizable: true,
-          width: 250
+          width: 260
         },
         {
           title: '描述',
           key: 'description',
           sortable: true,
           resizable: true,
-          width: 250
+          width: 260
         },
         {
           title: '时间',
           key: 'scan_time',
           sortable: true,
           resizable: true,
-          width: 250
+          width: 260
         },
         { 
           title: '子域名', 
           key: 'domain',
           resizable: true,
-          width: 250
+          width: 260
         },
         {
           title: '域名ip',
           key: 'domain_ip',
           resizable: true,
-          width: 250
+          width: 310
         }
       ],
       tableData: []

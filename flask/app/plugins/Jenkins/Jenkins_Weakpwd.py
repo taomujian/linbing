@@ -5,9 +5,7 @@ name: Jenkins弱口令漏洞
 description: Jenkins弱口令漏洞
 '''
 
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class Jenkins_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -33,7 +31,7 @@ class Jenkins_Weakpwd_BaseVerify:
                     'Submit': 'Sign in'
                     }
                 try:
-                    req = requests.post(url, headers = self.headers, data = data, allow_redirects = False, verify = False)
+                    req = request.post(url, headers = self.headers, data = data)
                     if req.status_code == 302 and 'ACEGI_SECURITY_HASHED' not in req.headers['Set-Cookie']:
                         result = "user: %s pwd: %s" %(user, pwd)
                         print('存在Jenkins弱口令漏洞,弱口令为',result)

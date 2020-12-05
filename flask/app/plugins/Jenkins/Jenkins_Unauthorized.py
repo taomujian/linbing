@@ -5,9 +5,8 @@ name: Jenkins未授权漏洞
 description: Jenkins未授权漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Jenkins_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -20,14 +19,14 @@ class Jenkins_Unauthorized_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            response1 = requests.get(self.url + "/script", headers = self.headers, allow_redirects = False, verify=False)
-            response2 = requests.get(self.url +"/ajaxBuildQueue", headers = self.headers, allow_redirects = False, verify=False)
+            response1 = request.get(self.url + "/script", headers = self.headers)
+            response2 = request.get(self.url +"/ajaxBuildQueue", headers = self.headers)
             if (response1.status_code==200 and "Jenkins.instance.pluginManager.plugins" in response1.text  and response2.status_code==200):
                 print('存在Jenkins未授权漏洞')
                 return True
             else:
-                response3 = requests.get(self.url +"/jenkins/script", headers = self.headers, allow_redirects = False, verify=False)
-                response4 = requests.get(self.url +"/jenkins/ajaxBuildQueue", headers = self.headers, allow_redirects = False, verify=False)
+                response3 = request.get(self.url +"/jenkins/script", headers = self.headers)
+                response4 = request.get(self.url +"/jenkins/ajaxBuildQueue", headers = self.headers)
                 if (response3.status_code==200 and "Jenkins.instance.pluginManager.plugins" in response3.text  and response4.status_code==200):
                     print('存在Jenkins未授权漏洞')
                     return True

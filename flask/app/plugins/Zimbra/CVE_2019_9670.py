@@ -6,9 +6,7 @@ description: CVE-2019-9670 XXE读取漏洞
 '''
 
 import re
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2019_9670_BaseVerify:
     def __init__(self, url):
@@ -32,7 +30,7 @@ class CVE_2019_9670_BaseVerify:
           </Autodiscover>
         """
         try:
-            req = requests.post(self.url + '/Autodiscover/Autodiscover.xml', headers = self.headers, data = data, allow_redirects = False, verify = False)
+            req = request.post(self.url + '/Autodiscover/Autodiscover.xml', headers = self.headers, data = data)
             if 'Error 503 Requested response schema not available' in req.text:
                 print('存在CVE-2019-9670 XXE读取漏洞')
                 return True

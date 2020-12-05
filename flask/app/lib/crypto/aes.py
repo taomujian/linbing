@@ -4,16 +4,16 @@ import base64
 from Crypto.Cipher import AES
 
 class Aes_Crypto():
-    def __init__(self):
-        self.key = bytes('FeEt54f434R23sVb', encoding='utf-8')
-        self.iv = bytes('Dew245fGhJZ9S12n', encoding='utf-8')
+    def __init__(self, key, iv):
+        self.key = bytes(key, encoding='utf-8')
+        self.iv = bytes(iv, encoding='utf-8')
 
     def pkcs7padding(self, text):
         """
         明文使用PKCS7填充
         最终调用AES加密方法时，传入的是一个byte数组，要求是16的整数倍，因此需要对明文进行处理
 
-        :param text: 待加密内容(明文)
+        :param str text: 待加密内容(明文)
         :return:
         """
         bs = AES.block_size  # 16
@@ -30,7 +30,7 @@ class Aes_Crypto():
         """
         处理使用PKCS7填充过的数据
 
-        :param text: 解密后的字符串
+        :param str text: 解密后的字符串
         :return:
         """
         length = len(text)
@@ -44,8 +44,8 @@ class Aes_Crypto():
         模式cbc
         填充pkcs7
 
-        :param key: 密钥
-        :param content: 加密内容
+        :param str key: 密钥
+        :param str content: 加密内容
         :return:
         """
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)
@@ -64,8 +64,8 @@ class Aes_Crypto():
         模式cbc
         去填充pkcs7
         
-        :param key:
-        :param content:
+        :param str key:
+        :param str content:
         :return:
         """
         cipher = AES.new(self.key, AES.MODE_CBC, self.iv)

@@ -70,7 +70,7 @@ export default {
           title: '操作',
           key: 'action',
           resizable: true,
-          width: 250,
+          width: 310,
           align: 'center',
           render: (h, params) => {
             return h('div', [

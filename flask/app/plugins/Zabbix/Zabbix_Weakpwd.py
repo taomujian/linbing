@@ -4,9 +4,7 @@ name: Zabbix弱口令漏洞
 description: Zabbix弱口令漏洞
 '''
 
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class Zabbix_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -37,7 +35,7 @@ class Zabbix_Weakpwd_BaseVerify:
                             'autologin': 1,
                             'enter': 'Sign in'
                         }
-                        req = requests.post(url, headers = self.headers, data = data, allow_redirects = False, verify = False)
+                        req = request.post(url, headers = self.headers, data = data)
                         if 'zbx_sessionid' in req.headers['Set-Cookie'] and req.status_code == 302:
                             result = "exists Zabbix weak password, user: %s, pwd: %s"%(user, pwd)
                             #print(req.status_code)

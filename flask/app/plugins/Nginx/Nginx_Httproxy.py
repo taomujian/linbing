@@ -7,7 +7,7 @@ Reference: https://mp.weixin.qq.com/s/EtUmfMxxJjYNl7nIOKkRmA
 '''
 
 import re
-import requests
+from app.lib.utils.request import request
 
 class Nginx_Httproxy_BaseVerify:
     def __init__(self, url):
@@ -19,13 +19,13 @@ class Nginx_Httproxy_BaseVerify:
     def run(self):
         url = "http://www.net.cn/static/customercare/yourip.asp"
         try:
-            local_req = requests.get(url)
+            local_req = request.get(url)
             pattern = re.compile('<h2>(.*?)</h2')
             local_ip = re.findall(pattern, local_req.text)[0]
             proxies = {
                 'http': self.url
             }
-            proxy_req = requests.get(url, proxies = proxies)
+            proxy_req = request.get(url, proxies = proxies)
             proxy_ip = re.findall(pattern, proxy_req.text)[0]
             if local_ip != proxy_ip:
                 print('存在Nginx反向代理可访问内网漏洞')

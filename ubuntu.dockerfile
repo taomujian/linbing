@@ -14,7 +14,9 @@ RUN cd ~ && export PYTHON=python3.8 && uwsgi --build-plugin "/usr/src/uwsgi/plug
 # 设置相关环境变量,数据库账号密码
 ENV MARIADB_USER root
 ENV MARIADB_PASS 1234567
-
+ENV TZ=Asia/Shanghai
+ENV LANG C.UTF-8
+ 
 # 暴露端口
 EXPOSE 3306 11000
 
@@ -27,7 +29,8 @@ ADD flask /root/flask
 ADD flask/uwsgi.ini /root/flask/uwsgi.ini
 ADD ubuntu_run.sh /ubuntu_run.sh
 
-RUN service mysql start && mysql -e "SET PASSWORD FOR ${MARIADB_USER}@localhost = PASSWORD('${MARIADB_PASS}');FLUSH PRIVILEGES;" \
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && apt install -y tzdata && service mysql start \
+&& mysql -e "SET PASSWORD FOR ${MARIADB_USER}@localhost = PASSWORD('${MARIADB_PASS}');FLUSH PRIVILEGES;" \
 && mysql -e "update mysql.user set plugin='mysql_native_password' where User='${MARIADB_USER}';FLUSH PRIVILEGES;" \
 && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 && update-alternatives --config python3 \
 && pip3 install -r /root/flask/requirements.txt && chmod +x /ubuntu_run.sh 

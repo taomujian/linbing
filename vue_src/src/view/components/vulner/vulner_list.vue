@@ -76,7 +76,7 @@ export default {
         {
         title: '操作',
         key: 'action',
-        width: 260,
+        width: 310,
         resizable: true,
         align: 'center',
         render: (h, params) => {

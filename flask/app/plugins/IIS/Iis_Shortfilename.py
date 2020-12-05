@@ -5,9 +5,8 @@ name: IIS短文件名漏洞
 description: IIS短文件名漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Iis_Shortfilename_BaseVerify:
     def __init__(self, url):
@@ -22,8 +21,8 @@ class Iis_Shortfilename_BaseVerify:
         url1_400 = self.url + "/san1e*~1****/a.aspx"
         url1_404 = self.url + "/*~1****/a.aspx"
         try:
-            req_400 = requests.get(url1_400, headers = self.headers, allow_redirects = False, verify=False)
-            req_404 = requests.get(url1_404, headers = self.headers, allow_redirects = False, verify=False)
+            req_400 = request.get(url1_400, headers = self.headers)
+            req_404 = request.get(url1_404, headers = self.headers)
             if req_400.status_code == 400 and req_404.status_code == 404:
                 result = "exists IIS short filename vuln"
                 print('存在IIS短文件名漏洞')

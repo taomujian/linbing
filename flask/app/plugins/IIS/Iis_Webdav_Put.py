@@ -5,11 +5,8 @@ name: iis webdav put漏洞
 description: iis webdav put漏洞
 '''
 
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class Iis_Webdav_Put_BaseVerify:
     def __init__(self, url):
@@ -17,18 +14,15 @@ class Iis_Webdav_Put_BaseVerify:
         self.headers = {
             "User-Agent":"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)",
         }
-        self.capta=''
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
 
     def run(self):
         file_name = self.capta
         file_content = self.capta
         url = self.url + "/" + self.capta + ".txt"
         try:
-            req = requests.put(url, data = {'test': self.capta}, headers = self.headers, allow_redirects = False, verify=False)
-            req_get = requests.get(url, headers = self.headers, allow_redirects = False, verify=False)
+            req = request.put(url, data = {'test': self.capta}, headers = self.headers)
+            req_get = request.get(url, headers = self.headers)
             if req_get.status_code == 200 and file_content in req_get.text:
                 print('存在iis webdav put漏洞')
                 return True

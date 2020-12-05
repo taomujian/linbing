@@ -5,9 +5,8 @@ name: Hadoop 未授权访问漏洞
 description: Hadoop 未授权访问漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Hadoop_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -20,7 +19,7 @@ class Hadoop_Unauthorized_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            req = requests.get(self.url + '/cluster/cluster', headers = self.headers, verify = False, allow_redirects = False)
+            req = request.get(self.url + '/cluster/cluster', headers = self.headers)
             if "hbase" in req.text or "url=/rs-status" in req.text or "hadoop" in req.text:
                 print('存在Hadoop 未授权访问漏洞')
                 return True

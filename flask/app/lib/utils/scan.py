@@ -2,23 +2,22 @@
 
 import nmap
 import masscan
-from app.aes import Aes_Crypto
 
 class Port_Scan():
-    def __init__(self, mysqldb):
+    def __init__(self, mysqldb, aes_crypto):
         self.mysqldb = mysqldb
-        self.aes_crypto = Aes_Crypto()
+        self.aes_crypto = aes_crypto
 
     def nmap_scan(self, username, target, description, target_ip, min_port, max_port):
         """
         用nmap进行扫描
 
-        :param username: 用户名
-        :param target: 待扫描的目标
-        :param target_ip: 待扫描的目标ip
-        :param min_port: 扫描端口的最小值
-        :param max_port: 扫描端口的最大值
-        :return scan_list: 扫描的结果
+        :param str username: 用户名
+        :param str target: 待扫描的目标
+        :param str target_ip: 待扫描的目标ip
+        :param str min_port: 扫描端口的最小值
+        :param str max_port: 扫描端口的最大值
+        :return list scan_list: 扫描的结果
         """
         scan_list = []
         print('Nmap starting.....')
@@ -53,13 +52,13 @@ class Port_Scan():
         """
         用masscan进行扫描
 
-        :param username: 用户名
-        :param target: 待扫描的目标
-        :param target_ip: 待扫描的目标ip
-        :param min_port: 扫描端口的最小值
-        :param max_port: 扫描端口的最大值
-        :param rate: 扫描速率
-        :return scan_list: 扫描的结果
+        :param str username: 用户名
+        :param str target: 待扫描的目标
+        :param str target_ip: 待扫描的目标ip
+        :param str min_port: 扫描端口的最小值
+        :param str max_port: 扫描端口的最大值
+        :param str rate: 扫描速率
+        :return list scan_list: 扫描的结果
         """
         scan_list = []
         print('Masscan starting.....\n')

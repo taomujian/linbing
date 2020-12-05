@@ -7,9 +7,7 @@ description: Phpmyadmin弱口令漏洞
 
 import re
 import urllib
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class Phpmyadmin_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -29,7 +27,7 @@ class Phpmyadmin_Weakpwd_BaseVerify:
         urls.append(self.url + '/phpmyadmin/index.php')
         try:
             for url in urls:
-                url_req = requests.get(url, headers = self.headers, allow_redirects = False, verify = False)
+                url_req = request.get(url, headers = self.headers)
                 if 'input_password' in url_req.text and 'name="token"' in url_req.text and url_req.status_code:
                     check_url = url
             if check_url:

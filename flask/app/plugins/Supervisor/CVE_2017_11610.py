@@ -6,17 +6,13 @@ description: CVE-2017-11610 任意代码执行漏洞
 '''
 
 import json
-import string
-import random
 import xmlrpc.client
+from app.lib.utils.common import get_capta
 
 class CVE_2017_11610_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta = ''
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
 
     def run(self):
         try:

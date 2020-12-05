@@ -1,0 +1,4 @@
+{"name":"search.hahaha365.com.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":283,"type":"CNAME","class":"IN","name":"search.hahaha365.com.","data":"search.discuz.qq.com."},{"ttl":283,"type":"A","class":"IN","name":"search.discuz.qq.com.","data":"0.0.0.1"}]},"resolver":"223.6.6.6:53"}
+{"name":"www.hahaha365.com.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":2162,"type":"A","class":"IN","name":"www.hahaha365.com.","data":"115.28.128.106"}]},"resolver":"223.6.6.6:53"}
+{"name":"hahaha365.com.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":3600,"type":"A","class":"IN","name":"hahaha365.com.","data":"115.28.128.106"}]},"resolver":"119.29.29.29:53"}
+{"name":"letgo.hahaha365.com.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":3600,"type":"A","class":"IN","name":"letgo.hahaha365.com.","data":"203.107.43.165"}]},"resolver":"223.6.6.6:53"}

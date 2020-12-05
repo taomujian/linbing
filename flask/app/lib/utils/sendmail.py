@@ -27,9 +27,9 @@ class MailSender:
         """
         设置邮件头部信息
 
-        :param msg: 要发送的邮件内容
-        :param to_mail: 邮件收件人
-        :param cc_mail: 邮件抄送人
+        :param str msg: 要发送的邮件内容
+        :param str to_mail: 邮件收件人
+        :param str cc_mail: 邮件抄送人
         :return:
         """
         msg["Subject"] = Header(self.subject, "utf-8")
@@ -41,10 +41,10 @@ class MailSender:
         """
         设置邮件正文信息
 
-        :param msg: 要发送的邮件内容
-        :param type: 邮件正文类型
-        :param capta: 要发送的验证码
-        :param imgfile: 图片文件
+        :param str msg: 要发送的邮件内容
+        :param str type: 邮件正文类型
+        :param str capta: 要发送的验证码
+        :param str imgfile: 图片文件
         :return:
         """
         msgtext = MIMEText(self.imgbody + capta, type, "utf-8")
@@ -65,8 +65,8 @@ class MailSender:
         """
         发送邮件
 
-        :param to_mail: 邮件收件人
-        :return result: 状态码和邮件所发送的验证码
+        :param str to_mail: 邮件收件人
+        :return: str result: 状态码和邮件所发送的验证码
         """
         msg = MIMEMultipart()
         capta = '' 

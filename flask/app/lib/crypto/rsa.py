@@ -37,8 +37,8 @@ class Rsa_Crypto():
         """
         进行rsa加密
 
-        :param content: 待加密字符串
-        :return result: 加密后的字符串
+        :param str content: 待加密字符串
+        :return: str result: 加密后的字符串
         """
         content = content.encode('utf-8')
         length = len(content)
@@ -65,8 +65,8 @@ class Rsa_Crypto():
         """
         进行rsa解密
 
-        :param content: 待解密字符串
-        :return result: 解密后的字符串
+        :param str content: 待解密字符串
+        :return: str result: 解密后的字符串
         """
         content = base64.b64decode(content)
         length = len(content)

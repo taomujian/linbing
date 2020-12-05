@@ -6,7 +6,7 @@ description: Docker未验证漏洞
 '''
 
 import socket
-import requests
+from app.lib.utils.request import request
 from urllib.parse import urlparse
 
 class Docker_Unauthorized_BaseVerify:
@@ -34,7 +34,7 @@ class Docker_Unauthorized_BaseVerify:
                 result = "Docker unauthorized access"
                 print('存在Docker未授权访问漏洞')
                 return True
-            req = requests.get(self.url + '/info', headers = self.headers, allow_redirects = False, verify = False)
+            req = request.get(self.url + '/info', headers = self.headers)
             if req and 'docker' in req.text:
                 print('存在Docker未授权访问漏洞')
                 return True

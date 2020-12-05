@@ -7,16 +7,15 @@ import asyncio
 import functools
 import threading
 import importlib
-from app.scan import Port_Scan
-from app.aes import Aes_Crypto
+from app.lib.utils.scan import Port_Scan
 from app.oneforall.oneforall import OneForAll
 from concurrent.futures import ThreadPoolExecutor
 
 class Multiply_Thread():
-    def __init__(self, mysqldb):
-        self.port_scan = Port_Scan(mysqldb)
+    def __init__(self, mysqldb, aes_crypto):
+        self.port_scan = Port_Scan(mysqldb, aes_crypto)
         self.mysqldb = mysqldb
-        self.aes_crypto = Aes_Crypto()
+        self.aes_crypto = aes_crypto
         self.plugin_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"plugins")
         if not os.path.isdir(self.plugin_path):
             raise EnvironmentError
@@ -25,11 +24,11 @@ class Multiply_Thread():
     def async_exe(self, func, args = None, kwargs = None, delay = 0):
         """异步执行方法
         
-        :param func: 待执行方法
-        :param args: 方法args参数
-        :param kwargs: 方法kwargs参数
-        :param delay: 执行延迟时间
-        :return: 执行线程对象
+        :param str func: 待执行方法
+        :param str args: 方法args参数
+        :param dict kwargs: 方法kwargs参数
+        :param str delay: 执行延迟时间
+        :return: str thread thread: 执行线程对象
         """
         args = args or ()
         kwargs = kwargs or {}
@@ -45,13 +44,13 @@ class Multiply_Thread():
         """
         多协程执行方法
         
-        :param func: 待执行方法
-        :param loop: loop 对象
-        :param semaphore: 协程并发数量
-        :param kwargs: kwargs参数,方便与数据库联动,保存到数据库
-        :param ip_port: 目标的ip和端口,方便与数据库联动,保存到数据库
-        :param plugin_name: 插件的名字,方便与数据库联动,保存到数据库
-        :return: 执行线程对象
+        :param str func: 待执行方法
+        :param str loop: loop 对象
+        :param str semaphore: 协程并发数量
+        :param dict kwargs: kwargs参数,方便与数据库联动,保存到数据库
+        :param str ip_port: 目标的ip和端口,方便与数据库联动,保存到数据库
+        :param str plugin_name: 插件的名字,方便与数据库联动,保存到数据库
+        :return:
         """
 
         async with semaphore:
@@ -62,6 +61,8 @@ class Multiply_Thread():
                         self.mysqldb.save_vulnerability(kwargs['username'], kwargs['target'], self.aes_crypto.encrypt(plugin_name), self.aes_crypto.encrypt(ip_port), self.aes_crypto.encrypt(plugin_name), self.aes_crypto.encrypt(plugin_name))
                     else:
                         self.mysqldb.update_vulnerability(kwargs['username'], kwargs['target'], self.aes_crypto.encrypt(ip_port), self.aes_crypto.encrypt(plugin_name))
+                    
+                    self.mysqldb.update_target_vulnernumber(kwargs['username'], kwargs['target'])
                 else:
                     pass
             except Exception as e:
@@ -72,17 +73,20 @@ class Multiply_Thread():
         """
         调用oneforall爆破子域名
         
-        :param username: 用户名
-        :param targer: 目标
-        :param description: 目标描述
-        :param domain: 要爆破的域名
+        :param str username: 用户名
+        :param str targer: 目标
+        :param str description: 目标描述
+        :param str domain: 要爆破的域名
         :return:
         """
 
         oneforall = OneForAll(domain)
         datas = oneforall.run()
+        data_set = set()
         for domain in datas:
-            self.mysqldb.save_target_domain(username, target, description, self.aes_crypto.encrypt(domain['subdomain']), self.aes_crypto.encrypt(domain['ip']))
+            data_set.add((domain['subdomain'], domain['ip']))
+        for data in data_set:
+            self.mysqldb.save_target_domain(username, target, description, self.aes_crypto.encrypt(data[0]), self.aes_crypto.encrypt(data[1]))
             #print(domain['alive'])
             #print(domain['port'])
             #print(domain['cdn'])
@@ -94,12 +98,12 @@ class Multiply_Thread():
         if kwargs['domain']:
             self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始子域名检测')
             self.sub_domain(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['domain'][0])
-        if scan_set['scanner'] == 'nmap':
-            scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'])
-        else:
-            scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
+        # if scan_set['scanner'] == 'nmap':
+            # scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'])
+        # else:
+            # scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
         self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始POC检测')
-        
+        scan_list = ['127.0.0.1:7001']
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         semaphore = asyncio.Semaphore(int(scan_set['concurren_number']))
@@ -119,8 +123,11 @@ class Multiply_Thread():
                                 class_name = plugin_name + '_BaseVerify'
                                 url = 'http://' + ip_port
                                 get_class = getattr(module, class_name)(url)
-                                future = asyncio.ensure_future(self.coroutine_execution(get_class, loop, semaphore, kwargs, ip_port, plugin_name))
-                                tasks.append(future)
+                                if item == 'Weblogic':
+                                    future = asyncio.ensure_future(self.coroutine_execution(get_class, loop, semaphore, kwargs, ip_port, plugin_name))
+                                    tasks.append(future)
+                                else:
+                                    pass
                             except Exception as e:
                                 print(e)
                                 pass

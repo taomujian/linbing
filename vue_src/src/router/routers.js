@@ -296,6 +296,39 @@ export default [
       }
     ]
   },
+
+  {
+    path: '/system',
+    name: '系统设置路由前缀',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: false
+    },
+    children: [
+      {
+        path: '/',
+        name: '系统设置',
+        meta: {
+          icon: 'ios-infinite',
+          title: '系统设置',
+        },
+        component: () => import('@/view/components/system/system.vue')
+      },
+      {
+        path: '/system/set',
+        name: '配置系统信息',
+        meta: {
+          icon: 'ios-infinite',
+          title: '配置系统信息',
+          hideInBread: true,
+          hideInMenu: true
+        },
+        component: () => import('@/view/components/system_set/system_set.vue')
+      }
+    ]
+  },
+  
   {
     path: '/argu',
     name: 'argu',

@@ -37,7 +37,7 @@ class CVE_2020_2551_BaseVerify:
                 sock.close()
         return False
 
-    def run(self, ):
+    def run(self):
         try:
             if self.doSendOne(bytes.fromhex('47494f50010200030000001700000002000000000000000b4e616d6553657276696365')):
                 print('存在CVE-2020-2551漏洞')

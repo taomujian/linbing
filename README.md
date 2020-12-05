@@ -2,6 +2,23 @@
 
 > 本系统是对目标进行漏洞扫描的一个系统,前端采用vue技术,后端采用flask.核心原理是扫描主机的开放端口情况,然后根据端口情况逐个去进行poc检测,poc有110多个,包含绝大部分的中间件漏洞,本系统的poc皆来源于网络或在此基础上进行修改
 
+## 修改加密key
+
+> 存储到mysql中的数据是进行aes加密后的数据,登陆请求是用的rsa请求,目前是默认的key,如果需要修改key的参考下面,修改key信息需要重新编译vue源码
+
+### 修改aes key
+
+> python这块直接修改/flask/conf.ini中aes部分的配置即可,采用cbc模式,需要key和iv. vue部分则需要修改vue_src/src/libs/AES.js文件中第三行和第四行,要和conf.ini中保持一致
+
+### 修改rsa key
+
+> 需要先生成rsa的公私钥(私钥1024位)[参考地址](https://www.jianshu.com/p/d614ba4720ec)
+
+> 修改flask/rsa.py文件中的公钥和私钥信息,vue部分则需要修改vue_src/src/libs/crypto.js文件中第77行的公钥,要和flask/rsa.py文件中的公钥保持一致
+
+
+修改vue部分后要重新打包,然后把打包后的文件夹dist中的内容复制到vue文件夹,vue原有的文件要删除.
+
 ## 打包vue源代码(进入到vue_src目录下)
 
 > npm run build(有打包好的,即vue文件夹,可直接使用,自行打包需要安装node和vue,参考<https://www.runoob.com/nodejs/nodejs-install-setup.html>, <https://www.runoob.com/vue2/vue-install.html>)
@@ -187,7 +204,7 @@
 
 ### 启动容器(进入项目根目录)
 
-> docker run -it -d -p 11000:11000 linbing 
+> docker run -it -d -p 3306:3306 -p 11000:11000 linbing 
 
 ## 访问
 
@@ -220,6 +237,11 @@
 ## [v1.6] 2020.11.27
 - 修改默认头像,若想替换的话直接flask/images/default.png图片就可以了
 - 优化前端修复一些小BUG
+
+## [v1.7] 2020.12.5
+- 增加设置代理和扫描的超时时间功能
+- 优化前端修复一些小BUG
+- 优化文件结构,同步docker时间
 
 ## 致谢
 

