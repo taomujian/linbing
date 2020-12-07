@@ -7,7 +7,7 @@
           :current="this.page.pageNum" 
           :page-size="this.page.pageSize" 
           :total= "this.page.count" 
-          :page-size-opts="[5,10]"
+          :page-size-opts="[10,20]"
           show-sizer
           show-elevator
           show-total
@@ -31,7 +31,7 @@ export default {
       token: getToken(),
       page: {
           pageNum: 1,
-          pageSize: 5,
+          pageSize: 10,
           count: 0
       },
       columns: [

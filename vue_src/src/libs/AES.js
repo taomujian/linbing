@@ -1,7 +1,7 @@
 const CryptoJS = require('crypto-js');  //引用AES源码js
 
-const key = CryptoJS.enc.Utf8.parse('FeEt54f434R23sVb'); //十六位十六进制数作为秘钥
-const iv = CryptoJS.enc.Utf8.parse('Dew245fGhJZ9S12n'); //十六位十六进制数作为秘钥偏移量
+const key = CryptoJS.enc.Utf8.parse('FejK34f214s03szb'); //十六位十六进制数作为秘钥
+const iv = CryptoJS.enc.Utf8.parse('L9A242fGmJn9o1xn'); //十六位十六进制数作为秘钥偏移量
 
 //解密方法
 export function Decrypt(word) {
