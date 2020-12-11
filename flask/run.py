@@ -477,11 +477,10 @@ def save_target():
                 return str(response_data)
             else:
                 for target in target_list:
+                    target = target.strip()
                     scan_ip = parse_target(target)[0]
                     if not scan_ip:
-                        response_data['code'] = 'Z1020'
-                        response_data['message'] = '添加的目标无法解析,请重新输入'
-                        return str(response_data)
+                        scan_ip = target
                     target = aes_crypto.encrypt(target)
                     description = aes_crypto.encrypt(request_data['description'])
                     save_result = mysqldb.save_target(username_result['username'], target, description, scan_ip)
