@@ -35,7 +35,7 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 CORS(app, supports_credentials=True)
 config = configparser.ConfigParser()
 config.read('conf.ini')
-sender = MailSender(config.get('Email', 'email_address'), config.get('Email', 'secret'))
+sender = MailSender('linbing@xip.io', '127.0.0.1')
 mysqldb = Mysql_db(config.get('mysql', 'ip'), config.get('mysql', 'port'), config.get('mysql', 'username'), config.get('mysql', 'password'))
 mysqldb.create_database('linbing')
 mysqldb.create_user()

@@ -31,6 +31,8 @@
 
 ### 安装依赖
 
+> DEBIAN_FRONTEND noninteractive apt install -y postfix
+
 > apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping
 
 > mkdir /root/flask && mkdir /var/log/uwsgi
@@ -85,7 +87,9 @@
 
 ### 邮件
 
-> 我使用的是QQ邮箱发送的邮件,需要授权码,需要自行到flask/conf.ini文件中去设置,参考<https://blog.csdn.net/Momorrine/article/details/79881251>
+> 修改为使用postfix进行发送邮件
+
+> serive postfix start
 
 #### 执行uwsgi脚本(自制uwsgi-plugin-python38, ubuntu系统目前最高支持uwsgi-plugin-python36)
 
@@ -108,6 +112,8 @@
 > mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup && curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo && curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo && sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo yum clean all && yum makecache && yum update -y
 
 ### 安装依赖
+
+> yum install -y -q postfix
 
 > yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel uwsgi uwsgi-plugin-common 
 
@@ -176,7 +182,9 @@
 
 ### 邮件
 
-> 我使用的是QQ邮箱发送的邮件,需要授权码,需要自行到flask/conf.ini文件中去设置,参考<https://blog.csdn.net/Momorrine/article/details/79881251>
+> 修改为使用postfix进行发送邮件
+
+> systemctl start postfix
 
 #### 执行uwsgi脚本(自制uwsgi-plugin-python38, centos系统目前最高支持uwsgi-plugin-python36)
 
@@ -245,6 +253,9 @@
 
 ### [v1.8] 2020.12.11
 - 优化前端刷新后头像丢失BUG
+
+### [v1.9] 2020.12.18
+- 修改发送邮件的方式,使用postfix发送邮件
 
 ## 致谢
 
