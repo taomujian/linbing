@@ -98,12 +98,12 @@ class Multiply_Thread():
         if kwargs['domain']:
             self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始子域名检测')
             self.sub_domain(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['domain'][0])
-        # if scan_set['scanner'] == 'nmap':
-            # scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'])
-        # else:
-            # scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
+        if scan_set['scanner'] == 'nmap':
+            scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'])
+        else:
+            scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
         self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始POC检测')
-        scan_list = ['127.0.0.1:7001']
+        # scan_list = ['127.0.0.1:7001']
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
         semaphore = asyncio.Semaphore(int(scan_set['concurren_number']))
