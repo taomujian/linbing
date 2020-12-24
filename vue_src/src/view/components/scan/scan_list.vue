@@ -232,7 +232,7 @@ export default {
   
   mounted () {
     this.getTableData()
-    setInterval(this.getTableData, 60000)
+    setInterval(this.getTableData, 10000)
   },
 }
 </script>
