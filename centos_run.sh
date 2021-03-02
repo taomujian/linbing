@@ -22,7 +22,6 @@ if [ "$PIDS" = "" ]; then
     # 刷新权限
     mysql -u "$MARIADB_USER" -p"$MARIADB_PASS" -e "flush privileges;"
     
-    systemctl start postfix
     nginx
     setsid mysqld_safe &
     cd /root/flask

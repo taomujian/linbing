@@ -9,7 +9,7 @@ RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backu
 && sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo \
 && yum clean all && yum makecache && yum update -y && yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 \
 && wget https://ftp.gnu.org/gnu/gcc/gcc-9.2.0/gcc-9.2.0.tar.xz && tar xvf gcc-9.2.0.tar.xz \
-&& yum install -y -q zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel postfix nmap masscan nginx -y initscripts postgresql-devel python3-devel uwsgi uwsgi-plugin-common \
+&& yum install -y -q zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap masscan nginx -y initscripts postgresql-devel python3-devel uwsgi uwsgi-plugin-common \
 && mkdir /root/flask && mkdir /var/log/uwsgi && cd gcc-9.2.0 && ./contrib/download_prerequisites && mkdir build && cd build && ../configure --prefix=/usr/local --disable-multilib --enable-languages=c,c++ && make && make install \
 && ln -sf /usr/local/bin/gcc cc && yum remove -y gcc
 
@@ -23,7 +23,7 @@ ENV TZ=Asia/Shanghai
 ENV LANG C.UTF-8
 
 # 暴露端口
-EXPOSE 3306 11000
+EXPOSE 11000
 
 # 复制本地文件到docker 中
 ADD nginx/flask.conf /etc/nginx/conf.d/flask.conf
@@ -35,6 +35,7 @@ ADD flask/uwsgi.ini /root/flask/uwsgi.ini
 ADD centos_run.sh /centos_run.sh
 ADD centos_uwsgi.sh /centos_uwsgi.sh
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && pip3 install -r /root/flask/requirements.txt && chmod 775 /centos_uwsgi.sh && ./centos_uwsgi.sh && chmod 775 /centos_run.sh
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &&  pip3 install --upgrade pip&& pip3 install -r /root/flask/requirements.txt \
+&& chmod 775 /centos_uwsgi.sh && ./centos_uwsgi.sh && chmod 775 /centos_run.sh
 
 CMD ["/centos_run.sh"]

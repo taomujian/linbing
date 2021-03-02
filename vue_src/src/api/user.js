@@ -1,85 +1,56 @@
-import axios from '@/libs/api.request'
+import request from '@/utils/request'
 
-export const login = ({ userName, password }) => {
-  const data = {
-    userName,
-    password
-  }
-  
-  return axios.request({
+export function login(data) {
+  return request({
     url: '/api/login',
-    data,
+    method: 'post',
+    data
+  })
+}
+
+export function getInfo(data) {
+  return request({
+    url: '/api/userinfo',
+    method: 'post',
+    data
+  })
+}
+
+export function changeAvatar(data) {
+  return request({
+    url: '/api/change/avatar',
+    method: 'post',
+    data
+  })
+}
+
+export function uploadImage(data) {
+  return request({
+    url: '/api/upload/image',
+    method: 'post',
+    data
+  })
+}
+
+export function changePassword(data) {
+  return request({
+    url: '/api/change/password',
+    method: 'post',
+    data
+  })
+}
+
+export function queryPassword(data) {
+  return request({
+    url: '/api/query/password',
+    method: 'post',
+    data
+  })
+}
+
+export function logout() {
+  return request({
+    url: '/api/logout',
     method: 'post'
-  })
-}
-
-export const getUserInfo = (token) => {
-  return axios.request({
-    url: 'get_info',
-    params: {
-      token
-    },
-    method: 'get'
-  })
-}
-
-export const logout = (token) => {
-  return axios.request({
-    url: 'logout',
-    method: 'post'
-  })
-}
-
-export const getUnreadCount = () => {
-  return axios.request({
-    url: 'message/count',
-    method: 'get'
-  })
-}
-
-export const getMessage = () => {
-  return axios.request({
-    url: 'message/init',
-    method: 'get'
-  })
-}
-
-export const getContentByMsgId = msg_id => {
-  return axios.request({
-    url: 'message/content',
-    method: 'get',
-    params: {
-      msg_id
-    }
-  })
-}
-
-export const hasRead = msg_id => {
-  return axios.request({
-    url: 'message/has_read',
-    method: 'post',
-    data: {
-      msg_id
-    }
-  })
-}
-
-export const removeReaded = msg_id => {
-  return axios.request({
-    url: 'message/remove_readed',
-    method: 'post',
-    data: {
-      msg_id
-    }
-  })
-}
-
-export const restoreTrash = msg_id => {
-  return axios.request({
-    url: 'message/restore',
-    method: 'post',
-    data: {
-      msg_id
-    }
   })
 }

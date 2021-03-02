@@ -85,11 +85,6 @@
 
 > 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
 
-### 邮件
-
-> 修改为使用postfix进行发送邮件,由于发送的邮件可能被拦截,需要去所接收的邮箱里设置下白名单,具体就烦请各位百度下了.......
-
-> serive postfix start
 
 #### 执行uwsgi脚本(自制uwsgi-plugin-python38, ubuntu系统目前最高支持uwsgi-plugin-python36)
 
@@ -180,12 +175,6 @@
 > mysql_secure_installation(具体步骤略去,可参考<https://www.cnblogs.com/yhongji/p/9783065.html>)
 > 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
 
-### 邮件
-
-> 修改为使用postfix进行发送邮件,由于发送的邮件可能被拦截,需要去所接收的邮箱里设置下白名单,具体就烦请各位百度下了.......
-
-> systemctl start postfix
-
 #### 执行uwsgi脚本(自制uwsgi-plugin-python38, centos系统目前最高支持uwsgi-plugin-python36)
 
 > chmod +x centos_uwsgi.sh
@@ -200,7 +189,7 @@
 
 > 进入到/root/flask/目录下,uwsgi --ini uwsgi.ini(必须进到相关目录中执行)
 
-## docker部署
+## 自编译docker文件进行部署
 
 ### 配置
 
@@ -212,11 +201,17 @@
 
 ### 启动容器(进入项目根目录)
 
-> docker run -it -d -p 3306:3306 -p 11000:11000 linbing 
+> docker run -it -d -p 11000:11000 linbing 
+
+## 从dockerhub中获取镜像
+
+> docker pull taomujian/linbing:latest
+
+> docker run -it -d -p 11000:11000 taomujian/linbing 
 
 ## 访问
 
-> 访问<http://yourip:11000/login>即可
+> 访问<http://yourip:11000/login>即可,默认账号密码为admin/X!ru0#M&%V
 
 ## CHANGELOG
 
@@ -257,11 +252,24 @@
 ### [v1.9] 2020.12.18
 - 修改发送邮件的方式,使用postfix发送邮件
 
+### [v2.0] 2021.3.1
+- 前端框架由iview换为element,重构前端代码
+- 取消账号注册,改由内置管理员账号添加
+- 增加对url目标的目录扫描功能
+- 增加查看所有漏洞和所有端口信息的功能
+- 优化数据库表格数据结构和sql语句
+
 ## 致谢
 
-> 感谢vulhub项目提供的靶机环境:<https://github.com/vulhub/vulhub>,还有<https://hub.docker.com/r/2d8ru/struts2>
+> 感谢vulhub项目提供的靶机环境:
+<https://github.com/vulhub/vulhub>,
+<https://hub.docker.com/r/2d8ru/struts2>
 
-> POC也参考了很多项目:<https://github.com/Xyntax/POC-T>、<https://github.com/ysrc/xunfeng>、<https://github.com/se55i0n/DBScanner>、<https://github.com/vulscanteam/vulscan>
+> POC也参考了很多项目:
+<https://github.com/Xyntax/POC-T>、
+<https://github.com/ysrc/xunfeng>、
+<https://github.com/se55i0n/DBScanner>、
+<https://github.com/vulscanteam/vulscan>
 
 > 感谢师傅pan带我入门安全,也感谢呆橘同学在vue上对我的指导
 

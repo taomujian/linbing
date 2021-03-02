@@ -1,52 +1,122 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import routes from './routers'
-import store from '@/store'
-import iView from 'view-design'
-import { setToken, getToken, canTurnTo, setTitle } from '@/libs/util'
-import config from '@/config'
-const { homeName } = config
 
 Vue.use(Router)
-const router = new Router({
-  routes,
-  mode: 'history'
-})
-const LOGIN_PAGE_NAME = 'login'
-const REGISTER_PAGE_NAME = 'register'
-const FINDPASSWORD_PAGE_NAME = 'findpassword'
 
-router.beforeEach((to, from, next) => {
-  iView.LoadingBar.start()
-  const token = getToken()
-  if (!token && to.name !== LOGIN_PAGE_NAME && to.name !== REGISTER_PAGE_NAME && to.name !== FINDPASSWORD_PAGE_NAME ) {
-    // 未登录且要跳转的页面不是登录页
-    next({
-      name: LOGIN_PAGE_NAME // 跳转到登录页
-    })
-  } else if (!token && to.name === LOGIN_PAGE_NAME) {
-    // 未登陆且要跳转的页面是登录页
-    next() // 跳转
-  } else if (!token && to.name === REGISTER_PAGE_NAME) {
-    // 未登陆且要跳转的页面是登录页
-    next() // 跳转
-  } else if (!token && to.name === FINDPASSWORD_PAGE_NAME) {
-    // 未登陆且要跳转的页面是登录页
-    next() // 跳转 
-  } else if (token && to.name === LOGIN_PAGE_NAME) {
-    // 已登录且要跳转的页面是登录页
-    next({
-      name: homeName // 跳转到homeName页
-    })
-  } else {
-      next()
-    }
+/* Layout */
+import Layout from '@/layout'
+
+/* Router Modules */
+import userRouter from './modules/user'
+import targetRouter from './modules/target'
+import scanRouter from './modules/scan'
+import vulnerRouter from './modules/vulner'
+import portRouter from './modules/port'
+import accountRouter from './modules/account'
+import trashRouter from './modules/trash'
+import systemRouter from './modules/system'
+
+/**
+ * Note: sub-menu only appear when route children.length >= 1
+ * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
+ *
+ * hidden: true                   if set true, item will not show in the sidebar(default is false)
+ * alwaysShow: true               if set true, will always show the root menu
+ *                                if not set alwaysShow, when item has more than one children route,
+ *                                it will becomes nested mode, otherwise not show the root menu
+ * redirect: noRedirect           if set noRedirect will no redirect in the breadcrumb
+ * name:'router-name'             the name is used by <keep-alive> (must set!!!)
+ * meta : {
+    roles: ['admin','editor']    control the page roles (you can set multiple roles)
+    title: 'title'               the name show in sidebar and breadcrumb (recommend set)
+    icon: 'svg-name'/'el-icon-x' the icon show in the sidebar
+    noCache: true                if set true, the page will no be cached(default is false)
+    affix: true                  if set true, the tag will affix in the tags-view
+    breadcrumb: false            if set false, the item will hidden in breadcrumb(default is true)
+    activeMenu: '/example/list'  if set path, the sidebar will highlight the path you set
+  }
+ */
+
+/**
+ * constantRoutes
+ * a base page that does not have permission requirements
+ * all roles can be accessed
+ */
+export const constantRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index'),
+        name: 'Dashboard',
+        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  userRouter,
+  targetRouter,
+  scanRouter,
+  portRouter,
+  vulnerRouter,
+  trashRouter,
+  systemRouter,
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index')
+      }
+    ]
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/auth-redirect',
+    component: () => import('@/views/login/auth-redirect'),
+    hidden: true
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/error-page/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error-page/401'),
+    hidden: true
+  },
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+/**
+ * asyncRoutes
+ * the routes that need to be dynamically loaded based on user roles
+ */
+export const asyncRoutes = [
+  accountRouter
+]
+
+const createRouter = () => new Router({
+  // mode: 'history', // require service support
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRoutes
 })
 
-router.afterEach(to => {
-  setTitle(to, router.app)
-  iView.LoadingBar.finish()
-  window.scrollTo(0, 0)
-})
+const router = createRouter()
+
+// Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher // reset router
+}
 
 export default router

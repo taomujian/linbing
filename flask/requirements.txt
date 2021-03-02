@@ -22,7 +22,7 @@ beautifulsoup4
 bs4
 certifi
 chardet
-colorama ; sys_platform == 'win32'
+colorama
 exrex
 fire
 future
@@ -38,6 +38,6 @@ termcolor
 tldextract
 tqdm
 treelib
-urllib3
 configparser
-win32-setctime ; sys_platform == 'win32'
+win32-setctime
+chardet

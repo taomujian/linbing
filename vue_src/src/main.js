@@ -1,57 +1,40 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import App from './App'
-import router from './router'
-import store from './store'
-import ViewUI from 'view-design'
-import { Notice } from 'view-design'
-import 'view-design/dist/styles/iview.css'
-import axios from 'axios'
-import QS from 'qs'
-import i18n from '@/locale'
-import config from '@/config'
-import importDirective from '@/directive'
-import { directive as clickOutside } from 'v-click-outside-x'
-import './index.less'
-import '@/assets/icons/iconfont.css'
-import TreeTable from 'tree-table-vue'
-import VOrgTree from 'v-org-tree'
-import 'v-org-tree/dist/v-org-tree.css'
-import 'default-passive-events'
-// 实际打包时应该不引入mock
-/* eslint-disable */
 
-Vue.use(ViewUI, {
+import Cookies from 'js-cookie'
+
+import 'normalize.css/normalize.css' // a modern alternative to CSS resets
+
+import Element from 'element-ui'
+import './styles/element-variables.scss'
+import i18n from './lang'
+
+import '@/styles/index.scss' // global css
+
+import App from './App'
+import store from './store'
+import router from './router'
+
+import './icons' // icon
+import './permission' // permission control
+
+import * as filters from './filters' // global filters
+
+Vue.use(Element, {
+  size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
 })
-Vue.use(TreeTable)
-Vue.use(VOrgTree)
-/**
- * @description 注册admin内置插件
- */
-/**
- * @description 生产环境关掉提示
- */
-Vue.config.productionTip = false
-/**
- * @description 全局注册应用配置
- */
-Vue.prototype.$axios = axios
-Vue.prototype.qs = QS
-Vue.prototype.$config = config
-Vue.prototype.$Notice = Notice
-/**
- * 注册指令
- */
-importDirective(Vue)
-Vue.directive('clickOutside', clickOutside)
 
-/* eslint-disable no-new */
+// register global utility filters
+Object.keys(filters).forEach(key => {
+  Vue.filter(key, filters[key])
+})
+
+Vue.config.productionTip = false
+
 new Vue({
   el: '#app',
   router,
-  i18n,
   store,
+  i18n,
   render: h => h(App)
 })

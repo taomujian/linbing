@@ -7,15 +7,16 @@ import asyncio
 import functools
 import threading
 import importlib
-from app.lib.utils.scan import Port_Scan
+from urllib.parse import urlparse
+from app.lib.utils.port_scan import Port_Scan
 from app.oneforall.oneforall import OneForAll
+from app.dirsearch.dirsearch import Program
 from concurrent.futures import ThreadPoolExecutor
 
 class Multiply_Thread():
-    def __init__(self, mysqldb, aes_crypto):
-        self.port_scan = Port_Scan(mysqldb, aes_crypto)
+    def __init__(self, mysqldb):
+        self.port_scan = Port_Scan(mysqldb)
         self.mysqldb = mysqldb
-        self.aes_crypto = aes_crypto
         self.plugin_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),"plugins")
         if not os.path.isdir(self.plugin_path):
             raise EnvironmentError
@@ -40,7 +41,7 @@ class Multiply_Thread():
         thread.start()
         return thread
 
-    async def coroutine_execution(self, function, loop, semaphore, kwargs, ip_port, plugin_name):
+    async def coroutine_execution(self, function, loop, semaphore, kwargs, ip_port, plugin_name, scan_id):
         """
         多协程执行方法
         
@@ -57,26 +58,23 @@ class Multiply_Thread():
             try:
                 result = await loop.run_in_executor(None, functools.partial(function.run))
                 if result:
-                    if not self.mysqldb.get_vulnerability(kwargs['username'], kwargs['target'], self.aes_crypto.encrypt(ip_port), self.aes_crypto.encrypt(plugin_name)):
-                        self.mysqldb.save_vulnerability(kwargs['username'], kwargs['target'], self.aes_crypto.encrypt(plugin_name), self.aes_crypto.encrypt(ip_port), self.aes_crypto.encrypt(plugin_name), self.aes_crypto.encrypt(plugin_name))
-                    else:
-                        self.mysqldb.update_vulnerability(kwargs['username'], kwargs['target'], self.aes_crypto.encrypt(ip_port), self.aes_crypto.encrypt(plugin_name))
+                    self.mysqldb.save_target_vulner(kwargs['username'], kwargs['target'], scan_id, ip_port, plugin_name, plugin_name)
                     
-                    self.mysqldb.update_target_vulnernumber(kwargs['username'], kwargs['target'])
+                    self.mysqldb.save_vulner(kwargs['username'], kwargs['target'], ip_port + '_' + plugin_name, ip_port, plugin_name, plugin_name)
                 else:
                     pass
             except Exception as e:
                 #print(e)
                 pass
             
-    def sub_domain(self, username, target, description, domain):
+    def sub_domain(self, username, target, domain, scan_id):
         """
         调用oneforall爆破子域名
         
         :param str username: 用户名
         :param str targer: 目标
-        :param str description: 目标描述
         :param str domain: 要爆破的域名
+        :param: str scan_id: 扫描id
         :return:
         """
 
@@ -86,27 +84,56 @@ class Multiply_Thread():
         for domain in datas:
             data_set.add((domain['subdomain'], domain['ip']))
         for data in data_set:
-            self.mysqldb.save_target_domain(username, target, description, self.aes_crypto.encrypt(data[0]), self.aes_crypto.encrypt(data[1]))
-            #print(domain['alive'])
-            #print(domain['port'])
-            #print(domain['cdn'])
-            #print(domain['title'])
-            #print(domain['banner'])
+            self.mysqldb.save_target_domain(username, target, scan_id, data[0], data[1])
+    
+    def dir_scan(self, username, target, url, scan_id):
+        """
+        调用dirsearch爆破目录,查找后台
+        
+        :param str username: 用户名
+        :param str targer: 目标
+        :param: str scan_id: 扫描id
+        :param str url: 要爆破的url
+
+        :return:
+        """
+
+        path_scan = Program(url)
+        for item in path_scan.result:
+            path = item[0]
+            status = item[1]
+            if 'http' in path:
+                url_parse = urlparse(path)
+                url_header = url_parse.scheme + '://' + url_parse.netloc
+                path = path.replace(url_header, '')
+            self.mysqldb.save_target_path(username, target, scan_id, path, str(status))
 
     def run(self, *args, **kwargs):
         scan_set = self.mysqldb.get_scan(kwargs['username'], kwargs['target'])
         if kwargs['domain']:
-            self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始子域名检测')
-            self.sub_domain(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['domain'][0])
+            self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '子域名探测中')
+            self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '子域名探测中')
+            self.sub_domain(kwargs['username'], kwargs['target'], kwargs['main_domain'], kwargs['scan_id'])
+
+        if 'http://' in kwargs['target'] or 'https://' in kwargs['target']:
+            self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '目录扫描中')
+            self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
+            self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
+
+        self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '端口扫描中')
+        self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
         if scan_set['scanner'] == 'nmap':
-            scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'])
+            scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'])
         else:
-            scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['description'], kwargs['scan_ip'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
-        self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '开始POC检测')
-        # scan_list = ['127.0.0.1:7001']
+            scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
+        
+        self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], 'POC扫描中')
+        self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], 'POC扫描中')
+        scan_list = ['127.0.0.1:7001', '127.0.0.1:8001']
         new_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(new_loop)
-        semaphore = asyncio.Semaphore(int(scan_set['concurren_number']))
+        # semaphore = asyncio.Semaphore(int(scan_set['concurren_number']))
+        semaphore = asyncio.Semaphore(50)
         tasks = []
         loop = asyncio.get_event_loop()
 
@@ -123,11 +150,8 @@ class Multiply_Thread():
                                 class_name = plugin_name + '_BaseVerify'
                                 url = 'http://' + ip_port
                                 get_class = getattr(module, class_name)(url)
-                                if item == 'Weblogic':
-                                    future = asyncio.ensure_future(self.coroutine_execution(get_class, loop, semaphore, kwargs, ip_port, plugin_name))
-                                    tasks.append(future)
-                                else:
-                                    pass
+                                future = asyncio.ensure_future(self.coroutine_execution(get_class, loop, semaphore, kwargs, ip_port, plugin_name, kwargs['scan_id']))
+                                tasks.append(future)
                             except Exception as e:
                                 print(e)
                                 pass
@@ -135,7 +159,11 @@ class Multiply_Thread():
                             continue
 
         loop.run_until_complete(asyncio.wait(tasks))
-        self.mysqldb.update_scan(kwargs['username'], kwargs['target'], '扫描结束')
+
+        self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描结束')
+        self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描结束')                                 
+        self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描结束')
+        self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描结束')
 
 if __name__ == '__main__':
     multiply_thread = Multiply_Thread()

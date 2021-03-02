@@ -4,19 +4,48 @@ import nmap
 import masscan
 
 class Port_Scan():
-    def __init__(self, mysqldb, aes_crypto):
+    def __init__(self, mysqldb):
         self.mysqldb = mysqldb
-        self.aes_crypto = aes_crypto
 
-    def nmap_scan(self, username, target, description, target_ip, min_port, max_port):
+    def get_title(self, url):
+        """
+        获取网站的title与banner
+
+        :param str url: 目标url
+
+        :return tuple title,banner: 识别的结果
+        """
+
+        try:
+            req = request.get(url)
+            #获取网站的页面编码
+            r_detectencode = chardet.detect(req.content)
+            actual_encode = r_detectencode['encoding']
+            pagecode = req.content.decode(actual_encode)
+            response = re.findall('<title>(.*?)</title>', pagecode, re.S)
+            if response:
+                #将页面解码为utf-8，获取中文标题
+                title = response[0]
+                banner = req.headers['server']
+                return title, banner
+        except Exception as e:
+            print(e)
+            return '', ''
+        finally:
+            pass
+
+    def nmap_scan(self, username, target, target_ip, scan_id, scan_time, min_port, max_port):
         """
         用nmap进行扫描
 
         :param str username: 用户名
         :param str target: 待扫描的目标
         :param str target_ip: 待扫描的目标ip
+        :param str scan_id: 扫描id
+        :param str scan_time: 扫描时间
         :param str min_port: 扫描端口的最小值
         :param str max_port: 扫描端口的最大值
+
         :return list scan_list: 扫描的结果
         """
         scan_list = []
@@ -34,13 +63,18 @@ class Port_Scan():
                         protocol = nm[host][nmap_proto][int(nmap_port)]['name']
                         product = nm[host][nmap_proto][int(nmap_port)]['product']
                         version = nm[host][nmap_proto][int(nmap_port)]['version']
-                        if not self.mysqldb.get_target_port(username, target, nmap_port):
-                            self.mysqldb.save_target_port(username, target, description, self.aes_crypto.encrypt(str(nmap_port)), self.aes_crypto.encrypt(protocol), self.aes_crypto.encrypt(product), self.aes_crypto.encrypt(version))
-                        else:
-                            self.mysqldb.update_target_port(username, target, description, self.aes_crypto.encrypt(str(nmap_port)), self.aes_crypto.encrypt(protocol), self.aes_crypto.encrypt(product), self.aes_crypto.encrypt(version))
+                        if 'http' in protocol or protocol == 'sun-answerbook':
+                            if protocol == 'https' or protocol == 'https-alt':
+                                scan_url_port = 'https://' + str(host) + ':' + str(nmap_port)
+                            else:
+                                scan_url_port = 'http://' + str(host) + ':' + str(nmap_port)
+                            result = self.get_title(scan_url_port)
+                            self.mysqldb.save_target_port(username, target, scan_id, scan_time, target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
+                            continue
+
+                        self.mysqldb.save_target_port(username, target, scan_id, scan_time, target_ip, str(nmap_port), protocol, product, version, '', '')
                         scan_list.append(str(host) + ':' + str(nmap_port))
             print('Nmap scanned.....')
-            self.mysqldb.update_scan(username, target, '端口扫描结束')
         except Exception as e:
             print(e)
             pass
@@ -48,7 +82,7 @@ class Port_Scan():
             pass
         return scan_list
 
-    def masscan_scan(self, username, target, description, target_ip, min_port, max_port, rate):
+    def masscan_scan(self, username, target, target_ip, scan_id, scan_time, min_port, max_port, rate):
         """
         用masscan进行扫描
 
@@ -76,10 +110,17 @@ class Port_Scan():
                             protocol = nm[host][nmap_proto][int(masscan_port)]['name']
                             product = nm[host][nmap_proto][int(masscan_port)]['product']
                             version = nm[host][nmap_proto][int(masscan_port)]['version']
-                            if not self.mysqldb.get_target_port(username, target, masscan_port):
-                                self.mysqldb.save_target_port(username, target, description, self.aes_crypto.encrypt(str(masscan_port)), self.aes_crypto.encrypt(protocol), self.aes_crypto.encrypt(product), self.aes_crypto.encrypt(version))
-                            else:
-                                self.mysqldb.update_target_port(username, target, description, self.aes_crypto.encrypt(str(masscan_port)), self.aes_crypto.encrypt(protocol), self.aes_crypto.encrypt(product), self.aes_crypto.encrypt(version))
+                            if 'http' in protocol or protocol == 'sun-answerbook':
+                                if protocol == 'https' or protocol == 'https-alt':
+                                    scan_url_port = 'https://' + str(host) + ':' + str(nmap_port)
+                                else:
+                                    scan_url_port = 'http://' + str(host) + ':' + str(nmap_port)
+                                result = self.get_title(scan_url_port)
+                                self.mysqldb.save_target_port(username, target, scan_id, scan_time, target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
+                                continue
+
+                            self.mysqldb.save_target_port(username, target, scan_id, scan_time, target_ip, str(nmap_port), protocol, product, version, '', '')
+                    
                             scan_list.append(str(host) + ':' + str(masscan_port))
             print('Masscan scanned.....\n')
             self.mysqldb.update_scan(username, target, '端口扫描结束')

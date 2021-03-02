@@ -5,7 +5,6 @@
 
 PIDS=`ps -ef |grep mysql |grep -v grep | awk '{print $2}'`
 if [ "$PIDS" = "" ]; then
-    service postfix start
     nginx
     service mysql start
     cd /root/flask
