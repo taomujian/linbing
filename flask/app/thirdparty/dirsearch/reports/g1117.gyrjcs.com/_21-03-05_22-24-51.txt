@@ -1,0 +1,335 @@
+Time: Fri Mar  5 22:25:19 2021
+
+Time: Fri Mar  5 22:25:19 2021
+
+403   204B   http://g1117.gyrjcs.com:80/%3f/
+Time: Fri Mar  5 22:25:29 2021
+
+Time: Fri Mar  5 22:25:29 2021
+
+403   203B   http://g1117.gyrjcs.com:80/%ff
+Time: Fri Mar  5 22:25:31 2021
+
+Time: Fri Mar  5 22:25:31 2021
+
+403   207B   http://g1117.gyrjcs.com:80/.HTF/
+Time: Fri Mar  5 22:26:48 2021
+
+Time: Fri Mar  5 22:26:48 2021
+
+403   213B   http://g1117.gyrjcs.com:80/.ht_wsr.txt
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   216B   http://g1117.gyrjcs.com:80/.htaccess.bak1
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   216B   http://g1117.gyrjcs.com:80/.htaccess.orig
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   218B   http://g1117.gyrjcs.com:80/.htaccess.sample
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   216B   http://g1117.gyrjcs.com:80/.htaccess.save
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   214B   http://g1117.gyrjcs.com:80/.htaccessBAK
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   215B   http://g1117.gyrjcs.com:80/.htaccessOLD2
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   217B   http://g1117.gyrjcs.com:80/.htaccess_extra
+Time: Fri Mar  5 22:26:49 2021
+
+403   216B   http://g1117.gyrjcs.com:80/.htaccess_orig
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   214B   http://g1117.gyrjcs.com:80/.htaccess_sc
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   206B   http://g1117.gyrjcs.com:80/.htm
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   207B   http://g1117.gyrjcs.com:80/.html
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   212B   http://g1117.gyrjcs.com:80/.htpasswds
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   216B   http://g1117.gyrjcs.com:80/.htpasswd_test
+Time: Fri Mar  5 22:26:49 2021
+
+Time: Fri Mar  5 22:26:49 2021
+
+403   213B   http://g1117.gyrjcs.com:80/.httr-oauth
+Time: Fri Mar  5 22:26:50 2021
+
+Time: Fri Mar  5 22:26:50 2021
+
+403   214B   http://g1117.gyrjcs.com:80/.htaccessOLD
+Time: Fri Mar  5 22:27:30 2021
+
+Time: Fri Mar  5 22:27:30 2021
+
+200     3KB  http://g1117.gyrjcs.com:80/.php_cs.cache
+Time: Fri Mar  5 22:28:25 2021
+
+Time: Fri Mar  5 22:28:25 2021
+
+302     3B   http://g1117.gyrjcs.com:80/0    -> REDIRECTS TO: /index/login/login/token/0406dc9d713b0ae01027e025203411e4.html
+Time: Fri Mar  5 22:28:52 2021
+
+Time: Fri Mar  5 22:28:52 2021
+
+200   481B   http://g1117.gyrjcs.com:80/404.html
+Time: Fri Mar  5 22:29:03 2021
+
+Time: Fri Mar  5 22:29:03 2021
+
+302     3B   http://g1117.gyrjcs.com:80/ADMIN    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:29:03 2021
+
+Time: Fri Mar  5 22:29:03 2021
+
+302     3B   http://g1117.gyrjcs.com:80/ADMIN.html    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:29:08 2021
+
+Time: Fri Mar  5 22:29:08 2021
+
+302     3B   http://g1117.gyrjcs.com:80/Admin    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:29:08 2021
+
+Time: Fri Mar  5 22:29:08 2021
+
+302     3B   http://g1117.gyrjcs.com:80/Admin.html    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:29:59 2021
+
+Time: Fri Mar  5 22:29:59 2021
+
+403   209B   http://g1117.gyrjcs.com:80/Public/
+Time: Fri Mar  5 22:30:22 2021
+
+Time: Fri Mar  5 22:30:22 2021
+
+403   218B   http://g1117.gyrjcs.com:80/Trace.axd::$DATA
+Time: Fri Mar  5 22:32:09 2021
+
+Time: Fri Mar  5 22:32:09 2021
+
+302     3B   http://g1117.gyrjcs.com:80/admin    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:32:21 2021
+
+Time: Fri Mar  5 22:32:21 2021
+
+302     3B   http://g1117.gyrjcs.com:80/admin.html    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:32:25 2021
+
+Time: Fri Mar  5 22:32:25 2021
+
+302     3B   http://g1117.gyrjcs.com:80/admin/    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:32:25 2021
+
+Time: Fri Mar  5 22:32:25 2021
+
+302     3B   http://g1117.gyrjcs.com:80/admin/?/login    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:32:43 2021
+
+Time: Fri Mar  5 22:32:43 2021
+
+302     3B   http://g1117.gyrjcs.com:80/admin/index    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:32:44 2021
+
+Time: Fri Mar  5 22:32:44 2021
+
+302     3B   http://g1117.gyrjcs.com:80/admin/index.html    -> REDIRECTS TO: /admin/login/login.html
+Time: Fri Mar  5 22:36:42 2021
+
+Time: Fri Mar  5 22:36:42 2021
+
+403   213B   http://g1117.gyrjcs.com:80/application
+Time: Fri Mar  5 22:36:42 2021
+
+Time: Fri Mar  5 22:36:42 2021
+
+403   214B   http://g1117.gyrjcs.com:80/application/
+Time: Fri Mar  5 22:36:43 2021
+
+Time: Fri Mar  5 22:36:43 2021
+
+403   220B   http://g1117.gyrjcs.com:80/application/cache/
+Time: Fri Mar  5 22:36:43 2021
+
+Time: Fri Mar  5 22:36:43 2021
+
+403   237B   http://g1117.gyrjcs.com:80/application/configs/application.ini
+Time: Fri Mar  5 22:36:43 2021
+
+Time: Fri Mar  5 22:36:43 2021
+
+403   219B   http://g1117.gyrjcs.com:80/application/logs/
+Time: Fri Mar  5 22:38:21 2021
+
+Time: Fri Mar  5 22:38:21 2021
+
+403   210B   http://g1117.gyrjcs.com:80/cgi-bin/
+Time: Fri Mar  5 22:38:21 2021
+
+Time: Fri Mar  5 22:38:21 2021
+
+500   537B   http://g1117.gyrjcs.com:80/cgi-bin/printenv.pl
+Time: Fri Mar  5 22:40:38 2021
+
+Time: Fri Mar  5 22:40:38 2021
+
+301   237B   http://g1117.gyrjcs.com:80/down    -> REDIRECTS TO: http://g1117.gyrjcs.com/down/
+Time: Fri Mar  5 22:40:40 2021
+
+Time: Fri Mar  5 22:40:40 2021
+
+200    11KB  http://g1117.gyrjcs.com:80/down/
+Time: Fri Mar  5 22:41:08 2021
+
+Time: Fri Mar  5 22:41:08 2021
+
+200     1KB  http://g1117.gyrjcs.com:80/error.html
+Time: Fri Mar  5 22:41:36 2021
+
+Time: Fri Mar  5 22:41:36 2021
+
+200     6KB  http://g1117.gyrjcs.com:80/favicon.ico
+Time: Fri Mar  5 22:43:04 2021
+
+Time: Fri Mar  5 22:43:04 2021
+
+302     3B   http://g1117.gyrjcs.com:80/index    -> REDIRECTS TO: /index/login/login/token/c326d86e178b5f26a947b73cd07f335a.html
+Time: Fri Mar  5 22:43:04 2021
+
+Time: Fri Mar  5 22:43:04 2021
+
+302     3B   http://g1117.gyrjcs.com:80/index.php    -> REDIRECTS TO: /index.php/index/login/login/token/c326d86e178b5f26a947b73cd07f335a.html
+Time: Fri Mar  5 22:43:05 2021
+
+Time: Fri Mar  5 22:43:05 2021
+
+302     3B   http://g1117.gyrjcs.com:80/index.html    -> REDIRECTS TO: /index/login/login/token/2ba85b7a602c9573bd0d73eb7ac266a5.html
+Time: Fri Mar  5 22:44:14 2021
+
+Time: Fri Mar  5 22:44:14 2021
+
+200     0B   http://g1117.gyrjcs.com:80/log.txt
+Time: Fri Mar  5 22:48:16 2021
+
+Time: Fri Mar  5 22:48:16 2021
+
+301   241B   http://g1117.gyrjcs.com:80/public..    -> REDIRECTS TO: http://g1117.gyrjcs.com/public../
+Time: Fri Mar  5 22:48:16 2021
+
+Time: Fri Mar  5 22:48:16 2021
+
+301   239B   http://g1117.gyrjcs.com:80/public    -> REDIRECTS TO: http://g1117.gyrjcs.com/public/
+Time: Fri Mar  5 22:48:16 2021
+
+Time: Fri Mar  5 22:48:16 2021
+
+403   209B   http://g1117.gyrjcs.com:80/public/
+Time: Fri Mar  5 22:50:15 2021
+
+Time: Fri Mar  5 22:50:15 2021
+
+301   239B   http://g1117.gyrjcs.com:80/static    -> REDIRECTS TO: http://g1117.gyrjcs.com/static/
+Time: Fri Mar  5 22:50:15 2021
+
+Time: Fri Mar  5 22:50:15 2021
+
+301   241B   http://g1117.gyrjcs.com:80/static..    -> REDIRECTS TO: http://g1117.gyrjcs.com/static../
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+403   209B   http://g1117.gyrjcs.com:80/vendor/
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/autoload.php
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/ClassLoader.php
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+200     1KB  http://g1117.gyrjcs.com:80/vendor/composer/LICENSE
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/autoload_classmap.php
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/autoload_psr4.php
+Time: Fri Mar  5 22:52:04 2021
+
+Time: Fri Mar  5 22:52:04 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/autoload_real.php
+Time: Fri Mar  5 22:52:05 2021
+
+Time: Fri Mar  5 22:52:05 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/autoload_static.php
+Time: Fri Mar  5 22:52:05 2021
+
+Time: Fri Mar  5 22:52:05 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/autoload_namespaces.php
+Time: Fri Mar  5 22:52:05 2021
+
+Time: Fri Mar  5 22:52:05 2021
+
+200     0B   http://g1117.gyrjcs.com:80/vendor/composer/autoload_files.php
+Time: Fri Mar  5 22:52:06 2021
+
+Time: Fri Mar  5 22:52:06 2021
+
+200    56KB  http://g1117.gyrjcs.com:80/vendor/composer/installed.json
+Time: Fri Mar  5 22:52:16 2021
+
+Time: Fri Mar  5 22:52:16 2021
+
+200     1KB  http://g1117.gyrjcs.com:80/web.config
+Time: Fri Mar  5 22:52:16 2021
+
+Time: Fri Mar  5 22:52:16 2021
+
+403   219B   http://g1117.gyrjcs.com:80/web.config::$DATA

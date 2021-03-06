@@ -22,7 +22,7 @@
       <el-tab-pane label="子域名" name="domain">
         <span slot="label">
           子域名
-          <el-badge v-show="domainpage.total>0" :value="domainpage.total" class="badge-a" />
+          <el-badge v-show="domain_total>0" :value="domain_total" class="badge-a" />
         </span>
         <el-table :data="domainlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
           <el-table-column
@@ -56,12 +56,12 @@
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="domainpage.total>=0" :total="domainpage.total" :page.sync="domainpage.pageNum" :limit.sync="domainpage.pageSize" @pagination="getDomainList" />
+        <pagination v-show="domain_total>=0" :total="domain_total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
       </el-tab-pane>
       <el-tab-pane name="path" :disabled="path_flag">
         <span slot="label">
           目录
-          <el-badge v-show="pathpage.total>0" :value="pathpage.total" class="badge-a" />
+          <el-badge v-show="path_total>0" :value="path_total" class="badge-a" />
         </span>
         <el-table :data="pathlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
           <el-table-column
@@ -97,7 +97,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="pathpage.total>=0" :total="pathpage.total" :page.sync="pathpage.pageNum" :limit.sync="pathpage.pageSize" @pagination="getPathList" />
+        <pagination v-show="path_total>=0" :total="path_total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -118,21 +118,18 @@ export default {
       domainlist: null,
       pathlist: null,
       spanArr: [],
+      pos: 0,
       target: '',
       targetdata: {
         'scan_status': '',
         'scan_schedule': '',
         'vulner_number': ''
       },
-      domainpage: {
+      domain_total: 10,
+      path_total: 10,
+      page: {
         pageNum: 1,
         pageSize: 10,
-        total: 10
-      },
-      pathpage: {
-        pageNum: 1,
-        pageSize: 10,
-        total: 10
       },
       path_flag: false,
       loading: false
@@ -149,8 +146,7 @@ export default {
     if (reg.test(this.target)) {
       this.path_flag = true
     }
-    this.getDomainList()
-    this.getPathList()
+    this.getList()
     // init the default selected tab
     const tab = this.$route.query.tab
     if (tab) {
@@ -160,12 +156,12 @@ export default {
   methods: {
     showCreatedTimes() {
     },
-    getDomainList() {
+    getList() {
       this.loading = true
       let data = {
         'target': this.target,
-        'pagenum': this.domainpage.pageNum,
-        'pagesize': this.domainpage.pageSize,
+        'pagenum': this.page.pageNum,
+        'pagesize': this.page.pageSize,
         'token': getToken()
       }
       data = JSON.stringify(data)
@@ -175,59 +171,63 @@ export default {
         this.targetdata.scan_schedule = response.data.target.result[0].scan_schedule
         this.targetdata.vulner_number = response.data.target.result[0].vulner_number
         this.domainlist = response.data.domain.result
-        this.getSpanArr(this.domainlist)
-        this.domainpage.total = response.data.domain.total
-        this.loading = false
-      })
-    },
-    getPathList() {
-      this.loading = true
-      let data = {
-        'target': this.target,
-        'pagenum': this.pathpage.pageNum,
-        'pagesize': this.pathpage.pageSize,
-        'token': getToken()
-      }
-      data = JSON.stringify(data)
-      const params = { 'data': Encrypt(data) }
-      targetDetail(params).then(response => {
-        this.targetdata.scan_status = response.data.target.result[0].scan_status
-        this.targetdata.scan_schedule = response.data.target.result[0].scan_schedule
-        this.targetdata.vulner_number = response.data.target.result[0].vulner_number
         this.pathlist = response.data.path.result
-        this.getSpanArr(this.pathlist)
-        this.pathpage.total = response.data.path.total
+        this.getSpanArr()
+        this.domain_total = response.data.domain.total
+        this.path_total = response.data.path.total
         this.loading = false
       })
     },
     getSpanArr(data) {
-      for (var i = 0; i < data.length; i++) {
-        if (i === 0) {
-          this.spanArr.push(1)
-          this.pos = 0
-        } else {
-          // 判断当前元素与上一个元素是否相同
-          if (data[i].id === data[i - 1].id) {
-            this.spanArr[this.pos] += 1
-            this.spanArr.push(0)
-          } else {
-            this.spanArr.push(1)
-            this.pos = i
+      this.domainlist.forEach(v => {
+        v.rowspan = 1;
+      });
+      // 双层循环
+      for (let i = 0; i < this.domainlist.length; i++) {
+        // 内层循环，上面已经给所有的行都加了v.rowspan = 1
+        // 这里进行判断
+        // 如果当前行的id和下一行的id相等
+        // 就把当前v.rowspan + 1
+        // 下一行的v.rowspan - 1
+        for (let j = i + 1; j < this.domainlist.length; j++) {
+          //此处可根据相同字段进行合并，此处是根据的id
+          if (this.domainlist[i].id === this.domainlist[j].id) {
+            this.domainlist[i].rowspan++;
+            this.domainlist[j].rowspan--;
           }
         }
+        // 这里跳过已经重复的数据
+        i = i + this.domainlist[i].rowspan - 1;
+      }
+      this.pathlist.forEach(v => {
+        v.rowspan = 1;
+      });
+      // 双层循环
+      for (let i = 0; i < this.pathlist.length; i++) {
+        // 内层循环，上面已经给所有的行都加了v.rowspan = 1
+        // 这里进行判断
+        // 如果当前行的id和下一行的id相等
+        // 就把当前v.rowspan + 1
+        // 下一行的v.rowspan - 1
+        for (let j = i + 1; j < this.pathlist.length; j++) {
+          //此处可根据相同字段进行合并，此处是根据的id
+          if (this.pathlist[i].id === this.pathlist[j].id) {
+            this.pathlist[i].rowspan++;
+            this.pathlist[j].rowspan--;
+          }
+        }
+        // 这里跳过已经重复的数据
+        i = i + this.pathlist[i].rowspan - 1;
       }
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 0) {
-        const _row = this.spanArr[rowIndex]
-        const _col = _row > 0 ? 1 : 0
-        console.log(`rowspan:${_row} colspan:${_col}`)
-        return { // [0,0] 表示这一行不显示， [2,1]表示行的合并数
-          rowspan: _row,
-          colspan: _col
-        }
+        return {
+          rowspan: row.rowspan,
+          colspan: 1
+        };
       }
-    }
+    },
   }
 }
 </script>

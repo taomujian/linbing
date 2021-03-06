@@ -31,17 +31,24 @@
       </el-table-column>
       <el-table-column label="目标" sortable align="center" width="200">
         <template slot-scope="{row}">
-          <span>{{ row.target }}</span>
+          <div v-if="isurl(row.target) === true">
+            <span class="link-type" @click="handleDetail(row)">{{ row.target }}</span>
+          </div>
+          <div v-else>
+            <span>{{ row.target }}</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="IP" sortable align="center" width="120">
         <template slot-scope="{row}">
-          <span class="link-type">{{ row.scan_ip }}</span>
+          <span>{{ row.scan_ip }}</span>
         </template>
       </el-table-column>
       <el-table-column label="PORT" sortable align="center" width="100">
         <template slot-scope="{row}">
-          <span>{{ row.port }}</span>
+          <span class="link-type">
+            <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
+          </span>
         </template>
       </el-table-column>
       <el-table-column label="协议" sortable align="center">
@@ -122,6 +129,20 @@ export default {
     this.getList()
   },
   methods: {
+    isurl(value) {
+      const ip_reg = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/
+      const domain_reg = /^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/
+      if (value.startsWith('http://') === true) {
+        return true
+      } else if (value.startsWith('https://') === true) {
+        return true
+      } else if (ip_reg.test(value)) {
+        return false
+      } else if (domain_reg.test(value)) {
+        return true
+      }
+      return false
+    },
     getList() {
       this.listLoading = true
       let data = {
@@ -144,6 +165,14 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 0.5 * 1000)
+      })
+    },
+    handleDetail(row) {
+      this.$router.push({
+        name: 'TargetDetail',
+        query: {
+          params: row['target']
+        }
       })
     },
     handleFilter() {

@@ -21,6 +21,9 @@ if [ "$PIDS" = "" ]; then
 
     # 刷新权限
     mysql -u "$MARIADB_USER" -p"$MARIADB_PASS" -e "flush privileges;"
+
+    systemctl start redis
+    redis-server /etc/redis.conf
     
     nginx
     setsid mysqld_safe &

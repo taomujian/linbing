@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import os
 import re
 import random
 import string
 import socket
+import signal
 import tldextract
 from IPy import IP
 from urllib.parse import urlparse
@@ -113,3 +115,25 @@ def parse_target(target):
     if domain_result:
         domain_result = domain_result[0]
     return scan_ip, main_domain, domain_result
+
+def check(parameter):
+    """
+    等待指定时间后杀掉指定的进程
+
+    :param str parameter: 要查找的进程名字关键字
+    :return:
+    """
+    
+    try:
+        out = os.popen("ps -ef |grep \'%s\' |grep -v grep | awk '{print $2}'" %(parameter)).read()
+        if out:
+            for line in out.splitlines():
+                try:
+                    os.kill(int(line), signal.SIGKILL)
+                except Exception as e:
+                    print(e)
+                    pass
+    except Exception as e:
+        print(e)
+    finally:
+        pass

@@ -408,6 +408,7 @@ export default {
           center: true,
           duration: 3 * 1000
         })
+        this.getList()
       })
     },
     handleDetail(row) {
@@ -432,6 +433,7 @@ export default {
           center: true,
           duration: 3 * 1000
         })
+        this.getList()
       })
     },
     handleScanSet(row) {

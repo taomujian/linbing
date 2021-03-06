@@ -13,7 +13,7 @@ class Zookeeper_Unauthorized_BaseVerify:
         self.ip = urlparse(url).hostname
         self.port =urlparse(url).port
         if not self.port:
-            self.port = '80'
+            self.port = '2181'
 
     def run(self):
         try:
@@ -30,6 +30,6 @@ class Zookeeper_Unauthorized_BaseVerify:
             zk.stop()
 
 if __name__ == '__main__':
-    Zookeeper_Unauthorized = Zookeeper_Unauthorized_BaseVerify('http://baidu.com')
+    Zookeeper_Unauthorized = Zookeeper_Unauthorized_BaseVerify('https://baidu.com:2181')
     Zookeeper_Unauthorized.run()
 

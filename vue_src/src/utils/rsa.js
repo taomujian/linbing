@@ -1,4 +1,4 @@
-import { JSEncrypt } from 'jsencrypt'
+import JSEncrypt from 'jsencrypt'
 // Convert a hex string to a byte array 16进制转byte数组
 
 function hexToBytes(hex) {

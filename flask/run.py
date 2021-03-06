@@ -7,12 +7,15 @@ import time
 import base64
 import hashlib
 import configparser
-from app.lib.utils.mysql import Mysql_db
+from rq import Queue
+from redis import Redis
 from app.lib.utils.encode import md5
-from app.lib.utils.common import get_capta, parse_target
+from app.lib.utils.mysql import Mysql_db
+from app.lib.utils.queue import queue_scan
+from app.lib.utils.common import get_capta, parse_target, check
 from app.lib.crypto.rsa import Rsa_Crypto
 from app.lib.crypto.aes import Aes_Crypto
-from app.multiplythread import Multiply_Thread
+from app.scan.scan import Scan
 from flask_cors import *
 from werkzeug.middleware.shared_data import SharedDataMiddleware
 from flask import Flask, request, redirect,url_for, send_from_directory
@@ -47,6 +50,12 @@ rsa_crypto = Rsa_Crypto()
 random_str = get_capta()
 token = aes_crypto.encrypt('admin' + random_str)
 mysqldb.save_account('admin', '系统内置管理员,不可删除,不可修改', token, generate_password_hash('X!ru0#M&%V'), 'admin', 'avatar.png')
+
+redis_conn = Redis(host = '127.0.0.1', password = config.get('redis', 'password'), port = 6379)
+high_queue = Queue("high", connection = redis_conn)
+
+check('worker.py')
+os.popen('nohup python3 worker.py > log.log 2>&1 &')
 
 @app.route('/api/query/account', methods = ['POST'])
 def query_account():
@@ -727,23 +736,10 @@ def start_scan():
                         mysqldb.update_scan_schedule(username_result['username'], target, scan_id, '扫描失败')                            
 
                     else:
-                        mysqldb.save_target_scan(username_result['username'], target, description, scan_ip, scan_id, scan_time, '扫描中', '正在排队')   
+                        mysqldb.save_target_scan(username_result['username'], target, description, scan_ip, scan_id, scan_time, '扫描中', '正在排队')
                         mysqldb.update_target_scan_status(username_result['username'], target, '扫描中')
-                        mysqldb.update_target_scan_schedule(username_result['username'], target, '开始扫描')                                 
-                        mysqldb.update_scan_status(username_result['username'], target, scan_id, '扫描中')
-                        mysqldb.update_scan_schedule(username_result['username'], target, scan_id, '开始扫描')                              
-                        
-                        multiply_thread = Multiply_Thread(mysqldb)
-                        scan_data = {
-                            'username': username_result['username'],
-                            'target': target,
-                            'scan_ip': scan_ip,
-                            'scan_id': scan_id,
-                            'main_domain': main_domain,
-                            'domain': domain
-                        }
-                        multiply_thread.async_exe(multiply_thread.run, (), scan_data)
-                        # q.enqueue_call(queue_scan, args = (username_result['username'], target, scan_id, scan_ip, main_domain, domain, aes_crypto, mysqldb, flint,), timeout = 7200)
+                        mysqldb.update_target_scan_schedule(username_result['username'], target, '正在排队')                               
+                        high_queue.enqueue_call(queue_scan, args = (username_result['username'], target, scan_id, scan_ip, main_domain, domain, mysqldb,), timeout = 7200)
                         scan_id = str(int(scan_id) + 1)
 
                 response_data['code'] = 'L1000'

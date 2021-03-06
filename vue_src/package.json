@@ -15,7 +15,7 @@
     "test:ci": "npm run lint && npm run test:unit"
   },
   "dependencies": {
-    "axios": "0.18.1",
+    "axios": "^0.21.1",
     "clipboard": "2.0.4",
     "codemirror": "5.45.0",
     "core-js": "3.6.5",
@@ -28,7 +28,7 @@
     "file-saver": "2.0.1",
     "fuse.js": "3.4.4",
     "js-cookie": "2.2.0",
-    "jsencrypt": "^3.0.0-rc.1",
+    "jsencrypt": "^3.0.1",
     "jsonlint": "1.6.3",
     "jszip": "3.2.1",
     "normalize.css": "7.0.0",

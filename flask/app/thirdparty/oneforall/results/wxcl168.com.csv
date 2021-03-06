@@ -1,0 +1,5 @@
+id,new,alive,request,resolve,url,subdomain,level,cname,ip,public,cdn,port,status,reason,title,banner,cidr,asn,org,addr,isp,source
+1,1,1,1,1,http://bt.wxcl168.com,bt.wxcl168.com,1,bt.wxcl168.com,47.57.69.15,1,1,80,200,OK,没有找到站点,nginx,,,,,,Brute
+2,1,0,0,1,https://bt.wxcl168.com,bt.wxcl168.com,1,bt.wxcl168.com,47.57.69.15,1,0,443,,"(MaxRetryError(""HTTPSConnectionPool(host='bt.wxcl168.com', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fc0de7c8970>, 'Connection to bt.wxcl168.com timed out. (connect timeout=3.05)'))""),)",,,,,,,,Brute
+3,1,1,1,1,http://www.wxcl168.com,www.wxcl168.com,1,www.wxcl168.com,47.57.69.15,1,1,80,200,OK,财经证劵,nginx,,,,,,Brute
+4,1,0,0,1,https://www.wxcl168.com,www.wxcl168.com,1,www.wxcl168.com,47.57.69.15,1,0,443,,"(MaxRetryError(""HTTPSConnectionPool(host='www.wxcl168.com', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fc0de575eb0>, 'Connection to www.wxcl168.com timed out. (connect timeout=3.05)'))""),)",,,,,,,,Brute

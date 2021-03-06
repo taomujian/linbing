@@ -1,4 +1,5 @@
 -i https://mirrors.aliyun.com/pypi/simple/
+rq
 cx-Oracle
 dnspython
 Flask
@@ -31,6 +32,7 @@ loguru
 pysocks
 requests-file
 six
+redis
 soupsieve
 sqlalchemy
 tenacity

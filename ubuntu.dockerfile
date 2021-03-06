@@ -6,20 +6,22 @@ MAINTAINER taomujian
 ENV DEBIAN_FRONTEND noninteractive
 ENV MARIADB_USER root
 ENV MARIADB_PASS 1234567
+ENV REDIS_PASS 1234567
 ENV TZ=Asia/Shanghai
 ENV LANG C.UTF-8
+
+# 暴露端口
+EXPOSE 11000
 
 # 更新apt源及安装依赖
 RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && apt-get clean && apt update \
 && apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libxml2-dev \
-libxslt1-dev zlib1g-dev libffi-dev libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping \
-&& mkdir /root/flask && useradd -s /sbin/nologin -M nginx
+libxslt1-dev zlib1g-dev libffi-dev libpq-dev uuid-dev libcap-dev redis-server libpcre3-dev python3-dev inetutils-ping \
+&& mkdir /root/flask && useradd -s /sbin/nologin -M nginx && sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf \
+&& sed -i "s|# requirepass foobared|requirepass '${REDIS_PASS}'|" /etc/redis/redis.conf
 
 RUN cd ~ && export PYTHON=python3.8 && uwsgi --build-plugin "/usr/src/uwsgi/plugins/python python38" && mv python38_plugin.so /usr/lib/uwsgi/plugins/python38_plugin.so \
 && chmod 644 /usr/lib/uwsgi/plugins/python38_plugin.so
-
-# 暴露端口
-EXPOSE 11000
 
 # 复制本地文件到docker 中
 ADD nginx/flask.conf /etc/nginx/conf.d/flask.conf

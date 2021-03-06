@@ -1,0 +1,2 @@
+{"name":"apm888.in.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":3600,"type":"A","class":"IN","name":"apm888.in.","data":"149.129.191.147"}]},"resolver":"119.29.29.29:53"}
+{"name":"app.apm888.in.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":3600,"type":"A","class":"IN","name":"app.apm888.in.","data":"149.129.191.147"}]},"resolver":"182.254.116.116:53"}

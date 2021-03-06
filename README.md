@@ -23,7 +23,15 @@
 
 > npm run build(有打包好的,即vue文件夹,可直接使用,自行打包需要安装node和vue,参考<https://www.runoob.com/nodejs/nodejs-install-setup.html>, <https://www.runoob.com/vue2/vue-install.html>)
 
-## ubuntu部署(强烈建议在ubuntu上搭建,centos源中无python3.8,在后面自制uwsgi插件时,还得重新编译gcc,特别麻烦,费时间)
+[ubuntu部署](##ubuntu部署(强烈建议))
+
+[centos部署](##centos部署)
+
+[自编译docker文件进行部署](##自编译docker文件进行部署)
+
+[从dockerhub中获取镜像](##从dockerhub中获取镜像)
+
+## ubuntu部署(强烈建议)
 
 ### 设置国内源
 
@@ -33,7 +41,7 @@
 
 > DEBIAN_FRONTEND noninteractive apt install -y postfix
 
-> apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping
+> apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
 
 > mkdir /root/flask && mkdir /var/log/uwsgi
 
@@ -85,6 +93,21 @@
 
 > 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
 
+### redis
+
+#### 配置redis
+
+> sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf
+
+> sed -i "s|# requirepass foobared|requirepass '你的redis密码'|" /etc/redis/redis.conf
+
+> 配置数据库密码后需要在flask/conf.ini文件中配置连接redis数据库的密码信息
+
+#### 启动redis
+
+> service redis-server start
+
+> redis-server /etc/redis/redis.conf
 
 #### 执行uwsgi脚本(自制uwsgi-plugin-python38, ubuntu系统目前最高支持uwsgi-plugin-python36)
 
@@ -100,7 +123,7 @@
 
 > 进入到/root/flask/目录下,uwsgi --ini uwsgi.ini(必须进到相关目录中执行)
 
-## centos部署(强烈建议在ubuntu上搭建,centos源中无python3.8,在后面自制uwsgi插件时,还得重新编译gcc,特别麻烦,费时间)
+## centos部署
 
 ### 设置源
 
@@ -110,7 +133,7 @@
 
 > yum install -y -q postfix
 
-> yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel uwsgi uwsgi-plugin-common 
+> yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel uwsgi uwsgi-plugin-common redis
 
 > mkdir /root/flask && mkdir /var/log/uwsgi 
 
@@ -174,6 +197,22 @@
 
 > mysql_secure_installation(具体步骤略去,可参考<https://www.cnblogs.com/yhongji/p/9783065.html>)
 > 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
+
+### redis
+
+#### 配置redis
+
+> sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf
+
+> sed -i "s|# requirepass foobared|requirepass '你的redis密码'|" /etc/redis/redis.conf
+
+> 配置数据库密码后需要在flask/conf.ini文件中配置连接redis数据库的密码信息
+
+#### 启动redis
+
+> systemctl start redis
+
+> redis-server /etc/redis.conf
 
 #### 执行uwsgi脚本(自制uwsgi-plugin-python38, centos系统目前最高支持uwsgi-plugin-python36)
 
@@ -259,6 +298,10 @@
 - 增加查看所有漏洞和所有端口信息的功能
 - 优化数据库表格数据结构和sql语句
 
+### [v2.1] 2021.3.5
+- 前端界面优化
+- 多个目标扫描同时扫描时,增加任务队列管理
+
 ## 致谢
 
 > 感谢vulhub项目提供的靶机环境:
@@ -266,10 +309,10 @@
 <https://hub.docker.com/r/2d8ru/struts2>
 
 > POC也参考了很多项目:
-<https://github.com/Xyntax/POC-T>、
-<https://github.com/ysrc/xunfeng>、
-<https://github.com/se55i0n/DBScanner>、
-<https://github.com/vulscanteam/vulscan>
+> <https://github.com/Xyntax/POC-T>、
+> <https://github.com/ysrc/xunfeng>、
+> <https://github.com/se55i0n/DBScanner>、
+> <https://github.com/vulscanteam/vulscan>
 
 > 感谢师傅pan带我入门安全,也感谢呆橘同学在vue上对我的指导
 
