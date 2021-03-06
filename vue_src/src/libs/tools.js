@@ -1,9 +1,9 @@
 export const forEach = (arr, fn) => {
   if (!arr.length || !fn) return
   let i = -1
-  let len = arr.length
+  const len = arr.length
   while (++i < len) {
-    let item = arr[i]
+    const item = arr[i]
     fn(item, i, arr)
   }
 }
@@ -14,9 +14,9 @@ export const forEach = (arr, fn) => {
  * @description 得到两个数组的交集, 两个数组的元素为数值或字符串
  */
 export const getIntersection = (arr1, arr2) => {
-  let len = Math.min(arr1.length, arr2.length)
+  const len = Math.min(arr1.length, arr2.length)
   let i = -1
-  let res = []
+  const res = []
   while (++i < len) {
     const item = arr2[i]
     if (arr1.indexOf(item) > -1) res.push(item)
@@ -46,7 +46,7 @@ export const hasOneOf = (targetarr, arr) => {
  * @param {String|Number} value 要验证的字符串或数值
  * @param {*} validList 用来验证的列表
  */
-export function oneOf (value, validList) {
+export function oneOf(value, validList) {
   for (let i = 0; i < validList.length; i++) {
     if (value === validList[i]) {
       return true
@@ -153,15 +153,15 @@ export const getExplorer = () => {
 /**
  * @description 绑定事件 on(element, event, handler)
  */
-export const on = (function () {
+export const on = (function() {
   if (document.addEventListener) {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event && handler) {
         element.addEventListener(event, handler, false)
       }
     }
   } else {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event && handler) {
         element.attachEvent('on' + event, handler)
       }
@@ -172,15 +172,15 @@ export const on = (function () {
 /**
  * @description 解绑事件 off(element, event, handler)
  */
-export const off = (function () {
+export const off = (function() {
   if (document.removeEventListener) {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event) {
         element.removeEventListener(event, handler, false)
       }
     }
   } else {
-    return function (element, event, handler) {
+    return function(element, event, handler) {
       if (element && event) {
         element.detachEvent('on' + event, handler)
       }
@@ -195,7 +195,7 @@ export const off = (function () {
 export const hasKey = (obj, key) => {
   if (key) return key in obj
   else {
-    let keysArr = Object.keys(obj)
+    const keysArr = Object.keys(obj)
     return keysArr.length
   }
 }

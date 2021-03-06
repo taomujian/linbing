@@ -129,7 +129,7 @@ export default {
       path_total: 10,
       page: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 10
       },
       path_flag: false,
       loading: false
@@ -180,8 +180,8 @@ export default {
     },
     getSpanArr(data) {
       this.domainlist.forEach(v => {
-        v.rowspan = 1;
-      });
+        v.rowspan = 1
+      })
       // 双层循环
       for (let i = 0; i < this.domainlist.length; i++) {
         // 内层循环，上面已经给所有的行都加了v.rowspan = 1
@@ -190,18 +190,18 @@ export default {
         // 就把当前v.rowspan + 1
         // 下一行的v.rowspan - 1
         for (let j = i + 1; j < this.domainlist.length; j++) {
-          //此处可根据相同字段进行合并，此处是根据的id
+          // 此处可根据相同字段进行合并，此处是根据的id
           if (this.domainlist[i].id === this.domainlist[j].id) {
-            this.domainlist[i].rowspan++;
-            this.domainlist[j].rowspan--;
+            this.domainlist[i].rowspan++
+            this.domainlist[j].rowspan--
           }
         }
         // 这里跳过已经重复的数据
-        i = i + this.domainlist[i].rowspan - 1;
+        i = i + this.domainlist[i].rowspan - 1
       }
       this.pathlist.forEach(v => {
-        v.rowspan = 1;
-      });
+        v.rowspan = 1
+      })
       // 双层循环
       for (let i = 0; i < this.pathlist.length; i++) {
         // 内层循环，上面已经给所有的行都加了v.rowspan = 1
@@ -210,14 +210,14 @@ export default {
         // 就把当前v.rowspan + 1
         // 下一行的v.rowspan - 1
         for (let j = i + 1; j < this.pathlist.length; j++) {
-          //此处可根据相同字段进行合并，此处是根据的id
+          // 此处可根据相同字段进行合并，此处是根据的id
           if (this.pathlist[i].id === this.pathlist[j].id) {
-            this.pathlist[i].rowspan++;
-            this.pathlist[j].rowspan--;
+            this.pathlist[i].rowspan++
+            this.pathlist[j].rowspan--
           }
         }
         // 这里跳过已经重复的数据
-        i = i + this.pathlist[i].rowspan - 1;
+        i = i + this.pathlist[i].rowspan - 1
       }
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -225,9 +225,9 @@ export default {
         return {
           rowspan: row.rowspan,
           colspan: 1
-        };
+        }
       }
-    },
+    }
   }
 }
 </script>

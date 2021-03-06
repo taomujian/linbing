@@ -31,10 +31,10 @@ const showThisMenuEle = (item, access) => {
  * @returns {Array}
  */
 export const getMenuByRouter = (list, access) => {
-  let res = []
+  const res = []
   forEach(list, item => {
     if (!item.meta || (item.meta && !item.meta.hideInMenu)) {
-      let obj = {
+      const obj = {
         icon: (item.meta && item.meta.icon) || '',
         name: item.name,
         meta: item.meta
@@ -54,18 +54,18 @@ export const getMenuByRouter = (list, access) => {
  * @returns {Array}
  */
 export const getBreadCrumbList = (route, homeRoute) => {
-  let homeItem = { ...homeRoute, icon: homeRoute.meta.icon }
-  let routeMetched = route.matched
+  const homeItem = { ...homeRoute, icon: homeRoute.meta.icon }
+  const routeMetched = route.matched
   if (routeMetched.some(item => item.name === homeRoute.name)) return [homeItem]
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hideInBread
   }).map(item => {
-    let meta = { ...item.meta }
+    const meta = { ...item.meta }
     if (meta.title && typeof meta.title === 'function') {
       meta.__titleIsFunction__ = true
       meta.title = meta.title(route)
     }
-    let obj = {
+    const obj = {
       icon: (item.meta && item.meta.icon) || '',
       name: item.name,
       meta: meta
@@ -79,8 +79,8 @@ export const getBreadCrumbList = (route, homeRoute) => {
 }
 
 export const getRouteTitleHandled = (route) => {
-  let router = { ...route }
-  let meta = { ...route.meta }
+  const router = { ...route }
+  const meta = { ...route.meta }
   let title = ''
   if (meta.title) {
     if (typeof meta.title === 'function') {
@@ -124,12 +124,12 @@ export const getTagNavListFromLocalstorage = () => {
  */
 export const getHomeRoute = (routers, homeName = 'home') => {
   let i = -1
-  let len = routers.length
+  const len = routers.length
   let homeRoute = {}
   while (++i < len) {
-    let item = routers[i]
+    const item = routers[i]
     if (item.children && item.children.length) {
-      let res = getHomeRoute(item.children, homeName)
+      const res = getHomeRoute(item.children, homeName)
       if (res.name) return res
     } else {
       if (item.name === homeName) homeRoute = item
@@ -145,7 +145,7 @@ export const getHomeRoute = (routers, homeName = 'home') => {
  */
 export const getNewTagList = (list, newRoute) => {
   const { name, path, meta } = newRoute
-  let newList = [...list]
+  const newList = [...list]
   if (newList.findIndex(item => item.name === name) >= 0) return newList
   else newList.push({ name, path, meta })
   return newList
@@ -187,7 +187,7 @@ export const canTurnTo = (name, access, routes) => {
  */
 export const getParams = url => {
   const keyValueArr = url.split('?')[1].split('&')
-  let paramObj = {}
+  const paramObj = {}
   keyValueArr.forEach(item => {
     const keyValue = item.split('=')
     paramObj[keyValue[0]] = keyValue[1]
@@ -228,15 +228,15 @@ export const doCustomTimes = (times, callback) => {
  * @description 从Csv文件中解析出表格，解析成二维数组
  */
 export const getArrayFromFile = (file) => {
-  let nameSplit = file.name.split('.')
-  let format = nameSplit[nameSplit.length - 1]
+  const nameSplit = file.name.split('.')
+  const format = nameSplit[nameSplit.length - 1]
   return new Promise((resolve, reject) => {
-    let reader = new FileReader()
+    const reader = new FileReader()
     reader.readAsText(file) // 以文本格式读取
     let arr = []
-    reader.onload = function (evt) {
-      let data = evt.target.result // 读到的数据
-      let pasteData = data.trim()
+    reader.onload = function(evt) {
+      const data = evt.target.result // 读到的数据
+      const pasteData = data.trim()
       arr = pasteData.split((/[\n\u0085\u2028\u2029]|\r\n?/g)).map(row => {
         return row.split('\t')
       }).map(item => {
@@ -257,7 +257,7 @@ export const getTableDataFromArray = (array) => {
   let columns = []
   let tableData = []
   if (array.length > 1) {
-    let titles = array.shift()
+    const titles = array.shift()
     columns = titles.map(item => {
       return {
         title: item,
@@ -265,7 +265,7 @@ export const getTableDataFromArray = (array) => {
       }
     })
     tableData = array.map(item => {
-      let res = {}
+      const res = {}
       item.forEach((col, i) => {
         res[titles[i]] = col
       })
@@ -289,9 +289,9 @@ export const findNodeUpper = (ele, tag) => {
 }
 
 export const findNodeUpperByClasses = (ele, classes) => {
-  let parentNode = ele.parentNode
+  const parentNode = ele.parentNode
   if (parentNode) {
-    let classList = parentNode.classList
+    const classList = parentNode.classList
     if (classList && classes.every(className => classList.contains(className))) {
       return parentNode
     } else {
@@ -304,9 +304,9 @@ export const findNodeDownward = (ele, tag) => {
   const tagName = tag.toUpperCase()
   if (ele.childNodes.length) {
     let i = -1
-    let len = ele.childNodes.length
+    const len = ele.childNodes.length
     while (++i < len) {
-      let child = ele.childNodes[i]
+      const child = ele.childNodes[i]
       if (child.tagName === tagName) return child
       else return findNodeDownward(child, tag)
     }
@@ -334,7 +334,7 @@ export const routeEqual = (route1, route2) => {
  * 判断打开的标签列表里是否已存在这个新添加的路由对象
  */
 export const routeHasExist = (tagNavList, routeItem) => {
-  let len = tagNavList.length
+  const len = tagNavList.length
   let res = false
   doCustomTimes(len, (index) => {
     if (routeEqual(tagNavList[index], routeItem)) res = true
@@ -357,7 +357,7 @@ export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
       window.webkitRequestAnimationFrame ||
       window.mozRequestAnimationFrame ||
       window.msRequestAnimationFrame ||
-      function (callback) {
+      function(callback) {
         return window.setTimeout(callback, 1000 / 60)
       }
     )
