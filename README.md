@@ -319,3 +319,7 @@
 ## 免责声明
 
 工具仅用于安全研究以及内部自查，禁止使用工具发起非法攻击，造成的后果使用者负责
+
+## License
+
+[MIT](https://github.com/taomujian/linbing/blob/master/LICENSE)

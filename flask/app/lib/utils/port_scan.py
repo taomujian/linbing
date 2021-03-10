@@ -63,19 +63,20 @@ class Port_Scan():
                         protocol = nm[host][nmap_proto][int(nmap_port)]['name']
                         product = nm[host][nmap_proto][int(nmap_port)]['product']
                         version = nm[host][nmap_proto][int(nmap_port)]['version']
-                        if 'http' in protocol or protocol == 'sun-answerbook':
-                            if protocol == 'https' or protocol == 'https-alt':
-                                scan_url_port = 'https://' + str(host) + ':' + str(nmap_port)
-                            else:
-                                scan_url_port = 'http://' + str(host) + ':' + str(nmap_port)
-                            result = self.get_title(scan_url_port)
-                            self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
-                            self.mysqldb.save_port(username, target, str(host) + ':' + str(nmap_port), target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
-                            continue
+                        if 'tcpwrapped' not in protocol:
+                            if 'http' in protocol or protocol == 'sun-answerbook':
+                                if protocol == 'https' or protocol == 'https-alt':
+                                    scan_url_port = 'https://' + str(host) + ':' + str(nmap_port)
+                                else:
+                                    scan_url_port = 'http://' + str(host) + ':' + str(nmap_port)
+                                result = self.get_title(scan_url_port)
+                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
+                                self.mysqldb.save_port(username, target, str(host) + ':' + str(nmap_port), target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
+                                continue
 
-                        self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), protocol, product, version, '', '')
-                        self.mysqldb.save_port(username, target, str(host) + ':' + str(nmap_port), target_ip, str(nmap_port), protocol, product, version, '', '')
-                        scan_list.append(str(host) + ':' + str(nmap_port))
+                            self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), protocol, product, version, '', '')
+                            self.mysqldb.save_port(username, target, str(host) + ':' + str(nmap_port), target_ip, str(nmap_port), protocol, product, version, '', '')
+                            scan_list.append(str(host) + ':' + str(nmap_port))
         except Exception as e:
             print(e)
             pass
@@ -113,19 +114,20 @@ class Port_Scan():
                             protocol = nm[host][nmap_proto][int(masscan_port)]['name']
                             product = nm[host][nmap_proto][int(masscan_port)]['product']
                             version = nm[host][nmap_proto][int(masscan_port)]['version']
-                            if 'http' in protocol or protocol == 'sun-answerbook':
-                                if protocol == 'https' or protocol == 'https-alt':
-                                    scan_url_port = 'https://' + str(host) + ':' + str(masscan_port)
-                                else:
-                                    scan_url_port = 'http://' + str(host) + ':' + str(masscan_port)
-                                result = self.get_title(scan_url_port)
-                                self.mysqldb.save_target_port(username, target, scan_id,  target_ip, str(masscan_port), protocol, product, version, result[0], result[1])
-                                self.mysqldb.save_port(username, target, str(host) + ':' + str(masscan_port), target_ip, str(masscan_port), protocol, product, version, result[0], result[1])
-                                continue
+                            if 'tcpwrapped' not in protocol:
+                                if 'http' in protocol or protocol == 'sun-answerbook':
+                                    if protocol == 'https' or protocol == 'https-alt':
+                                        scan_url_port = 'https://' + str(host) + ':' + str(masscan_port)
+                                    else:
+                                        scan_url_port = 'http://' + str(host) + ':' + str(masscan_port)
+                                    result = self.get_title(scan_url_port)
+                                    self.mysqldb.save_target_port(username, target, scan_id,  target_ip, str(masscan_port), protocol, product, version, result[0], result[1])
+                                    self.mysqldb.save_port(username, target, str(host) + ':' + str(masscan_port), target_ip, str(masscan_port), protocol, product, version, result[0], result[1])
+                                    continue
 
-                            self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(masscan_port), protocol, product, version, '', '')
-                            self.mysqldb.save_port(username, target, str(host) + ':' + str(masscan_port), target_ip, str(masscan_port), protocol, product, version, '', '')
-                            scan_list.append(str(host) + ':' + str(masscan_port))
+                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(masscan_port), protocol, product, version, '', '')
+                                self.mysqldb.save_port(username, target, str(host) + ':' + str(masscan_port), target_ip, str(masscan_port), protocol, product, version, '', '')
+                                scan_list.append(str(host) + ':' + str(masscan_port))
             print('Masscan scanned.....\n')
         except Exception as e:
             print(e)
