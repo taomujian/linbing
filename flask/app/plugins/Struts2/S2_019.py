@@ -5,8 +5,6 @@ name: Struts2 S2-019漏洞，又名CVE-2013-4316漏洞
 description: Struts2 S2-019漏洞可执行任意命令
 '''
 
-import re
-import urllib
 from app.lib.utils.common import get_capta
 from app.lib.utils.request import request
 

@@ -53,6 +53,11 @@
           <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="框架信息" sortable align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.finger }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" sortable align="center">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>

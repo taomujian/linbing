@@ -2,6 +2,7 @@
 
 import os
 import re
+import shlex
 import random
 import string
 import socket
@@ -9,6 +10,7 @@ import signal
 import tldextract
 from IPy import IP
 from urllib.parse import urlparse
+from app.lib.utils.request import request
 
 def get_useragent():
     """
@@ -115,6 +117,50 @@ def parse_target(target):
     if domain_result:
         domain_result = domain_result[0]
     return scan_ip, main_domain, domain_result
+
+def filter_str(check_str):
+        
+    """
+    过滤无用字符
+
+    :param str check_str:待过滤的字符串
+
+    :return str temp:过滤后的字符串
+    """
+
+    temp = ''
+    for i in check_str:
+        if i != '\n' and i != '\x00':
+            temp = temp + i
+    return temp
+
+def parser_cmd(cmd, type = 'string'):
+    """
+    命令解析,将要执行的命令解析为字符串格式,如echo 123 解析为"echo", "123"
+
+    :param str cmd: 待解析的命令
+    :param str type: 命令的类型
+    :return: cmd_str 解析后的字符串
+    """
+    cmd = shlex.split(cmd)
+    if type == 'string':
+        cmd_str = '"' + '","'.join(cmd) + '"'
+    elif type == 'xml':
+        cmd_str = '<string>' + '</string><string>'.join(cmd) + '</string>'
+    else:
+        cmd_str = cmd
+    return cmd_str
+
+def parser_url(url):
+    """
+    解析出url的域名、端口信息
+
+    :param str url: 待解析的ulr
+    :return: parser_url: 解析url后的对象
+    """
+    data = urlparse(url)
+    parser_url = data.scheme + '://' + data.netloc
+    return parser_url
 
 def check(parameter):
     """

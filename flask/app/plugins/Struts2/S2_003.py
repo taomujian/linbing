@@ -33,7 +33,7 @@ class S2_003_BaseVerify:
             self.url = self.url + '/example/HelloWorld.action'
         try:
             check_req = request.get(self.url + self.check_payload, headers = self.headers)
-            if self.capta in check_req.text.replace('\n', ''):
+            if self.capta in check_req.text.replace('\n', '') and len(check_req.text) < 100:
                 return True
             else:
                 return False

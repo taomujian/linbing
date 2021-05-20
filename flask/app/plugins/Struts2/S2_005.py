@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 
-'''
-name: Struts2 S2-015漏洞，又名CVE-2010-1870漏洞
-description: Struts2 S2-015漏洞可执行任意命令
-'''
-
-import re
 import urllib
 from app.lib.utils.common import get_capta
 from app.lib.utils.request import request

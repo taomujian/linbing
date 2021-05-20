@@ -9,6 +9,9 @@
         <span>目标:{{ target }}</span>
       </div>
       <div class="p">
+        框架信息: {{ targetdata.finger }}
+      </div>
+      <div class="p">
         扫描状态: {{ targetdata.scan_status }}
       </div>
       <div class="p">
@@ -123,7 +126,8 @@ export default {
       targetdata: {
         'scan_status': '',
         'scan_schedule': '',
-        'vulner_number': ''
+        'vulner_number': '',
+        'finger': ''
       },
       domain_total: 10,
       path_total: 10,
@@ -170,6 +174,7 @@ export default {
         this.targetdata.scan_status = response.data.target.result[0].scan_status
         this.targetdata.scan_schedule = response.data.target.result[0].scan_schedule
         this.targetdata.vulner_number = response.data.target.result[0].vulner_number
+        this.targetdata.finger = response.data.target.result[0].finger
         this.domainlist = response.data.domain.result
         this.pathlist = response.data.path.result
         this.getSpanArr()

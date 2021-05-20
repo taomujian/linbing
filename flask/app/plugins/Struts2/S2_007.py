@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-import re
-import sys
-import time
-import urllib
 from app.lib.utils.common import get_capta
 from app.lib.utils.request import request
 
@@ -38,7 +34,7 @@ class S2_007_BaseVerify:
             if '.action' not in self.url:
                 self.url = self.url + '/user.action'
             check_req = request.post(self.url, data = self.check_payload)
-            if self.capta in check_req.text and check_req.status_code == 200:
+            if self.capta in check_req.text and check_req.status_code == 200 and len(check_req.text) < 100:
                 return True
             else:
                 return False

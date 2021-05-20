@@ -1,17 +1,17 @@
 #/usr/bin/python3
 
 import os
-import time
-import sched
+import re
+import socket
 import asyncio
 import functools
-import threading
 import importlib
 from urllib.parse import urlparse
+from app.lib.utils.common import get_live
 from app.lib.utils.port_scan import Port_Scan
+from app.lib.utils.finger import WhatCms, Fofa_Scanner
 from app.thirdparty.oneforall.oneforall import OneForAll
 from app.thirdparty.dirsearch.dirsearch import Program
-from concurrent.futures import ThreadPoolExecutor
 
 class Scan:
     def __init__(self, mysqldb):
@@ -23,6 +23,7 @@ class Scan:
         self.items = os.listdir(self.plugin_path)
 
     async def coroutine_execution(self, function, loop, semaphore, kwargs, ip_port, plugin_name, scan_id):
+
         """
         多协程执行方法
         
@@ -49,6 +50,7 @@ class Scan:
                 pass
             
     def sub_domain(self, username, target, domain, scan_id):
+
         """
         调用oneforall爆破子域名
         
@@ -68,6 +70,7 @@ class Scan:
             self.mysqldb.save_target_domain(username, target, scan_id, data[0], data[1])
     
     def dir_scan(self, username, target, url, scan_id):
+
         """
         调用dirsearch爆破目录,查找后台
         
@@ -90,16 +93,77 @@ class Scan:
             self.mysqldb.save_target_path(username, target, scan_id, path, str(status))
 
     def run(self, kwargs):
-        scan_set = self.mysqldb.get_scan(kwargs['username'], kwargs['target'])
-        if kwargs['domain']:
-            self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '子域名探测中')
-            self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '子域名探测中')
-            self.sub_domain(kwargs['username'], kwargs['target'], kwargs['main_domain'], kwargs['scan_id'])
 
-        if 'http://' in kwargs['target'] or 'https://' in kwargs['target']:
-            self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '目录扫描中')
-            self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
-            self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
+        scan_set = self.mysqldb.get_scan(kwargs['username'], kwargs['target'])
+        ip_result = re.findall(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b", kwargs['target'])
+        domain_regex = re.compile(r'(?:[A-Z0-9_](?:[A-Z0-9-_]{0,247}[A-Z0-9])?\.)+(?:[A-Z]{2,6}|[A-Z0-9-]{2,}(?<!-))\Z', re.IGNORECASE)
+        domain_result = domain_regex.findall(kwargs['target'])
+        
+        # 目标为ip类型时,不再探测指纹、扫描子域名和目录
+        if ip_result and kwargs['target'] in ip_result:
+            pass
+        
+        else:
+            # 目标为域名类型时
+            if domain_result and kwargs['target'] in domain_result:
+                scan_ip = ''
+                try:
+                    scan_ip = socket.gethostbyname(kwargs['target'])
+                except Exception as e:
+                    pass
+                finally:
+                    pass
+
+                if not scan_ip:
+                    self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
+                    self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
+                    self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描失败')                                 
+                    self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
+                    self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
+                    return None
+            
+            target = get_live(kwargs['target'], 3)
+            if not target:
+                self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
+                self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
+                self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描失败')                                 
+                self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
+                self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
+                return None
+
+            else:
+                self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '指纹探测中')
+                self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '指纹探测中')
+
+                finger_data = self.mysqldb.all_finger(kwargs['username'], '0')
+                cms = Fofa_Scanner(kwargs['target'], finger_data['fofa_cms'])
+                fofa_finger = cms.run()
+                cms_name = ''
+                cms_name_flag = 0
+                for fofa_finger_tmp in fofa_finger:
+                    if fofa_finger_tmp.lower() in cms.cms_finger_list:
+                        cms_name = fofa_finger_tmp
+                        cms_name_flag = 1
+                        self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
+                
+                if not cms_name_flag:
+                    whatcms = WhatCms(kwargs['target'], finger_data['cms'])
+                    result = whatcms.run()
+                    cms_name = ''
+                    if result:
+                        cms_name = result['cms_name']
+                        self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
+                
+                
+                if kwargs['domain']:
+                    self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '子域名探测中')
+                    self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '子域名探测中')
+                    self.sub_domain(kwargs['username'], kwargs['target'], kwargs['main_domain'], kwargs['scan_id'])
+
+                if 'http://' in kwargs['target'] or 'https://' in kwargs['target']:
+                    self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '目录扫描中')
+                    self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
+                    self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
 
         self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '端口扫描中')
         self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')

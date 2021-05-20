@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+import sqlite3
 import pymysql
 
 class Mysql_db:
@@ -41,6 +42,190 @@ class Mysql_db:
         finally:
             cursor.close()
             conn.close()
+    
+    def create_cms_finger(self):
+
+        """
+        创建保存指纹信息的表
+
+        :param:
+
+        :return:
+        """
+        
+        sql = "create table if not exists cms_finger (id integer auto_increment primary key, username varchar(255), cms_type varchar(255), path varchar(255), match_pattern varchar(255), options varchar(255), finger_type varchar(255), trash_flag varchar(255), time datetime) engine = innodb default charset = utf8;"
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql)
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def create_fofa_cms_finger(self):
+
+        """
+        创建保存指纹信息的表
+
+        :param:
+
+        :return:
+        """
+        
+        sql = "create table if not exists fofa_cms_finger (id integer auto_increment primary key, username varchar(255), fofa_cms_type varchar(255), key_str varchar(255), finger_type varchar(255), trash_flag varchar(255), time datetime) engine = innodb default charset = utf8;"
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql)
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def save_cms_finger(self, username, cms_type, path, match_pattern, options, finger_type):
+
+        """
+        保存指纹
+
+        :param: str username: 用户名
+        :param: str cms_type: cms类型
+        :param: str path: 文件路径
+        :param: str match_pattern: 要匹配的字符串
+        :param: str options: 匹配模式
+        :param: str finger_type: 指纹类型
+        
+        :return: 'ZXXXXX': 状态码
+        """
+
+        datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        sql =  "insert cms_finger (username, cms_type, path, match_pattern, options, finger_type, trash_flag, time) values (%s, %s, %s, %s, %s, %s, %s, %s)"
+        values = [username, cms_type, path, match_pattern, options, finger_type, '0', datetime]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            return 'J1000'
+        except Exception as e:
+            print(e)
+            return 'J1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def save_fofa_cms_finger(self, username, fofa_cms_type, key, finger_type):
+
+        """
+        保存指纹
+
+        :param: str username: 用户名
+        :param: str fofa_cms_type: cms类型
+        :param: str key: fofa指纹规则
+        :param: str finger_type: 指纹类型
+        
+        :return: 'ZXXXXX': 状态码
+        """
+
+        datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        sql =  "insert fofa_cms_finger (username, fofa_cms_type, key_str, finger_type, trash_flag, time) values (%s, %s, %s, %s, %s, %s)"
+        values = [username, fofa_cms_type, key, finger_type, '0', datetime]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            return 'J1000'
+        except Exception as e:
+            print(e)
+            return 'J1001'
+        finally:
+            cursor.close()
+            self.close_conn
+
+    def init_finger(self, filename):
+
+        """
+        从其他指纹库初始化指纹库
+
+        :param: filename:cdn json文件路径
+        
+        :return: 'ZXXXXX': 状态码
+        """
+
+        cms_sql =  "select count(0) from cms_finger"
+        fofa_sql = "select count(0) from fofa_cms_finger"
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(cms_sql)
+            count_result = cursor.fetchone()['count(0)']
+            if count_result == 0:
+                print('start init cms_finger table')
+                sqlconn = sqlite3.connect(filename)
+                sqlcursor = sqlconn.cursor()
+                sqlcursor.execute('select * from cms')
+                cms_list = sqlcursor.fetchall()
+                sqlcursor.close()
+                sqlconn.close()
+                for cms in cms_list:
+                    self.save_cms_finger('common', cms[1], cms[2], cms[3], cms[4], '通用指纹')
+                print('finish init cms_finger table!')
+
+            cursor.execute(fofa_sql)
+            count_result = cursor.fetchone()['count(0)']
+            if count_result == 0:
+                print('start init fofa_cms_finger table')
+                sqlconn = sqlite3.connect(filename)
+                sqlcursor = sqlconn.cursor()
+                sqlcursor.execute('select * from fofa')
+                cms_list = sqlcursor.fetchall()
+                sqlcursor.close()
+                sqlconn.close()
+                for cms in cms_list:
+                    self.save_fofa_cms_finger('common', cms[1], cms[2], '通用指纹')
+                print('finish init fofa_cms_finger table!')
+            return 'J1000'
+        except Exception as e:
+            print(e)
+            return 'J1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def all_finger(self, username, flag):
+        
+        """
+        获取所有指纹的信息,无数量限制
+
+        :param: str username: 用户名
+        :param: str flag: 筛选指纹的标识位
+
+        :return: 'ZXXXXX': 状态码
+        """
+        
+        cms_sql = "select id, cms_type, path, match_pattern, options, finger_type from cms_finger where (username = %s or username = 'common') and trash_flag = %s"
+        fofa_sql = "select id, fofa_cms_type, key_str, finger_type from fofa_cms_finger where (username = %s or username = 'common') and trash_flag = %s"
+        values = [username, flag]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(cms_sql, values)
+            cms_result = cursor.fetchall()
+
+            cursor.execute(fofa_sql, values)
+            fofa_result = cursor.fetchall()
+            datas = {
+                'cms': cms_result, 
+                'fofa_cms': fofa_result 
+            }
+            return datas
+        except Exception as e:
+            print(e)
+            return 'J1001'
+        finally:
+            cursor.close()
+            self.close_conn
 
     def create_user(self):
         """
@@ -110,7 +295,7 @@ class Mysql_db:
 
         :return:
         """
-        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(10000) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -220,7 +405,7 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
-
+    
     def query_account(self, username):
         """
         查询用户是否已存在
@@ -754,6 +939,31 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
+    
+    def update_target_finger(self, username, target, finger):
+        """
+        更新目标的指纹
+
+        :param: str username: 用户名
+        :param: str target: 目标
+        :param: str finger: 指纹
+
+        :return:
+        """
+
+        sql =  "update target set finger = %s where username = %s and target = %s"
+        values = [finger, username, target]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            return 'L1000'
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
 
     def update_target_description(self, username, target, description):
         """
@@ -1125,7 +1335,7 @@ class Mysql_db:
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select id, target, description, create_time, scan_status, scan_schedule, vulner_number from target where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc limit %s, %s"
+        sql = "select id, target, description, finger, create_time, scan_status, scan_schedule, vulner_number from target where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc limit %s, %s"
         values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule'], start, pagesize]
         total_sql = "select count(0) from target where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s)"
         total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule']]
@@ -1161,7 +1371,7 @@ class Mysql_db:
 
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        target_sql = "select target, scan_status, scan_schedule, vulner_number from target where username = %s and target = %s"
+        target_sql = "select target, finger, scan_status, scan_schedule, vulner_number from target where username = %s and target = %s"
         domain_sql = "select scan_id, scan_time, domain, domain_ip from target_domain where username = %s and target = %s order by scan_time desc limit %s, %s"
         path_sql = "select scan_id, scan_time, path, status_code from target_path where username = %s and target = %s order by scan_time desc limit %s, %s"
         

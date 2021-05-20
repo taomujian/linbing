@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import re
-import base64
-from app.lib.utils.common import get_capta
 from app.lib.utils.request import request
+from app.lib.utils.common import get_capta
+from app.lib.utils.encode import base64encode
 
 class Phpstudy_Backdoor_Rce_BaseVerify:
     def __init__(self, url):
@@ -53,12 +52,12 @@ class Phpstudy_Backdoor_Rce_BaseVerify:
             else:
                 return False
         except Exception as e:
-            # print(e)
+            print(e)
             return False
         finally:
             pass
 
 if __name__ == '__main__':
-    Phpstudy_Backdoor_Rce = Phpstudy_Backdoor_Rce_BaseVerify('http://baidu.com')
+    Phpstudy_Backdoor_Rce = Phpstudy_Backdoor_Rce_BaseVerify('')
     print(Phpstudy_Backdoor_Rce.run())
 

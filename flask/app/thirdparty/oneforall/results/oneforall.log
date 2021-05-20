@@ -16089,3 +16089,467 @@ set()
 2021-03-06 14:03:08,404 [DEBUG] SpawnPoolWorker-1(2840):MainThread        (4423708096) | iscdn.save_db:83 - Saving cdn check results
 2021-03-06 14:03:08,416 [ALERT] SpawnPoolWorker-1(2840):MainThread        (4423708096) | utils.check_path:198 - The /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/apm888.in.csv exists and will be overwritten
 2021-03-06 14:03:08,418 [ALERT] SpawnPoolWorker-1(2840):MainThread        (4423708096) | dbexport.export_data:71 - The subdomain result for apm888.in: /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/apm888.in.csv
+2021-05-20 15:49:04,172 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_env:543 - Checking the environment
+2021-05-20 15:49:04,174 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_net:509 - Checking Internet environment
+2021-05-20 15:49:04,175 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_net:513 - Trying to access http://www.baidu.com
+2021-05-20 15:49:04,219 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_net:527 - Access to Internet OK
+2021-05-20 15:49:04,222 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_pre:531 - Checking dependent environment
+2021-05-20 15:49:04,224 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.auto_select_nameserver:772 - Ping test start, to select nameservers.
+2021-05-20 15:49:06,252 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.ping_avg_time:763 - ping 114.114.114.114 average time 9.695 ms.
+2021-05-20 15:49:08,330 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.ping_avg_time:763 - ping 8.8.8.8 average time 67.078 ms.
+2021-05-20 15:49:08,337 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.auto_select_nameserver:781 - Ping test finished, use common nameservers.
+2021-05-20 15:49:08,339 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_version:554 - Checking for the latest version
+2021-05-20 15:49:09,007 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_version:573 - The current version is v0.3.0 but the latest version is v0.4.3
+2021-05-20 15:49:09,009 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_version:575 - The v0.4.3 version mainly has the following changes
+2021-05-20 15:49:09,010 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_version:576 - ## [0.4.3](https://github.com/shmilylty/oneforall/releases/tag/v0.4.3) - 2020-11-29
+- 修复了已知问题
+- 更新了文档
+2021-05-20 15:49:09,012 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | oneforall.run:270 - Python 3.9.1 (v3.9.1:1e5d33e9b9, Dec  7 2020, 12:10:52) 
+[Clang 6.0 (clang-600.0.57)]
+2021-05-20 15:49:09,013 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | oneforall.run:271 - OneForAll v0.3.0
+2021-05-20 15:49:09,014 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | oneforall.run:272 - Start running OneForAll
+2021-05-20 15:49:09,016 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.get_domains:155 - Getting domains
+2021-05-20 15:49:09,018 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.get_domains:161 - Get 1 domains
+2021-05-20 15:49:09,019 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.get_domains:164 - The obtained domains 
+['30hd.com']
+2021-05-20 15:49:09,032 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | collect.run:44 - Start collecting subdomains of 30hd.com
+2021-05-20 15:49:09,153 [DEBUG] SpawnPoolWorker-1(14270):crtsh             (123145790427136) | module.begin:52 - Start CrtshQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,154 [DEBUG] SpawnPoolWorker-1(14270):censys_api        (123145807216640) | module.have_api:44 - CensysAPIQuery module is not configured
+2021-05-20 15:49:09,157 [DEBUG] SpawnPoolWorker-1(14270):certspotter       (123145824006144) | module.begin:52 - Start CertSpotterQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,158 [DEBUG] SpawnPoolWorker-1(14270):google            (123145807216640) | module.begin:52 - Start GoogleQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,161 [DEBUG] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.begin:52 - Start SitemapCheck module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,163 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.begin:52 - Start CSPCheck module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,168 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.begin:52 - Start CertInfo module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,170 [DEBUG] SpawnPoolWorker-1(14270):nsec              (123145891164160) | module.begin:52 - Start NSECCheck module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,172 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.begin:52 - Start AXFRCheck module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,175 [DEBUG] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.begin:52 - Start RobotsCheck module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,179 [DEBUG] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.begin:52 - Start CrossDomainCheck module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,184 [DEBUG] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.begin:52 - Start WZPCQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,187 [DEBUG] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.begin:52 - Start DNSdumpsterQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,191 [DEBUG] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.begin:52 - Start QianXunQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,195 [DEBUG] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.begin:52 - Start XimcxQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,199 [DEBUG] SpawnPoolWorker-1(14270):rapiddns          (123146025480192) | module.begin:52 - Start RapidDNSQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,204 [DEBUG] SpawnPoolWorker-1(14270):ipv4info_api      (123146042269696) | module.have_api:44 - IPv4InfoAPIQuery module is not configured
+2021-05-20 15:49:09,205 [DEBUG] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.begin:52 - Start HackerTargetQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,208 [DEBUG] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.begin:52 - Start RobtexQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,211 [DEBUG] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.begin:52 - Start PhoneBookQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,212 [DEBUG] SpawnPoolWorker-1(14270):circl_api         (123146092638208) | module.have_api:44 - CirclAPIQuery module is not configured
+2021-05-20 15:49:09,217 [DEBUG] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.begin:52 - Start Sublist3rQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,221 [DEBUG] SpawnPoolWorker-1(14270):passivedns_api    (123146092638208) | module.have_api:44 - PassiveDnsQuery module is not configured
+2021-05-20 15:49:09,223 [DEBUG] SpawnPoolWorker-1(14270):riddler           (123146092638208) | module.begin:52 - Start RiddlerQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,232 [DEBUG] SpawnPoolWorker-1(14270):binaryedge_api    (123146126217216) | module.have_api:44 - BinaryEdgeAPIQuery module is not configured
+2021-05-20 15:49:09,235 [DEBUG] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.begin:52 - Start AnubisQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,242 [DEBUG] SpawnPoolWorker-1(14270):cloudflare_api    (123146143006720) | module.have_api:44 - CloudFlareAPIQuery module is not configured
+2021-05-20 15:49:09,245 [DEBUG] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.begin:52 - Start CeBaiduQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,252 [DEBUG] SpawnPoolWorker-1(14270):dnsdb_api         (123146159796224) | module.have_api:44 - DNSdbAPIQuery module is not configured
+2021-05-20 15:49:09,255 [DEBUG] SpawnPoolWorker-1(14270):spyse_api         (123146159796224) | module.have_api:44 - SpyseAPIQuery module is not configured
+2021-05-20 15:49:09,257 [DEBUG] SpawnPoolWorker-1(14270):ip138             (123146159796224) | module.begin:52 - Start IP138Query module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,260 [DEBUG] SpawnPoolWorker-1(14270):chinaz_api        (123146176585728) | module.have_api:44 - ChinazAPIQuery module is not configured
+2021-05-20 15:49:09,262 [DEBUG] SpawnPoolWorker-1(14270):securitytrails_api(123146193375232) | module.have_api:44 - SecurityTrailsAPIQuery module is not configured
+2021-05-20 15:49:09,264 [DEBUG] SpawnPoolWorker-1(14270):netcraft          (123146176585728) | module.begin:52 - Start NetCraftQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,269 [DEBUG] SpawnPoolWorker-1(14270):chinaz            (123146193375232) | module.begin:52 - Start ChinazQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,274 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | cert.check:30 - (1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1123)')
+2021-05-20 15:49:09,276 [DEBUG] SpawnPoolWorker-1(14270):sitedossier       (123146210164736) | module.begin:52 - Start SiteDossierQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,278 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.finish:61 - Finished CertInfo module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,280 [INFOR] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.finish:63 - The CertInfo module took 0.1 seconds found 0 subdomains
+2021-05-20 15:49:09,281 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.finish:65 - CertInfo module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,282 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,283 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.gen_result:273 - CertInfo module result is empty
+2021-05-20 15:49:09,286 [DEBUG] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.begin:52 - Start QueryMX module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,287 [DEBUG] SpawnPoolWorker-1(14270):cert              (123145874374656) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,288 [DEBUG] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.begin:52 - Start QueryTXT module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,292 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.begin:52 - Start QueryNS module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,294 [DEBUG] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.begin:52 - Start QuerySPF module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,297 [DEBUG] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.begin:52 - Start QuerySOA module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,299 [DEBUG] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.finish:61 - Finished QueryMX module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,301 [DEBUG] SpawnPoolWorker-1(14270):riskiq_api        (123146310901760) | module.have_api:44 - RiskIQAPIQuery module is not configured
+2021-05-20 15:49:09,302 [DEBUG] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.begin:52 - Start VirusTotalQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,305 [INFOR] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.finish:63 - The QueryMX module took 0.0 seconds found 0 subdomains
+2021-05-20 15:49:09,307 [DEBUG] SpawnPoolWorker-1(14270):alienvault        (123146344480768) | module.begin:52 - Start AlienVaultQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,308 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | axfr.axfr:32 - Trying to perform domain transfer in ns2.cloudcdns.com. of 30hd.com
+2021-05-20 15:49:09,311 [DEBUG] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.begin:52 - Start ThreatMinerQuery module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,312 [DEBUG] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.finish:65 - QueryMX module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,314 [DEBUG] SpawnPoolWorker-1(14270):virustotal_api    (123146361270272) | module.have_api:44 - VirusTotalAPIQuery module is not configured
+2021-05-20 15:49:09,315 [DEBUG] SpawnPoolWorker-1(14270):threatbook_api    (123146378059776) | module.have_api:44 - ThreatBookAPIQuery module is not configured
+2021-05-20 15:49:09,319 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | axfr.axfr:39 - ()
+2021-05-20 15:49:09,321 [DEBUG] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,322 [DEBUG] SpawnPoolWorker-1(14270):fofa_api          (123146394849280) | module.have_api:44 - FoFaAPISearch module is not configured
+2021-05-20 15:49:09,326 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | axfr.axfr:40 - Domain transfer to server ns2.cloudcdns.com. of 30hd.com failed
+2021-05-20 15:49:09,327 [DEBUG] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.gen_result:273 - QueryMX module result is empty
+2021-05-20 15:49:09,329 [DEBUG] SpawnPoolWorker-1(14270):zoomeye_api       (123146361270272) | module.have_api:44 - ZoomEyeAPISearch module is not configured
+2021-05-20 15:49:09,330 [DEBUG] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.begin:52 - Start YahooSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,331 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | axfr.axfr:32 - Trying to perform domain transfer in ns1.cloudcdns.com. of 30hd.com
+2021-05-20 15:49:09,332 [DEBUG] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.begin:52 - Start AskSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,335 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | lookup.query:27 - ns1.cloudcdns.com.
+2021-05-20 15:49:09,336 [DEBUG] SpawnPoolWorker-1(14270):mx                (123146226954240) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,338 [DEBUG] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.begin:52 - Start BingSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,339 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | axfr.axfr:39 - ()
+2021-05-20 15:49:09,341 [DEBUG] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.begin:52 - Start YandexSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,343 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | lookup.query:27 - ns2.cloudcdns.com.
+2021-05-20 15:49:09,343 [DEBUG] SpawnPoolWorker-1(14270):google            (123146411638784) | module.begin:52 - Start GoogleSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,344 [DEBUG] SpawnPoolWorker-1(14270):github_api        (123146428428288) | module.have_api:44 - GithubAPISearch module is not configured
+2021-05-20 15:49:09,347 [DEBUG] SpawnPoolWorker-1(14270):shodan_api        (123146445217792) | module.have_api:44 - ShodanAPISearch module is not configured
+2021-05-20 15:49:09,349 [DEBUG] SpawnPoolWorker-1(14270):google_api        (123146462007296) | module.have_api:44 - GoogleAPISearch module is not configured
+2021-05-20 15:49:09,351 [DEBUG] SpawnPoolWorker-1(14270):bing_api          (123146478796800) | module.have_api:44 - BingAPISearch module is not configured
+2021-05-20 15:49:09,352 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | axfr.axfr:40 - Domain transfer to server ns1.cloudcdns.com. of 30hd.com failed
+2021-05-20 15:49:09,354 [DEBUG] SpawnPoolWorker-1(14270):so                (123146495586304) | module.begin:52 - Start SoSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,355 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.finish:61 - Finished QueryNS module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,358 [DEBUG] SpawnPoolWorker-1(14270):sogou             (123146428428288) | module.begin:52 - Start SogouSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,359 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.finish:61 - Finished AXFRCheck module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,362 [INFOR] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.finish:63 - The QueryNS module took 0.1 seconds found 0 subdomains
+2021-05-20 15:49:09,368 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.finish:65 - QueryNS module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,367 [INFOR] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.finish:63 - The AXFRCheck module took 0.2 seconds found 0 subdomains
+2021-05-20 15:49:09,370 [DEBUG] SpawnPoolWorker-1(14270):baidu             (123146445217792) | module.begin:52 - Start BaiduSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,371 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,372 [DEBUG] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.begin:52 - Start GiteeSearch module to collect subdomains of 30hd.com
+2021-05-20 15:49:09,373 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.finish:65 - AXFRCheck module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,374 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.gen_result:273 - QueryNS module result is empty
+2021-05-20 15:49:09,376 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,376 [DEBUG] SpawnPoolWorker-1(14270):ns                (123146260533248) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,377 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.gen_result:273 - AXFRCheck module result is empty
+2021-05-20 15:49:09,380 [DEBUG] SpawnPoolWorker-1(14270):axfr              (123145907953664) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,387 [DEBUG] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.finish:61 - Finished QueryTXT module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,389 [INFOR] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.finish:63 - The QueryTXT module took 0.1 seconds found 0 subdomains
+2021-05-20 15:49:09,390 [DEBUG] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.finish:65 - QueryTXT module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,391 [DEBUG] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,392 [DEBUG] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.gen_result:273 - QueryTXT module result is empty
+2021-05-20 15:49:09,393 [DEBUG] SpawnPoolWorker-1(14270):txt               (123146243743744) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,395 [DEBUG] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.finish:61 - Finished QuerySPF module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,395 [INFOR] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.finish:63 - The QuerySPF module took 0.1 seconds found 0 subdomains
+2021-05-20 15:49:09,397 [DEBUG] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.finish:65 - QuerySPF module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,397 [DEBUG] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,398 [DEBUG] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.gen_result:273 - QuerySPF module result is empty
+2021-05-20 15:49:09,399 [DEBUG] SpawnPoolWorker-1(14270):spf               (123146277322752) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,402 [DEBUG] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.finish:61 - Finished QuerySOA module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,402 [INFOR] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.finish:63 - The QuerySOA module took 0.1 seconds found 0 subdomains
+2021-05-20 15:49:09,403 [DEBUG] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.finish:65 - QuerySOA module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,404 [DEBUG] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,405 [DEBUG] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.gen_result:273 - QuerySOA module result is empty
+2021-05-20 15:49:09,406 [DEBUG] SpawnPoolWorker-1(14270):soa               (123146294112256) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,501 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | csp.check:64 - There is no Content-Security-Policy in the header of 30hd.com
+2021-05-20 15:49:09,502 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.finish:61 - Finished CSPCheck module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,503 [INFOR] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.finish:63 - The CSPCheck module took 0.3 seconds found 0 subdomains
+2021-05-20 15:49:09,505 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.finish:65 - CSPCheck module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,506 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,507 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.gen_result:273 - CSPCheck module result is empty
+2021-05-20 15:49:09,508 [DEBUG] SpawnPoolWorker-1(14270):csp               (123145857585152) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,550 [DEBUG] SpawnPoolWorker-1(14270):sogou             (123146428428288) | module.finish:61 - Finished SogouSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,551 [INFOR] SpawnPoolWorker-1(14270):sogou             (123146428428288) | module.finish:63 - The SogouSearch module took 0.2 seconds found 1 subdomains
+2021-05-20 15:49:09,552 [DEBUG] SpawnPoolWorker-1(14270):sogou             (123146428428288) | module.finish:65 - SogouSearch module found subdomains of 30hd.com
+{'30hd.com'}
+2021-05-20 15:49:09,553 [DEBUG] SpawnPoolWorker-1(14270):sogou             (123146428428288) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,554 [DEBUG] SpawnPoolWorker-1(14270):sogou             (123146428428288) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,635 [DEBUG] SpawnPoolWorker-1(14270):ip138             (123146159796224) | module.finish:61 - Finished IP138Query module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,636 [INFOR] SpawnPoolWorker-1(14270):ip138             (123146159796224) | module.finish:63 - The IP138Query module took 0.4 seconds found 1 subdomains
+2021-05-20 15:49:09,637 [DEBUG] SpawnPoolWorker-1(14270):ip138             (123146159796224) | module.finish:65 - IP138Query module found subdomains of 30hd.com
+{'30hd.com'}
+2021-05-20 15:49:09,638 [DEBUG] SpawnPoolWorker-1(14270):ip138             (123146159796224) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,639 [DEBUG] SpawnPoolWorker-1(14270):ip138             (123146159796224) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,753 [ALERT] SpawnPoolWorker-1(14270):robtex            (123146059059200) | utils.check_response:285 - GET https://freeapi.robtex.com/pdns//forward/30hd.com 200 - OK 0
+2021-05-20 15:49:09,755 [DEBUG] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.finish:61 - Finished RobtexQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,756 [INFOR] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.finish:63 - The RobtexQuery module took 0.5 seconds found 0 subdomains
+2021-05-20 15:49:09,758 [DEBUG] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.finish:65 - RobtexQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,759 [DEBUG] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,760 [DEBUG] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.gen_result:273 - RobtexQuery module result is empty
+2021-05-20 15:49:09,761 [DEBUG] SpawnPoolWorker-1(14270):robtex            (123146059059200) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,834 [ALERT] SpawnPoolWorker-1(14270):anubis            (123146126217216) | utils.check_response:285 - GET https://jldc.me/anubis/subdomains/30hd.com 300 - Multiple Choices 2
+2021-05-20 15:49:09,837 [ALERT] SpawnPoolWorker-1(14270):anubis            (123146126217216) | utils.check_response:294 - []
+2021-05-20 15:49:09,839 [DEBUG] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.finish:61 - Finished AnubisQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,840 [INFOR] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.finish:63 - The AnubisQuery module took 0.6 seconds found 0 subdomains
+2021-05-20 15:49:09,842 [DEBUG] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.finish:65 - AnubisQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,843 [DEBUG] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,844 [DEBUG] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.gen_result:273 - AnubisQuery module result is empty
+2021-05-20 15:49:09,845 [DEBUG] SpawnPoolWorker-1(14270):anubis            (123146126217216) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,878 [DEBUG] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.finish:61 - Finished CeBaiduQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,879 [INFOR] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.finish:63 - The CeBaiduQuery module took 0.6 seconds found 0 subdomains
+2021-05-20 15:49:09,881 [DEBUG] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.finish:65 - CeBaiduQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,881 [DEBUG] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,882 [DEBUG] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.gen_result:273 - CeBaiduQuery module result is empty
+2021-05-20 15:49:09,883 [DEBUG] SpawnPoolWorker-1(14270):cebaidu           (123146143006720) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,903 [ALERT] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | utils.check_response:285 - GET https://www.virustotal.com/ui/domains/30hd.com/subdomains?limit=40&cursor= 429 - Too Many Requests 181
+2021-05-20 15:49:09,905 [ALERT] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | utils.check_response:294 - {'error': {'message': 'Please re-send request with a valid reCAPTCHA response in the "x-recaptcha-response" header', 'code': 'RecaptchaRequiredError'}}
+2021-05-20 15:49:09,907 [DEBUG] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.finish:61 - Finished VirusTotalQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,908 [INFOR] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.finish:63 - The VirusTotalQuery module took 0.6 seconds found 0 subdomains
+2021-05-20 15:49:09,909 [DEBUG] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.finish:65 - VirusTotalQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,910 [DEBUG] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,911 [DEBUG] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.gen_result:273 - VirusTotalQuery module result is empty
+2021-05-20 15:49:09,912 [DEBUG] SpawnPoolWorker-1(14270):virustotal        (123146327691264) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,956 [DEBUG] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.finish:61 - Finished CrossDomainCheck module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,958 [INFOR] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.finish:63 - The CrossDomainCheck module took 0.8 seconds found 0 subdomains
+2021-05-20 15:49:09,959 [DEBUG] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.finish:65 - CrossDomainCheck module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,960 [DEBUG] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,961 [DEBUG] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.gen_result:273 - CrossDomainCheck module result is empty
+2021-05-20 15:49:09,962 [DEBUG] SpawnPoolWorker-1(14270):cdx               (123145941532672) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:09,965 [DEBUG] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.finish:61 - Finished RobotsCheck module to collect 30hd.com's subdomains
+2021-05-20 15:49:09,966 [INFOR] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.finish:63 - The RobotsCheck module took 0.8 seconds found 0 subdomains
+2021-05-20 15:49:09,968 [DEBUG] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.finish:65 - RobotsCheck module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:09,969 [DEBUG] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:09,970 [DEBUG] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.gen_result:273 - RobotsCheck module result is empty
+2021-05-20 15:49:09,970 [DEBUG] SpawnPoolWorker-1(14270):robots            (123145924743168) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,035 [DEBUG] SpawnPoolWorker-1(14270):certspotter       (123145824006144) | module.finish:61 - Finished CertSpotterQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,036 [INFOR] SpawnPoolWorker-1(14270):certspotter       (123145824006144) | module.finish:63 - The CertSpotterQuery module took 0.9 seconds found 2 subdomains
+2021-05-20 15:49:10,038 [DEBUG] SpawnPoolWorker-1(14270):certspotter       (123145824006144) | module.finish:65 - CertSpotterQuery module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:10,039 [DEBUG] SpawnPoolWorker-1(14270):certspotter       (123145824006144) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,040 [DEBUG] SpawnPoolWorker-1(14270):certspotter       (123145824006144) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,098 [DEBUG] SpawnPoolWorker-1(14270):sitedossier       (123146210164736) | module.finish:61 - Finished SiteDossierQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,099 [INFOR] SpawnPoolWorker-1(14270):sitedossier       (123146210164736) | module.finish:63 - The SiteDossierQuery module took 0.8 seconds found 2 subdomains
+2021-05-20 15:49:10,101 [DEBUG] SpawnPoolWorker-1(14270):sitedossier       (123146210164736) | module.finish:65 - SiteDossierQuery module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:10,102 [DEBUG] SpawnPoolWorker-1(14270):sitedossier       (123146210164736) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,103 [DEBUG] SpawnPoolWorker-1(14270):sitedossier       (123146210164736) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,137 [DEBUG] SpawnPoolWorker-1(14270):riddler           (123146092638208) | module.finish:61 - Finished RiddlerQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,139 [INFOR] SpawnPoolWorker-1(14270):riddler           (123146092638208) | module.finish:63 - The RiddlerQuery module took 0.9 seconds found 1 subdomains
+2021-05-20 15:49:10,140 [DEBUG] SpawnPoolWorker-1(14270):riddler           (123146092638208) | module.finish:65 - RiddlerQuery module found subdomains of 30hd.com
+{'30hd.com'}
+2021-05-20 15:49:10,141 [DEBUG] SpawnPoolWorker-1(14270):riddler           (123146092638208) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,142 [DEBUG] SpawnPoolWorker-1(14270):riddler           (123146092638208) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,150 [DEBUG] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.finish:61 - Finished Sublist3rQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,151 [INFOR] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.finish:63 - The Sublist3rQuery module took 0.9 seconds found 0 subdomains
+2021-05-20 15:49:10,152 [DEBUG] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.finish:65 - Sublist3rQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:10,153 [DEBUG] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,154 [DEBUG] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.gen_result:273 - Sublist3rQuery module result is empty
+2021-05-20 15:49:10,155 [DEBUG] SpawnPoolWorker-1(14270):sublist3r         (123146109427712) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,159 [ALERT] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | utils.check_response:285 - GET https://www.threatminer.org/getData.php?e=subdomains_container&q=30hd.com&t=0&rt=10 200 - OK 0
+2021-05-20 15:49:10,161 [DEBUG] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.finish:61 - Finished ThreatMinerQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,162 [INFOR] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.finish:63 - The ThreatMinerQuery module took 0.9 seconds found 0 subdomains
+2021-05-20 15:49:10,163 [DEBUG] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.finish:65 - ThreatMinerQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:10,164 [DEBUG] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,165 [DEBUG] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.gen_result:273 - ThreatMinerQuery module result is empty
+2021-05-20 15:49:10,166 [DEBUG] SpawnPoolWorker-1(14270):threatminer       (123146310901760) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,219 [ALERT] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | utils.check_response:285 - GET http://114.55.181.28/check_web/databaseInfo_mainSearch.action?isSearch=true&searchType=url&term=30hd.com&pageNo=1 404 - Not Found 5042
+2021-05-20 15:49:10,221 [DEBUG] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.finish:61 - Finished WZPCQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,222 [INFOR] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.finish:63 - The WZPCQuery module took 1.0 seconds found 0 subdomains
+2021-05-20 15:49:10,224 [DEBUG] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.finish:65 - WZPCQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:10,225 [DEBUG] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,226 [DEBUG] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.gen_result:273 - WZPCQuery module result is empty
+2021-05-20 15:49:10,227 [DEBUG] SpawnPoolWorker-1(14270):wzpc              (123145958322176) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,240 [ALERT] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | utils.check_response:285 - POST https://public.intelx.io/phonebook/search?k=d7d1ed06-f0c5-49d4-a9ca-a167e6d2ffab 403 - Forbidden 0
+2021-05-20 15:49:10,242 [DEBUG] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.finish:61 - Finished PhoneBookQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,243 [INFOR] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.finish:63 - The PhoneBookQuery module took 1.0 seconds found 0 subdomains
+2021-05-20 15:49:10,245 [DEBUG] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.finish:65 - PhoneBookQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:10,246 [DEBUG] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,246 [DEBUG] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.gen_result:273 - PhoneBookQuery module result is empty
+2021-05-20 15:49:10,247 [DEBUG] SpawnPoolWorker-1(14270):phonebook         (123146075848704) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,428 [DEBUG] SpawnPoolWorker-1(14270):crtsh             (123145790427136) | module.finish:61 - Finished CrtshQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,429 [INFOR] SpawnPoolWorker-1(14270):crtsh             (123145790427136) | module.finish:63 - The CrtshQuery module took 1.3 seconds found 2 subdomains
+2021-05-20 15:49:10,431 [DEBUG] SpawnPoolWorker-1(14270):crtsh             (123145790427136) | module.finish:65 - CrtshQuery module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:10,432 [DEBUG] SpawnPoolWorker-1(14270):crtsh             (123145790427136) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,433 [DEBUG] SpawnPoolWorker-1(14270):crtsh             (123145790427136) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,791 [DEBUG] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.finish:61 - Finished GiteeSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,792 [INFOR] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.finish:63 - The GiteeSearch module took 1.4 seconds found 0 subdomains
+2021-05-20 15:49:10,793 [DEBUG] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.finish:65 - GiteeSearch module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:10,794 [DEBUG] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,795 [DEBUG] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.gen_result:273 - GiteeSearch module result is empty
+2021-05-20 15:49:10,796 [DEBUG] SpawnPoolWorker-1(14270):gitee             (123146462007296) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:10,818 [DEBUG] SpawnPoolWorker-1(14270):alienvault        (123146344480768) | module.finish:61 - Finished AlienVaultQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:10,819 [INFOR] SpawnPoolWorker-1(14270):alienvault        (123146344480768) | module.finish:63 - The AlienVaultQuery module took 1.5 seconds found 2 subdomains
+2021-05-20 15:49:10,821 [DEBUG] SpawnPoolWorker-1(14270):alienvault        (123146344480768) | module.finish:65 - AlienVaultQuery module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:10,822 [DEBUG] SpawnPoolWorker-1(14270):alienvault        (123146344480768) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:10,823 [DEBUG] SpawnPoolWorker-1(14270):alienvault        (123146344480768) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,271 [DEBUG] SpawnPoolWorker-1(14270):chinaz            (123146193375232) | module.finish:61 - Finished ChinazQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,272 [INFOR] SpawnPoolWorker-1(14270):chinaz            (123146193375232) | module.finish:63 - The ChinazQuery module took 2.0 seconds found 1 subdomains
+2021-05-20 15:49:11,273 [DEBUG] SpawnPoolWorker-1(14270):chinaz            (123146193375232) | module.finish:65 - ChinazQuery module found subdomains of 30hd.com
+{'30hd.com'}
+2021-05-20 15:49:11,274 [DEBUG] SpawnPoolWorker-1(14270):chinaz            (123146193375232) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,276 [DEBUG] SpawnPoolWorker-1(14270):chinaz            (123146193375232) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,549 [ALERT] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | utils.check_response:285 - POST https://www.dnsscan.cn/dns.html?keywords=30hd.com&page=1 500 - Internal Server Error 5158
+2021-05-20 15:49:11,551 [DEBUG] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.finish:61 - Finished QianXunQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,552 [INFOR] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.finish:63 - The QianXunQuery module took 2.4 seconds found 0 subdomains
+2021-05-20 15:49:11,554 [DEBUG] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.finish:65 - QianXunQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:11,555 [DEBUG] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,556 [DEBUG] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.gen_result:273 - QianXunQuery module result is empty
+2021-05-20 15:49:11,557 [DEBUG] SpawnPoolWorker-1(14270):qianxun           (123145991901184) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,570 [DEBUG] SpawnPoolWorker-1(14270):rapiddns          (123146025480192) | module.finish:61 - Finished RapidDNSQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,571 [INFOR] SpawnPoolWorker-1(14270):rapiddns          (123146025480192) | module.finish:63 - The RapidDNSQuery module took 2.4 seconds found 2 subdomains
+2021-05-20 15:49:11,573 [DEBUG] SpawnPoolWorker-1(14270):rapiddns          (123146025480192) | module.finish:65 - RapidDNSQuery module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:11,573 [DEBUG] SpawnPoolWorker-1(14270):rapiddns          (123146025480192) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,574 [DEBUG] SpawnPoolWorker-1(14270):rapiddns          (123146025480192) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,613 [DEBUG] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.finish:61 - Finished BingSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,614 [INFOR] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.finish:63 - The BingSearch module took 2.3 seconds found 0 subdomains
+2021-05-20 15:49:11,615 [DEBUG] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.finish:65 - BingSearch module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:11,616 [DEBUG] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,617 [DEBUG] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.gen_result:273 - BingSearch module result is empty
+2021-05-20 15:49:11,618 [DEBUG] SpawnPoolWorker-1(14270):bing              (123146361270272) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,729 [DEBUG] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.finish:61 - Finished SitemapCheck module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,731 [INFOR] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.finish:63 - The SitemapCheck module took 2.6 seconds found 0 subdomains
+2021-05-20 15:49:11,732 [DEBUG] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.finish:65 - SitemapCheck module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:11,733 [DEBUG] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,734 [DEBUG] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.gen_result:273 - SitemapCheck module result is empty
+2021-05-20 15:49:11,735 [DEBUG] SpawnPoolWorker-1(14270):sitemap           (123145840795648) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,782 [DEBUG] SpawnPoolWorker-1(14270):so                (123146495586304) | module.finish:61 - Finished SoSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,783 [INFOR] SpawnPoolWorker-1(14270):so                (123146495586304) | module.finish:63 - The SoSearch module took 2.4 seconds found 2 subdomains
+2021-05-20 15:49:11,785 [DEBUG] SpawnPoolWorker-1(14270):so                (123146495586304) | module.finish:65 - SoSearch module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:11,786 [DEBUG] SpawnPoolWorker-1(14270):so                (123146495586304) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,787 [DEBUG] SpawnPoolWorker-1(14270):so                (123146495586304) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:11,965 [ALERT] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | utils.check_response:285 - POST https://dnsdumpster.com/ 403 - Forbidden 1019
+2021-05-20 15:49:11,967 [DEBUG] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.finish:61 - Finished DNSdumpsterQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:11,968 [INFOR] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.finish:63 - The DNSdumpsterQuery module took 2.8 seconds found 0 subdomains
+2021-05-20 15:49:11,970 [DEBUG] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.finish:65 - DNSdumpsterQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:11,971 [DEBUG] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:11,972 [DEBUG] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.gen_result:273 - DNSdumpsterQuery module result is empty
+2021-05-20 15:49:11,973 [DEBUG] SpawnPoolWorker-1(14270):dnsdumpster       (123145975111680) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:12,312 [ERROR] SpawnPoolWorker-1(14270):google            (123145807216640) | module.get:129 - (MaxRetryError("HTTPSConnectionPool(host='transparencyreport.google.com', port=443): Max retries exceeded with url: /transparencyreport/api/v3/httpsreport/ct/certsearch?include_expired=true&include_subdomains=true&domain=30hd.com (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fbdbc311bb0>, 'Connection to transparencyreport.google.com timed out. (connect timeout=3.05)'))"),)
+2021-05-20 15:49:12,315 [DEBUG] SpawnPoolWorker-1(14270):google            (123145807216640) | module.finish:61 - Finished GoogleQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:12,316 [INFOR] SpawnPoolWorker-1(14270):google            (123145807216640) | module.finish:63 - The GoogleQuery module took 3.2 seconds found 0 subdomains
+2021-05-20 15:49:12,318 [DEBUG] SpawnPoolWorker-1(14270):google            (123145807216640) | module.finish:65 - GoogleQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:12,319 [DEBUG] SpawnPoolWorker-1(14270):google            (123145807216640) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:12,320 [DEBUG] SpawnPoolWorker-1(14270):google            (123145807216640) | module.gen_result:273 - GoogleQuery module result is empty
+2021-05-20 15:49:12,321 [DEBUG] SpawnPoolWorker-1(14270):google            (123145807216640) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:12,365 [ERROR] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.get:129 - (MaxRetryError("HTTPSConnectionPool(host='api.hackertarget.com', port=443): Max retries exceeded with url: /hostsearch/?q=30hd.com (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fbdbc37d9d0>, 'Connection to api.hackertarget.com timed out. (connect timeout=3.05)'))"),)
+2021-05-20 15:49:12,368 [DEBUG] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.finish:61 - Finished HackerTargetQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:12,369 [INFOR] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.finish:63 - The HackerTargetQuery module took 3.2 seconds found 0 subdomains
+2021-05-20 15:49:12,371 [DEBUG] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.finish:65 - HackerTargetQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:12,372 [DEBUG] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:12,373 [DEBUG] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.gen_result:273 - HackerTargetQuery module result is empty
+2021-05-20 15:49:12,374 [DEBUG] SpawnPoolWorker-1(14270):hackertarget      (123146042269696) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:12,402 [ERROR] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.get:129 - (MaxRetryError("HTTPSConnectionPool(host='search.yahoo.com', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fbdbc2ec610>, 'Connection to search.yahoo.com timed out. (connect timeout=3.05)'))"),)
+2021-05-20 15:49:12,404 [DEBUG] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.finish:61 - Finished YahooSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:12,406 [INFOR] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.finish:63 - The YahooSearch module took 3.1 seconds found 0 subdomains
+2021-05-20 15:49:12,407 [DEBUG] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.finish:65 - YahooSearch module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:12,409 [DEBUG] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:12,410 [DEBUG] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.gen_result:273 - YahooSearch module result is empty
+2021-05-20 15:49:12,410 [DEBUG] SpawnPoolWorker-1(14270):yahoo             (123146378059776) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:12,423 [ERROR] SpawnPoolWorker-1(14270):google            (123146411638784) | module.get:129 - (MaxRetryError("HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fbdbc293940>, 'Connection to www.google.com timed out. (connect timeout=3.05)'))"),)
+2021-05-20 15:49:12,424 [DEBUG] SpawnPoolWorker-1(14270):google            (123146411638784) | module.finish:61 - Finished GoogleSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:12,425 [INFOR] SpawnPoolWorker-1(14270):google            (123146411638784) | module.finish:63 - The GoogleSearch module took 3.1 seconds found 0 subdomains
+2021-05-20 15:49:12,426 [DEBUG] SpawnPoolWorker-1(14270):google            (123146411638784) | module.finish:65 - GoogleSearch module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:12,427 [DEBUG] SpawnPoolWorker-1(14270):google            (123146411638784) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:12,428 [DEBUG] SpawnPoolWorker-1(14270):google            (123146411638784) | module.gen_result:273 - GoogleSearch module result is empty
+2021-05-20 15:49:12,429 [DEBUG] SpawnPoolWorker-1(14270):google            (123146411638784) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:12,442 [DEBUG] SpawnPoolWorker-1(14270):baidu             (123146445217792) | module.finish:61 - Finished BaiduSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:12,443 [INFOR] SpawnPoolWorker-1(14270):baidu             (123146445217792) | module.finish:63 - The BaiduSearch module took 3.1 seconds found 2 subdomains
+2021-05-20 15:49:12,445 [DEBUG] SpawnPoolWorker-1(14270):baidu             (123146445217792) | module.finish:65 - BaiduSearch module found subdomains of 30hd.com
+{'www.30hd.com', '30hd.com'}
+2021-05-20 15:49:12,446 [DEBUG] SpawnPoolWorker-1(14270):baidu             (123146445217792) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:12,446 [DEBUG] SpawnPoolWorker-1(14270):baidu             (123146445217792) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:13,435 [ERROR] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.get:129 - (MaxRetryError("HTTPSConnectionPool(host='www.search.ask.com', port=443): Max retries exceeded with url: /web?q=site%3A.30hd.com&page=1 (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fbdbbff9c70>, 'Connection to www.search.ask.com timed out. (connect timeout=3.05)'))"),)
+2021-05-20 15:49:13,436 [DEBUG] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.finish:61 - Finished AskSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:13,437 [INFOR] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.finish:63 - The AskSearch module took 4.1 seconds found 0 subdomains
+2021-05-20 15:49:13,438 [DEBUG] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.finish:65 - AskSearch module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:13,439 [DEBUG] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:13,440 [DEBUG] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.gen_result:273 - AskSearch module result is empty
+2021-05-20 15:49:13,441 [DEBUG] SpawnPoolWorker-1(14270):ask               (123145874374656) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:14,283 [ALERT] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | utils.check_response:285 - POST http://sbd.ximcx.cn/DomainServlet 502 - Bad Gateway 269
+2021-05-20 15:49:14,285 [DEBUG] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.finish:61 - Finished XimcxQuery module to collect 30hd.com's subdomains
+2021-05-20 15:49:14,285 [INFOR] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.finish:63 - The XimcxQuery module took 5.1 seconds found 0 subdomains
+2021-05-20 15:49:14,287 [DEBUG] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.finish:65 - XimcxQuery module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:14,288 [DEBUG] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:14,289 [DEBUG] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.gen_result:273 - XimcxQuery module result is empty
+2021-05-20 15:49:14,291 [DEBUG] SpawnPoolWorker-1(14270):ximcx             (123146008690688) | module.save_db:363 - Saving results to database
+2021-05-20 15:49:16,335 [DEBUG] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.finish:61 - Finished YandexSearch module to collect 30hd.com's subdomains
+2021-05-20 15:49:16,336 [INFOR] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.finish:63 - The YandexSearch module took 7.0 seconds found 0 subdomains
+2021-05-20 15:49:16,338 [DEBUG] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.finish:65 - YandexSearch module found subdomains of 30hd.com
+set()
+2021-05-20 15:49:16,339 [DEBUG] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.gen_result:271 - Generating final results
+2021-05-20 15:49:16,340 [DEBUG] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.gen_result:273 - YandexSearch module result is empty
+2021-05-20 15:49:16,341 [DEBUG] SpawnPoolWorker-1(14270):yandex            (123146394849280) | module.save_db:363 - Saving results to database
+2021-05-20 15:50:42,333 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | collect.run:66 - nsec module thread timed out
+2021-05-20 15:50:42,336 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.begin:52 - Start BruteSRV module to collect subdomains of 30hd.com
+2021-05-20 15:50:42,923 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.finish:61 - Finished BruteSRV module to collect 30hd.com's subdomains
+2021-05-20 15:50:42,924 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.finish:63 - The BruteSRV module took 0.6 seconds found 0 subdomains
+2021-05-20 15:50:42,925 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.finish:65 - BruteSRV module found subdomains of 30hd.com
+set()
+2021-05-20 15:50:42,926 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.gen_result:271 - Generating final results
+2021-05-20 15:50:42,927 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.gen_result:273 - BruteSRV module result is empty
+2021-05-20 15:50:42,928 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.save_db:363 - Saving results to database
+2021-05-20 15:50:42,939 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.run:727 - Start running Brute module
+2021-05-20 15:50:42,941 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.get_domains:155 - Getting domains
+2021-05-20 15:50:42,943 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.get_domains:161 - Get 1 domains
+2021-05-20 15:50:42,945 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.get_domains:164 - The obtained domains 
+['30hd.com']
+2021-05-20 15:50:42,946 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.main:668 - Blasting 30hd.com 
+2021-05-20 15:50:42,949 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_domain_ns:250 - Querying NS records of 30hd.com
+2021-05-20 15:50:42,971 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_domain_ns:260 - 30hd.com's authoritative name server is ['ns2.cloudcdns.com.', 'ns1.cloudcdns.com.']
+2021-05-20 15:50:42,973 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_domain_ns_a:230 - Querying A record from authoritative name server: ['ns2.cloudcdns.com.', 'ns1.cloudcdns.com.'] 
+2021-05-20 15:50:43,014 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_domain_ns_a:245 - Authoritative name server A record result: ['59.56.73.3', '122.226.189.21', '115.231.234.252', '103.95.222.238', '122.226.189.4', '103.95.222.234', '59.56.73.2', '115.231.234.251']
+2021-05-20 15:50:43,016 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.detect_wildcard:137 - Detecting 30hd.com use wildcard dns record or not
+2021-05-20 15:50:43,050 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_a_record:68 - Query 6975921b.30hd.com wildcard dns record error
+2021-05-20 15:50:43,051 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_a_record:69 - ('None of DNS query names exist: 6975921b.30hd.com., 6975921b.30hd.com.local.',)
+2021-05-20 15:50:43,087 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_a_record:68 - Query 6a30a9ea.30hd.com wildcard dns record error
+2021-05-20 15:50:43,088 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_a_record:69 - ('None of DNS query names exist: 6a30a9ea.30hd.com., 6a30a9ea.30hd.com.local.',)
+2021-05-20 15:50:43,125 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_a_record:68 - Query e73593d6.30hd.com wildcard dns record error
+2021-05-20 15:50:43,126 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.query_a_record:69 - ('None of DNS query names exist: e73593d6.30hd.com., e73593d6.30hd.com.local.',)
+2021-05-20 15:50:43,127 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.is_enable_wildcard:152 - The domain 30hd.com disables wildcard
+2021-05-20 15:50:43,128 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.gen_brute_dict:614 - Generating dictionary for 30hd.com
+2021-05-20 15:50:43,293 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.gen_subdomains:179 - The size of the dictionary generated by /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/data/subnames.txt is 95247
+2021-05-20 15:50:43,294 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.check_random_subdomain:694 - Please check whether charmed.30hd.com is correct or not
+2021-05-20 15:50:43,295 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.gen_word_subdomains:225 - Dictionary based on word mode size: 95247
+2021-05-20 15:50:43,299 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.gen_brute_dict:630 - Dictionary size: 95247
+2021-05-20 15:50:43,333 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.main:699 - Running massdns to brute subdomains
+2021-05-20 15:50:43,335 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.call_massdns:590 - Start running massdns
+2021-05-20 15:50:43,336 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.call_massdns:604 - Run command /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/thirdparty/massdns/massdns_darwin_x86_64 --quiet --status-format ansi --processes 1 --socket-count 1 --hashmap-size 2000 --resolvers /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/data/cn_nameservers.txt --resolve-count 15 --type A --flush --output J --outfile /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/temp/resolved_result_30hd.com_20210520_155042.json --root --error-log /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/massdns.log /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/temp/generated_subdomains_30hd.com_20210520_155042.txt --filter OK --sndbuf 0 --rcvbuf 0
+2021-05-20 15:51:12,403 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.call_massdns:606 - Finished massdns
+2021-05-20 15:51:12,403 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.stat_ip_times:427 - Counting IP
+2021-05-20 15:51:12,405 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.stat_ip_times:430 - Reading /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/temp/resolved_result_30hd.com_20210520_155042.json
+2021-05-20 15:51:12,406 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.deal_output:458 - Processing result
+2021-05-20 15:51:12,407 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.deal_output:462 - Processing /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/temp/resolved_result_30hd.com_20210520_155042.json
+2021-05-20 15:51:12,409 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.main:718 - Brute module takes 29.5 seconds, found 0 subdomains of 30hd.com
+2021-05-20 15:51:12,410 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.main:720 - Brute module found subdomains of 30hd.com: []
+2021-05-20 15:51:12,410 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.gen_result:271 - Generating final results
+2021-05-20 15:51:12,411 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.gen_result:273 - Brute module result is empty
+2021-05-20 15:51:12,412 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.save_db:363 - Saving results to database
+2021-05-20 15:51:12,420 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | brute.run:755 - Finished Brute module's brute 30hd.com
+2021-05-20 15:51:12,434 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.run_resolve:163 - Start resolving subdomains of 30hd.com
+2021-05-20 15:51:12,436 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.filter_subdomain:22 - Filtering subdomains to be resolved
+2021-05-20 15:51:12,437 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.save_subdomains:71 - Saving resolved subdomain
+2021-05-20 15:51:12,456 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.run_resolve:187 - Running massdns to resolve subdomains
+2021-05-20 15:51:12,457 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.call_massdns:590 - Start running massdns
+2021-05-20 15:51:12,458 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.call_massdns:604 - Run command /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/thirdparty/massdns/massdns_darwin_x86_64 --quiet --status-format ansi --processes 1 --socket-count 1 --hashmap-size 10000 --resolvers /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/data/cn_nameservers.txt --resolve-count 15 --type A --flush --output J --outfile /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/temp/resolved_result_30hd.com_20210520_155112.json --root --error-log /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/massdns.log /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/temp/collected_subdomains_30hd.com_20210520_155112.txt --filter OK --sndbuf 0 --rcvbuf 0
+2021-05-20 15:51:12,692 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | utils.call_massdns:606 - Finished massdns
+2021-05-20 15:51:12,693 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.deal_output:126 - Processing resolved results
+2021-05-20 15:51:12,705 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.update_data:40 - Updating resolved results
+2021-05-20 15:51:12,706 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.run_resolve:193 - Finished resolve subdomains of 30hd.com
+2021-05-20 15:51:12,707 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | resolve.save_db:66 - Saving resolved results
+2021-05-20 15:51:12,719 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.run_request:241 - Start requesting subdomains of 30hd.com
+2021-05-20 15:51:12,721 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.get_port_seq:26 - Getting port range
+2021-05-20 15:51:12,721 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.get_port_seq:34 - small port range
+2021-05-20 15:51:12,722 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.get_port_seq:39 - Port range:[80, 443]
+2021-05-20 15:51:12,723 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.gen_req_data:56 - Generating request urls
+2021-05-20 15:51:12,725 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.bulk_request:172 - Requesting urls in bulk
+2021-05-20 15:51:12,726 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.req_thread_count:21 - Number of request threads 120
+2021-05-20 15:51:13,124 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.run_request:248 - Found that 30hd.com has 4 alive subdomains
+2021-05-20 15:51:13,126 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.save_db:260 - Saving requested results
+2021-05-20 15:51:13,140 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | finder.run:22 - Start Finder module
+2021-05-20 15:51:13,161 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.bulk_request:172 - Requesting urls in bulk
+2021-05-20 15:51:13,162 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | request.req_thread_count:21 - Number of request threads 120
+2021-05-20 15:51:13,482 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.finish:61 - Finished Finder module to collect 's subdomains
+2021-05-20 15:51:13,483 [INFOR] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.finish:63 - The Finder module took 0.3 seconds found 0 subdomains
+2021-05-20 15:51:13,485 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | module.finish:65 - Finder module found subdomains of 
+set()
+2021-05-20 15:51:13,486 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | iscdn.check_cdn:54 - Start cdn check module
+2021-05-20 15:51:13,486 [DEBUG] SpawnPoolWorker-1(14270):MainThread        (4494044608) | iscdn.save_db:83 - Saving cdn check results
+2021-05-20 15:51:13,503 [ALERT] SpawnPoolWorker-1(14270):MainThread        (4494044608) | dbexport.export_data:71 - The subdomain result for 30hd.com: /Users/taomujian/Desktop/taomujian/linbing/flask/app/thirdparty/oneforall/results/30hd.com.csv
