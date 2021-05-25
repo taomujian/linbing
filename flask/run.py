@@ -731,7 +731,7 @@ def start_scan():
                     scan_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     
                     if not scan_ip:
-                        mysqldb.update_target_live_status(username_result['username'], target, '失活')
+                        # mysqldb.update_target_live_status(username_result['username'], target, '失活')
                         mysqldb.save_target_scan(username_result['username'], target, description, scan_ip, scan_id, scan_time, '扫描失败', '扫描失败')
                         mysqldb.update_target_scan_status(username_result['username'], target, '扫描失败')                                
                         mysqldb.update_target_scan_schedule(username_result['username'], target, '扫描失败')                               

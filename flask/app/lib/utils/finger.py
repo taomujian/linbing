@@ -51,7 +51,7 @@ class Fofa_Scanner:
                 return headers_str, content, title.strip('\n')
             except:
                 for key, value in req.headers.items():
-                    headers_str = headers_str + key + ':' + value + ','
+                    headers_str = headers_str + key + ': ' + value + ','
                 return headers_str, content, ''
         except Exception as e:
             print(e)

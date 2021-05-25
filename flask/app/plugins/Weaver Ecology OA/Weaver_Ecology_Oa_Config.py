@@ -5,9 +5,7 @@ name: 泛微-OA漏洞
 description: 泛微-OA Config信息泄露漏洞
 '''
 
-import json
 import pyDes
-import urllib3
 from app.lib.utils.request import request
 
 

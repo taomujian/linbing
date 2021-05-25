@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-import re
 import json
 import uuid
 from app.lib.utils.request import request
-from datetime import datetime
 
 class CVE_2020_5902_BaseVerify:
     def __init__(self, url):

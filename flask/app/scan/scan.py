@@ -115,7 +115,7 @@ class Scan:
                     pass
 
                 if not scan_ip:
-                    self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
+                    # self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
                     self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
                     self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描失败')                                 
                     self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
@@ -124,7 +124,7 @@ class Scan:
             
             target = get_live(kwargs['target'], 3)
             if not target:
-                self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
+                # self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
                 self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
                 self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描失败')                                 
                 self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
