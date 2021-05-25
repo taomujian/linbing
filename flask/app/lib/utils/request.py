@@ -28,7 +28,10 @@ def get_conf():
     config = configparser.ConfigParser()
     config.read('conf.ini')
     proxy = config.get('request', 'proxy')
-    timeout = int(config.get('request', 'timeout'))
+    if not config.get('request', 'timeout'):
+        timeout = 5
+    else:
+        timeout = int(config.get('request', 'timeout'))
     if not proxy:
         proxies = None
     else:

@@ -131,8 +131,8 @@ class Scan:
                 self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
                 self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描失败')
                 return None
-
-            else:
+                
+            else: 
                 self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '指纹探测中')
                 self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '指纹探测中')
 
@@ -155,7 +155,6 @@ class Scan:
                         cms_name = result['cms_name']
                         self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
                 
-                
                 if kwargs['domain']:
                     self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '子域名探测中')
                     self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '子域名探测中')
@@ -165,6 +164,7 @@ class Scan:
                     self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '目录扫描中')
                     self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
                     self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
+
         self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '端口扫描中')
         self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
         if scan_set['scanner'] == 'nmap':
@@ -202,7 +202,7 @@ class Scan:
                             continue
         if tasks:
             loop.run_until_complete(asyncio.wait(tasks))
-
+        
         self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描结束')
         self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描结束')                                 
         self.mysqldb.update_scan_status(kwargs['username'], kwargs['target'], kwargs['scan_id'], '扫描结束')
