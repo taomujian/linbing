@@ -5,7 +5,6 @@ import sys
 import json
 import time
 import base64
-import hashlib
 import configparser
 from rq import Queue
 from redis import Redis
@@ -741,9 +740,8 @@ def start_scan():
                     else:
                         mysqldb.save_target_scan(username_result['username'], target, description, scan_ip, scan_id, scan_time, '扫描中', '正在排队')
                         mysqldb.update_target_scan_status(username_result['username'], target, '扫描中')
-                        mysqldb.update_target_scan_schedule(username_result['username'], target, '正在排队')
-                        print(23)                              
-                        high_queue.enqueue_call(queue_scan, args = (username_result['username'], target, scan_id, scan_ip, main_domain, domain, mysqldb,), timeout = 720000)
+                        mysqldb.update_target_scan_schedule(username_result['username'], target, '正在排队')                             
+                        high_queue.enqueue_call(queue_scan, args = (username_result['username'], target, scan_id, scan_ip, main_domain, domain, mysqldb,), timeout = 720000000)
                         scan_id = str(int(scan_id) + 1)
 
                 response_data['code'] = 'L1000'

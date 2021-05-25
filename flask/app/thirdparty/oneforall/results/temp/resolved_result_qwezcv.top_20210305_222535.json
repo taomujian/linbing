@@ -1,6 +1,0 @@
-{"name":"syd.user.qwezcv.top.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":900,"type":"A","class":"IN","name":"syd.user.qwezcv.top.","data":"45.64.55.148"}]},"resolver":"114.114.115.115:53"}
-{"name":"qwezcv.top.","type":"A","class":"IN","status":"NOERROR","data":{"authorities":[{"ttl":600,"type":"SOA","class":"IN","name":"qwezcv.top.","data":"dns.4cun.com. admin.qwezcv.top. 1597072574 3600 180 1209600 600"}]},"resolver":"119.29.29.29:53"}
-{"name":"gyjr.admin.qwezcv.top.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":900,"type":"A","class":"IN","name":"gyjr.admin.qwezcv.top.","data":"202.146.219.34"}]},"resolver":"119.29.29.29:53"}
-{"name":"pajr4.user.qwezcv.top.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":900,"type":"A","class":"IN","name":"pajr4.user.qwezcv.top.","data":"45.64.55.148"}]},"resolver":"223.5.5.5:53"}
-{"name":"nwd.admin.qwezcv.top.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":900,"type":"A","class":"IN","name":"nwd.admin.qwezcv.top.","data":"45.64.55.148"}]},"resolver":"119.29.29.29:53"}
-{"name":"rrd2.user.qwezcv.top.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":900,"type":"A","class":"IN","name":"rrd2.user.qwezcv.top.","data":"45.64.55.148"}]},"resolver":"223.5.5.5:53"}

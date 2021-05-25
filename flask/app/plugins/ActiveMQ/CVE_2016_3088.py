@@ -7,7 +7,6 @@ description: CVE-2016-3088漏洞可上传文件,上传shell需要账号密码,�
 
 import re
 import time
-import base64
 from app.lib.utils.request import request
 
 class CVE_2016_3088_BaseVerify:

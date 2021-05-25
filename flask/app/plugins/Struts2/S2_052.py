@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from app.lib.utils.common import get_capta
 from app.lib.utils.request import request
 
 class S2_052_BaseVerify:

@@ -52,7 +52,7 @@ class Port_Scan():
         """
         scan_list = []
         nm = nmap.PortScanner()
-        arguments = '-sS -sV -Pn -T4 --open'
+        arguments = '-sS -sV -Pn -T4 --open -p %s-%s' %(min_port, max_port)
         nm.scan(hosts = target_ip, arguments = arguments)
         try:
             for host in nm.all_hosts():
@@ -102,7 +102,7 @@ class Port_Scan():
         scan_list = []
         print('Masscan starting.....\n')
         masscan_scan = masscan.PortScanner()
-        masscan_scan.scan(hosts = target_ip, arguments = '-sS -Pn -n --randomize-hosts -v --send-eth --open --rate %s' % (rate))
+        masscan_scan.scan(hosts = target_ip, ports='%s-%s'%(min_port, max_port), arguments = '-sS -Pn -n --randomize-hosts -v --send-eth --open --rate %s' % (rate))
         try:
             for host in masscan_scan.all_hosts:
                 for masscan_proto in masscan_scan[host].keys():

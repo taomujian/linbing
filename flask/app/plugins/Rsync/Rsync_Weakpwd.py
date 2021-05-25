@@ -8,11 +8,8 @@ import re
 import time
 import socket
 import hashlib
-from itertools import product
 from base64 import b64encode
 from urllib.parse import urlparse
-
-
 
 class Rsync_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -25,7 +22,6 @@ class Rsync_Weakpwd_BaseVerify:
             self.port = '80'
         self.sock = None
 
-
     def _rsync_init(self):
         sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         socket.setdefaulttimeout(self.timeout)
@@ -34,7 +30,6 @@ class Rsync_Weakpwd_BaseVerify:
         res = sock.recv(1024)
         self.sock = sock
         return res
-
 
     def is_path_not_auth(self, path_name = ''):
         self._rsync_init()
@@ -51,7 +46,6 @@ class Rsync_Weakpwd_BaseVerify:
             return -1
         else:
             return -1
-
 
     def get_all_pathname(self):
         path_name_list = []

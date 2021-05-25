@@ -123,6 +123,7 @@ class Scan:
                     return None
             
             target = get_live(kwargs['target'], 3)
+            
             if not target:
                 # self.mysqldb.update_target_live_status(kwargs['username'], kwargs['target'], '失活')
                 self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
@@ -164,7 +165,6 @@ class Scan:
                     self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '目录扫描中')
                     self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
                     self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
-
         self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '端口扫描中')
         self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
         if scan_set['scanner'] == 'nmap':
@@ -179,7 +179,7 @@ class Scan:
         semaphore = asyncio.Semaphore(int(scan_set['concurren_number']))
         tasks = []
         loop = asyncio.get_event_loop()
-
+        
         for ip_port in scan_list:
             for item in self.items:
                 poc_path = os.path.join(self.plugin_path, item)
@@ -200,8 +200,8 @@ class Scan:
                                 pass
                         else:
                             continue
-
-        loop.run_until_complete(asyncio.wait(tasks))
+        if tasks:
+            loop.run_until_complete(asyncio.wait(tasks))
 
         self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描结束')
         self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描结束')                                 

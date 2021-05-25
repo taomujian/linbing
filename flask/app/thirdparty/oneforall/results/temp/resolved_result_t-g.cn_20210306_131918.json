@@ -1,3 +1,0 @@
-{"name":"www.t-g.cn.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":600,"type":"A","class":"IN","name":"www.t-g.cn.","data":"47.75.116.106"}]},"resolver":"182.254.116.116:53"}
-{"name":"mail.t-g.cn.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":600,"type":"A","class":"IN","name":"mail.t-g.cn.","data":"103.147.13.231"}]},"resolver":"182.254.116.116:53"}
-{"name":"download.t-g.cn.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":600,"type":"A","class":"IN","name":"download.t-g.cn.","data":"47.75.116.106"}]},"resolver":"223.6.6.6:53"}

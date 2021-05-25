@@ -2,7 +2,7 @@
 
 from app.lib.utils.request import request
 from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, filter_str,
+from app.lib.utils.common import get_capta, filter_str
 
 class S2_016_BaseVerify:
     def __init__(self, url):

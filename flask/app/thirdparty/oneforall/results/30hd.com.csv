@@ -1,5 +1,0 @@
-id,new,alive,request,resolve,url,subdomain,level,cname,ip,public,cdn,port,status,reason,title,banner,cidr,asn,org,addr,isp,source
-1,1,1,1,1,https://30hd.com,30hd.com,0,achd.cdn-cp.cc,150.107.1.121,1,1,443,200,OK,爱彩彩票爱彩彩票,"nginx,ThinkPHP",150.107.1.0/24,AS132422,RMD Suite C1 6/F Wing Hing Industrial Building,中国香港,未知,SogouSearch
-2,1,1,1,1,http://30hd.com,30hd.com,0,achd.cdn-cp.cc,150.107.1.121,1,1,80,200,OK,爱彩彩票爱彩彩票,"nginx,ThinkPHP",150.107.1.0/24,AS132422,RMD Suite C1 6/F Wing Hing Industrial Building,中国香港,未知,SogouSearch
-3,1,1,1,1,https://www.30hd.com,www.30hd.com,1,achd.cdn-cp.cc,150.107.1.121,1,1,443,200,OK,爱彩彩票爱彩彩票,"nginx,ThinkPHP",150.107.1.0/24,AS132422,RMD Suite C1 6/F Wing Hing Industrial Building,中国香港,未知,CertSpotterQuery
-4,1,1,1,1,http://www.30hd.com,www.30hd.com,1,achd.cdn-cp.cc,150.107.1.121,1,1,80,200,OK,爱彩彩票爱彩彩票,"nginx,ThinkPHP",150.107.1.0/24,AS132422,RMD Suite C1 6/F Wing Hing Industrial Building,中国香港,未知,CertSpotterQuery

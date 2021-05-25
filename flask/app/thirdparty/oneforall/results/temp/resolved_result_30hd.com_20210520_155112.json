@@ -1,2 +1,0 @@
-{"name":"www.30hd.com.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":600,"type":"CNAME","class":"IN","name":"www.30hd.com.","data":"achd.cdn-cp.cc."},{"ttl":600,"type":"A","class":"IN","name":"achd.cdn-cp.cc.","data":"150.107.1.121"}]},"resolver":"223.6.6.6:53"}
-{"name":"30hd.com.","type":"A","class":"IN","status":"NOERROR","data":{"answers":[{"ttl":600,"type":"CNAME","class":"IN","name":"30hd.com.","data":"achd.cdn-cp.cc."},{"ttl":600,"type":"A","class":"IN","name":"achd.cdn-cp.cc.","data":"150.107.1.121"}]},"resolver":"223.5.5.5:53"}

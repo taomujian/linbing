@@ -5,11 +5,7 @@ name: Struts2 S2-048漏洞，又名CVE-2017-9791漏洞
 description: Struts2 S2-048漏洞可执行任意命令
 '''
 
-import os
 import re
-import json
-import time
-import urllib
 from urllib import parse
 from app.lib.utils.common import get_capta
 from app.lib.utils.request import request
