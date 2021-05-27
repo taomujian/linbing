@@ -43,9 +43,9 @@ class Fofa_Scanner:
             }
             req = request.get(url = self.target, headers = headers, verify = False)
             content = req.text
+            headers_str = ''
             try:
                 title = BS(content, 'lxml').title.text.strip()
-                headers_str = ''
                 for key, value in req.headers.items():
                     headers_str = headers_str + key + ': ' + value + ','
                 return headers_str, content, title.strip('\n')

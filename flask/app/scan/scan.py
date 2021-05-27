@@ -164,7 +164,7 @@ class Scan:
                     self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '目录扫描中')
                     self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
                     self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
-
+                    
         self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['target'], kwargs['scan_id'], '端口扫描中')
         self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
         if scan_set['scanner'] == 'nmap':
