@@ -159,10 +159,10 @@
       </div>
     </el-dialog>
     <el-dialog title="选择扫描选项" :visible.sync="optionVisible" width="40%" center>
-      <el-transfer v-model="option" :data="data" :titles="['未选择', '已选择']"></el-transfer>
+      <el-transfer v-model="option" :data="data" :titles="['未选择', '已选择']" />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="optionVisible = false" class="button">取 消</el-button>
-        <el-button type="primary" @click="Scan" class="button">确 定</el-button>
+        <el-button class="button" @click="optionVisible = false">取 消</el-button>
+        <el-button type="primary" class="button" @click="Scan">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -199,17 +199,17 @@ export default {
   },
   data() {
     const generateData = _ => {
-        const data = [];
-        const options = ['指纹探测', '子域名扫描', '端口扫描', '目录扫描', 'POC扫描'];
-        options.forEach((option, index) => {
-          data.push({
-            label: option,
-            key: index + 1,
-            disabled: false
-          });
-        });
-        return data;
-      };
+      const data = []
+      const options = ['指纹探测', '子域名扫描', '端口扫描', '目录扫描', 'POC扫描']
+      options.forEach((option, index) => {
+        data.push({
+          label: option,
+          key: index + 1,
+          disabled: false
+        })
+      })
+      return data
+    }
     return {
       target: '',
       description: '',
@@ -264,8 +264,8 @@ export default {
       rules: {
         target: [{ required: true, message: '请输入目标', trigger: 'change' }],
         description: [{ required: false, message: '请输入目标描述', trigger: 'change' }]
-      },
-      
+      }
+
     }
   },
   created() {
@@ -438,7 +438,7 @@ export default {
           center: true,
           duration: 3 * 1000
         })
-      } else{
+      } else {
         let data = {
           'target': this.target,
           'description': this.description,

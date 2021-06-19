@@ -63,10 +63,11 @@ class Scan:
         oneforall = OneForAll(domain)
         datas = oneforall.run()
         data_set = set()
-        for domain in datas:
-            data_set.add((domain['subdomain'], domain['ip']))
-        for data in data_set:
-            self.mysqldb.save_target_domain(username, target, scan_id, data[0], data[1])
+        if datas:
+            for domain in datas:
+                data_set.add((domain['subdomain'], domain['ip']))
+            for data in data_set:
+                self.mysqldb.save_target_domain(username, target, scan_id, data[0], data[1])
     
     def dir_scan(self, username, target, url, scan_id):
 

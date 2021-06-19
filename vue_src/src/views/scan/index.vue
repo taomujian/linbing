@@ -76,7 +76,7 @@
             暂停扫描
           </el-button>
           <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleResume(row)">
-           恢复扫描
+            恢复扫描
           </el-button>
           <el-button size="mini" type="danger" icon="el-icon-error" @click="handleCancel(row)">
             取消扫描
@@ -138,6 +138,16 @@ export default {
   created() {
     this.getList()
   },
+  mounted() {
+    this.getList()
+    const timer = setInterval(() => {
+      this.getList()
+    }, 15000)
+    // 通过$once来监听定时器，在beforeDestroy钩子可以被清除。
+    this.$once('hook:beforeDestroy', () => {
+      clearInterval(timer)
+    })
+  },
   methods: {
     isurl(value) {
       const ip_reg = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/
@@ -188,10 +198,10 @@ export default {
       pauseScan(params).then(response => {
         if (response.data === '请求正常') {
           this.$notify({
-              message: '暂停扫描成功!',
-              type: 'success',
-              center: true,
-              duration: 3 * 1000
+            message: '暂停扫描成功!',
+            type: 'success',
+            center: true,
+            duration: 3 * 1000
           })
         } else {
           this.$notify({
@@ -214,10 +224,10 @@ export default {
       resumeScan(params).then(response => {
         if (response.data === '请求正常') {
           this.$notify({
-              message: '恢复扫描成功!',
-              type: 'success',
-              center: true,
-              duration: 3 * 1000
+            message: '恢复扫描成功!',
+            type: 'success',
+            center: true,
+            duration: 3 * 1000
           })
         } else {
           this.$notify({
@@ -240,10 +250,10 @@ export default {
       cancelScan(params).then(response => {
         if (response.data === '请求正常') {
           this.$notify({
-              message: '取消扫描成功!',
-              type: 'success',
-              center: true,
-              duration: 3 * 1000
+            message: '取消扫描成功!',
+            type: 'success',
+            center: true,
+            duration: 3 * 1000
           })
         } else {
           this.$notify({
@@ -267,16 +277,6 @@ export default {
       this.page.pageNum = 1
       this.getList()
     }
-  },
-  mounted () {
-    this.getList()
-    const timer = setInterval(() => {
-      this.getList()
-    }, 15000)
-    // 通过$once来监听定时器，在beforeDestroy钩子可以被清除。
-    this.$once('hook:beforeDestroy', () => {
-      clearInterval(timer)
-    })
   }
 }
 </script>
