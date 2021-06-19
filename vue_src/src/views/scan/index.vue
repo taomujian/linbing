@@ -31,7 +31,7 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="目标" sortable align="center">
+      <el-table-column label="目标" sortable align="center" width="200">
         <template slot-scope="{row}">
           <div v-if="isurl(row.target) === true">
             <span class="link-type" @click="handleDetail(row)">{{ row.target }}</span>
@@ -70,13 +70,26 @@
           <span>{{ row.vulner_number }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="操作" align="center" width="340" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button type="primary" size="mini" icon="el-icon-video-play" @click="handlePause(row)">
+            暂停扫描
+          </el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleResume(row)">
+           恢复扫描
+          </el-button>
+          <el-button size="mini" type="danger" icon="el-icon-error" @click="handleCancel(row)">
+            取消扫描
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <pagination v-show="page.total>=0" :total="page.total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
   </div>
 </template>
 
 <script>
-import { scanList } from '@/api/scan'
+import { scanList, pauseScan, resumeScan, cancelScan } from '@/api/scan'
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
 import waves from '@/directive/waves' // waves directive
@@ -164,6 +177,84 @@ export default {
         }, 0.5 * 1000)
       })
     },
+    handlePause(row) {
+      let data = {
+        'scan_id': row.scan_id,
+        'target': row.target,
+        'token': getToken()
+      }
+      data = JSON.stringify(data)
+      const params = { 'data': Encrypt(data) }
+      pauseScan(params).then(response => {
+        if (response.data === '请求正常') {
+          this.$notify({
+              message: '暂停扫描成功!',
+              type: 'success',
+              center: true,
+              duration: 3 * 1000
+          })
+        } else {
+          this.$notify({
+            message: '目标不处于扫描状态,无法暂停扫描!',
+            type: 'error',
+            center: true,
+            duration: 3 * 1000
+          })
+        }
+      })
+    },
+    handleResume(row) {
+      let data = {
+        'scan_id': row.scan_id,
+        'target': row.target,
+        'token': getToken()
+      }
+      data = JSON.stringify(data)
+      const params = { 'data': Encrypt(data) }
+      resumeScan(params).then(response => {
+        if (response.data === '请求正常') {
+          this.$notify({
+              message: '恢复扫描成功!',
+              type: 'success',
+              center: true,
+              duration: 3 * 1000
+          })
+        } else {
+          this.$notify({
+            message: '目标不处于暂停扫描状态,无法恢复扫描!',
+            type: 'error',
+            center: true,
+            duration: 3 * 1000
+          })
+        }
+      })
+    },
+    handleCancel(row) {
+      let data = {
+        'scan_id': row.scan_id,
+        'target': row.target,
+        'token': getToken()
+      }
+      data = JSON.stringify(data)
+      const params = { 'data': Encrypt(data) }
+      cancelScan(params).then(response => {
+        if (response.data === '请求正常') {
+          this.$notify({
+              message: '取消扫描成功!',
+              type: 'success',
+              center: true,
+              duration: 3 * 1000
+          })
+        } else {
+          this.$notify({
+            message: '扫描已结束,无法取消扫描!',
+            type: 'error',
+            center: true,
+            duration: 3 * 1000
+          })
+        }
+      })
+    },
     handleDetail(row) {
       this.$router.push({
         name: 'TargetDetail',
@@ -176,6 +267,16 @@ export default {
       this.page.pageNum = 1
       this.getList()
     }
+  },
+  mounted () {
+    this.getList()
+    const timer = setInterval(() => {
+      this.getList()
+    }, 15000)
+    // 通过$once来监听定时器，在beforeDestroy钩子可以被清除。
+    this.$once('hook:beforeDestroy', () => {
+      clearInterval(timer)
+    })
   }
 }
 </script>

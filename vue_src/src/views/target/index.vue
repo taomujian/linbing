@@ -158,6 +158,13 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog title="选择扫描选项" :visible.sync="optionVisible" width="40%" center>
+      <el-transfer v-model="option" :data="data" :titles="['未选择', '已选择']"></el-transfer>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="optionVisible = false" class="button">取 消</el-button>
+        <el-button type="primary" @click="Scan" class="button">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -179,6 +186,8 @@ export default {
         未开始: 'info',
         扫描结束: 'success',
         扫描中: '',
+        暂停扫描: 'danger',
+        取消扫描: 'danger',
         子域名扫描中: '',
         端口扫描中: '',
         目录扫描中: '',
@@ -189,7 +198,23 @@ export default {
     }
   },
   data() {
+    const generateData = _ => {
+        const data = [];
+        const options = ['指纹探测', '子域名扫描', '端口扫描', '目录扫描', 'POC扫描'];
+        options.forEach((option, index) => {
+          data.push({
+            label: option,
+            key: index + 1,
+            disabled: false
+          });
+        });
+        return data;
+      };
     return {
+      target: '',
+      description: '',
+      data: generateData(),
+      option: [],
       tableKey: 0,
       list: null,
       total: 0,
@@ -206,7 +231,7 @@ export default {
         scan_status: '',
         scan_schedule: ''
       },
-      statusOptions: ['全部', '未开始', '扫描中', '扫描结束', '扫描失败'],
+      statusOptions: ['全部', '未开始', '扫描中', '暂停扫描', '取消扫描', '扫描结束', '扫描失败'],
       scheduleOptions: ['全部', '未开始', '子域名扫描中', '端口扫描中', '目录扫描中', 'POC扫描中', '扫描结束', '扫描失败'],
       targetTemp: {
         target: '',
@@ -229,6 +254,7 @@ export default {
       },
       editFormVisible: false,
       scanFormVisible: false,
+      optionVisible: false,
       dialogStatus: '',
       scanTitle: '目标扫描设置',
       textMap: {
@@ -238,7 +264,8 @@ export default {
       rules: {
         target: [{ required: true, message: '请输入目标', trigger: 'change' }],
         description: [{ required: false, message: '请输入目标描述', trigger: 'change' }]
-      }
+      },
+      
     }
   },
   created() {
@@ -399,22 +426,38 @@ export default {
       })
     },
     handleScan(row) {
-      let data = {
-        'target': row.target,
-        'description': row.description,
-        'token': getToken()
-      }
-      data = JSON.stringify(data)
-      const params = { 'data': Encrypt(data) }
-      startScan(params).then(() => {
+      this.target = row.target,
+      this.description = row.description
+      this.optionVisible = true
+    },
+    Scan() {
+      if (this.option === undefined || this.option == null || this.option.length <= 0) {
         this.$notify({
-          message: '已开始扫描!',
-          type: 'success',
+          message: '扫描选项不可为空!',
+          type: 'error',
           center: true,
           duration: 3 * 1000
         })
-        this.getList()
-      })
+      } else{
+        let data = {
+          'target': this.target,
+          'description': this.description,
+          'scan_option': this.option.join(';'),
+          'token': getToken()
+        }
+        data = JSON.stringify(data)
+        const params = { 'data': Encrypt(data) }
+        startScan(params).then(() => {
+          this.$notify({
+            message: '已开始扫描!',
+            type: 'success',
+            center: true,
+            duration: 3 * 1000
+          })
+          this.getList()
+        })
+      }
+      this.optionVisible = false
     },
     handleDetail(row) {
       this.$router.push({

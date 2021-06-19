@@ -9,6 +9,7 @@ import base64
 import hashlib
 
 def md5(data):
+    
     """
     对字符串进行md5哈希
 
@@ -19,6 +20,7 @@ def md5(data):
     return result
 
 def urlencode(data, encode_type = 'part'):
+    
     """
     根据类型选择对部分或者全部字符进行url编码
 
@@ -34,6 +36,7 @@ def urlencode(data, encode_type = 'part'):
         return urllib.parse.quote(data)
 
 def base64encode(data):
+    
     """
     对字符进行base64编码
 

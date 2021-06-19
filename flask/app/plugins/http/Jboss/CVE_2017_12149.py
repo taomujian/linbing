@@ -6,10 +6,8 @@ description: CVE-2017-12149漏洞可执行任意命令
 '''
 
 import re
-import sys
 import binascii
 from app.lib.utils.request import request
-
 
 class CVE_2017_12149_BaseVerify:
     def __init__(self, url):

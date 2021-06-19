@@ -5,12 +5,14 @@ import nmap
 import masscan
 import chardet
 from app.lib.utils.request import request
+from app.lib.utils.finger import WhatCms, Fofa_Scanner
 
 class Port_Scan():
     def __init__(self, mysqldb):
         self.mysqldb = mysqldb
 
     def get_title(self, url):
+
         """
         获取网站的title与banner
 
@@ -38,6 +40,7 @@ class Port_Scan():
             pass
 
     def nmap_scan(self, username, target, target_ip, scan_id, min_port, max_port):
+
         """
         用nmap进行扫描
 
@@ -63,20 +66,40 @@ class Port_Scan():
                         protocol = nm[host][nmap_proto][int(nmap_port)]['name']
                         product = nm[host][nmap_proto][int(nmap_port)]['product']
                         version = nm[host][nmap_proto][int(nmap_port)]['version']
+                        print(lport, protocol, product, version)
                         if 'tcpwrapped' not in protocol:
                             if 'http' in protocol or protocol == 'sun-answerbook':
                                 if protocol == 'https' or protocol == 'https-alt':
                                     scan_url_port = 'https://' + str(host) + ':' + str(nmap_port)
                                 else:
                                     scan_url_port = 'http://' + str(host) + ':' + str(nmap_port)
-                                result = self.get_title(scan_url_port)
-                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
-                                self.mysqldb.save_port(username, target, str(host) + ':' + str(nmap_port), target_ip, str(nmap_port), protocol, product, version, result[0], result[1])
-                                continue
+                                
+                                finger_data = self.mysqldb.all_finger(username, '0')
+                                cms = Fofa_Scanner(target, finger_data['fofa_cms'])
+                                fofa_finger = cms.run()
+                                cms_name = ''
+                                cms_name_flag = 0
+                                for fofa_finger_tmp in fofa_finger:
+                                    if fofa_finger_tmp.lower() in cms.cms_finger_list:
+                                        cms_name = fofa_finger_tmp
+                                        cms_name_flag = 1
+                                
+                                if not cms_name_flag:
+                                    whatcms = WhatCms(target, finger_data['cms'])
+                                    result = whatcms.run()
+                                    cms_name = ''
+                                    if result:
+                                        cms_name = result['cms_name']
 
-                            self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), protocol, product, version, '', '')
-                            self.mysqldb.save_port(username, target, str(host) + ':' + str(nmap_port), target_ip, str(nmap_port), protocol, product, version, '', '')
-                            scan_list.append(str(host) + ':' + str(nmap_port))
+                                result = self.get_title(scan_url_port)
+                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), cms_name, protocol, product, version, result[0], result[1])
+                                self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(nmap_port), cms_name, protocol, product, version, result[0], result[1])
+                            else:
+                                scan_url_port = str(host) + ':' + str(nmap_port)
+                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), '', protocol, product, version, '', '')
+                                self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(nmap_port), '', protocol, product, version, '', '')
+                            
+                            scan_list.append(scan_url_port)
         except Exception as e:
             print(e)
             pass
@@ -85,6 +108,7 @@ class Port_Scan():
         return scan_list
 
     def masscan_scan(self, username, target, target_ip, scan_id, min_port, max_port, rate):
+        
         """
         用masscan进行扫描
 
@@ -120,14 +144,33 @@ class Port_Scan():
                                         scan_url_port = 'https://' + str(host) + ':' + str(masscan_port)
                                     else:
                                         scan_url_port = 'http://' + str(host) + ':' + str(masscan_port)
-                                    result = self.get_title(scan_url_port)
-                                    self.mysqldb.save_target_port(username, target, scan_id,  target_ip, str(masscan_port), protocol, product, version, result[0], result[1])
-                                    self.mysqldb.save_port(username, target, str(host) + ':' + str(masscan_port), target_ip, str(masscan_port), protocol, product, version, result[0], result[1])
-                                    continue
+                                    
+                                    finger_data = self.mysqldb.all_finger(username, '0')
+                                    cms = Fofa_Scanner(target, finger_data['fofa_cms'])
+                                    fofa_finger = cms.run()
+                                    cms_name = ''
+                                    cms_name_flag = 0
+                                    for fofa_finger_tmp in fofa_finger:
+                                        if fofa_finger_tmp.lower() in cms.cms_finger_list:
+                                            cms_name = fofa_finger_tmp
+                                            cms_name_flag = 1
+                                    
+                                    if not cms_name_flag:
+                                        whatcms = WhatCms(target, finger_data['cms'])
+                                        result = whatcms.run()
+                                        cms_name = ''
+                                        if result:
+                                            cms_name = result['cms_name']
 
-                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(masscan_port), protocol, product, version, '', '')
-                                self.mysqldb.save_port(username, target, str(host) + ':' + str(masscan_port), target_ip, str(masscan_port), protocol, product, version, '', '')
-                                scan_list.append(str(host) + ':' + str(masscan_port))
+                                    result = self.get_title(scan_url_port)
+                                    self.mysqldb.save_target_port(username, target, scan_id,  target_ip, str(masscan_port), cms_name, protocol, product, version, result[0], result[1])
+                                    self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(masscan_port), cms_name, protocol, product, version, result[0], result[1])
+                                else:
+                                    scan_url_port = str(host) + ':' + str(masscan_port)
+                                    self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(masscan_port), '', protocol, product, version, '', '')
+                                    self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(masscan_port), '', protocol, product, version, '', '')
+                                    scan_list.append(scan_url_port)
+
             print('Masscan scanned.....\n')
         except Exception as e:
             print(e)

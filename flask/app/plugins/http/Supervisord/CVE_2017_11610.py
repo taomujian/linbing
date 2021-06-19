@@ -5,7 +5,6 @@ name: CVE-2017-11610 任意代码执行漏洞
 description: CVE-2017-11610 任意代码执行漏洞
 '''
 
-import json
 import xmlrpc.client
 from app.lib.utils.common import get_capta
 

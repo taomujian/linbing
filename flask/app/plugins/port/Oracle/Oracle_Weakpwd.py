@@ -15,7 +15,7 @@ class Oracle_Weakpwd_BaseVerify:
         self.host = url_parse.hostname
         self.port = url_parse.port
         if not self.port:
-            self.port = '5432'
+            self.port = '1521'
 
     def run(self):
         for pwd in open('app/password.txt', 'r', encoding = 'utf-8').readlines():

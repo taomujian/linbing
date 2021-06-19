@@ -8,6 +8,7 @@ import base64
 import configparser
 from rq import Queue
 from redis import Redis
+from rq.command import send_stop_job_command
 from app.lib.utils.encode import md5
 from app.lib.utils.mysql import Mysql_db
 from app.lib.utils.queue import queue_scan
@@ -60,6 +61,7 @@ os.popen('nohup python3 worker.py > log.log 2>&1 &')
 
 @app.route('/api/query/account', methods = ['POST'])
 def query_account():
+    
     """
     查询的接口,用来查询用户否已存在
 
@@ -110,6 +112,7 @@ def query_account():
 
 @app.route('/api/query/target', methods = ['POST'])
 def query_target():
+    
     """
     用来查询目标是否已存在
 
@@ -160,6 +163,7 @@ def query_target():
 
 @app.route('/api/query/password', methods = ['POST'])
 def query_password():
+    
     """
     查询的接口,用来查询用或者目标是否已存在
 
@@ -210,6 +214,7 @@ def query_password():
 
 @app.route('/api/login', methods = ['POST'])
 def login():
+    
     """
     登陆的接口
 
@@ -254,6 +259,7 @@ def login():
 
 @app.route('/api/userinfo', methods = ['POST'])
 def userinfo():
+    
     """
     获取用户信息的接口
 
@@ -297,6 +303,7 @@ def userinfo():
 
 @app.route('/api/logout', methods = ['POST'])
 def logout():
+    
     """
     退出登陆的接口
 
@@ -323,6 +330,7 @@ def logout():
 
 @app.route('/api/change/password', methods = ['POST'])
 def changp_assword():
+    
     """
     修改用户密码的接口
 
@@ -380,6 +388,7 @@ def changp_assword():
 
 @app.route('/api/home/card', methods = ['POST'])
 def home_card():
+    
     """
     获取首页卡片上数据的接口
 
@@ -428,6 +437,7 @@ def home_card():
 
 @app.route('/api/home/7day', methods = ['POST'])
 def home_7day():
+    
     """
     获取首页卡片上曲线图上数据的接口
 
@@ -476,6 +486,7 @@ def home_7day():
 
 @app.route('/api/target/new', methods = ['POST'])
 def target_new():
+    
     """
     保存目标的接口
 
@@ -534,6 +545,7 @@ def target_new():
 
 @app.route('/api/target/edit', methods = ['POST'])
 def target_edit():
+    
     """
     修改目标描述的接口
 
@@ -584,6 +596,7 @@ def target_edit():
 
 @app.route('/api/target/detail', methods = ['POST'])
 def target_detail():
+    
     """
     获取目标详情的接口
 
@@ -635,6 +648,7 @@ def target_detail():
 
 @app.route('/api/scan/set', methods = ['POST'])
 def scan_set():
+    
     """
     设置扫描选项的接口
 
@@ -685,12 +699,14 @@ def scan_set():
 
 @app.route('/api/scan/start', methods = ['POST'])
 def start_scan():
+
     """
     开始扫描的接口
 
     :param:
     :return: str response_data: 需要返回的数据
     """
+
     response_data = {'code': '', 'message': '', 'data': ''}
     try:
         if request.method == 'POST':
@@ -698,6 +714,7 @@ def start_scan():
             request_data = rsa_crypto.decrypt(request_data['data'])
             request_data = json.loads(request_data)
             target = request_data['target']
+            scan_option = request_data['scan_option']
             token = request_data['token']
             query_str = {
                 'type': 'token',
@@ -723,27 +740,18 @@ def start_scan():
                 for item in target_list:
                     target = item['target']
                     description = item['description']
-                    parse_result = parse_target(target)
-                    scan_ip = parse_result[0]
-                    main_domain = parse_result[1]
-                    domain = parse_result[2]
                     scan_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    
-                    if not scan_ip:
-                        # mysqldb.update_target_live_status(username_result['username'], target, '失活')
-                        mysqldb.save_target_scan(username_result['username'], target, description, scan_ip, scan_id, scan_time, '扫描失败', '扫描失败')
-                        mysqldb.update_target_scan_status(username_result['username'], target, '扫描失败')                                
-                        mysqldb.update_target_scan_schedule(username_result['username'], target, '扫描失败')                               
-                        mysqldb.update_scan_status(username_result['username'], target, scan_id, '扫描失败')                               
-                        mysqldb.update_scan_schedule(username_result['username'], target, scan_id, '扫描失败')                            
-
+                    mysqldb.update_target_scan_status(username_result['username'], target, '扫描中')
+                    mysqldb.update_target_scan_schedule(username_result['username'], target, '正在排队')
+                    result = mysqldb.get_target_status(username_result['username'], target)
+                    if result != '扫描中':
+                        check = False               
+                        high_queue.enqueue_call(queue_scan, job_id = scan_id, args = (username_result['username'], target, description, scan_id, scan_time, scan_option, mysqldb, check,), timeout = 7200000)
                     else:
-                        mysqldb.save_target_scan(username_result['username'], target, description, scan_ip, scan_id, scan_time, '扫描中', '正在排队')
-                        mysqldb.update_target_scan_status(username_result['username'], target, '扫描中')
-                        mysqldb.update_target_scan_schedule(username_result['username'], target, '正在排队')                             
-                        high_queue.enqueue_call(queue_scan, args = (username_result['username'], target, scan_id, scan_ip, main_domain, domain, mysqldb,), timeout = 7200000)
-                        scan_id = str(int(scan_id) + 1)
-
+                        check = True
+                        high_queue.enqueue_call(queue_scan, job_id = scan_id, args = (username_result['username'], target, description, scan_id, scan_time, scan_option, mysqldb, check,), timeout = 7200000)
+                    scan_id = str(int(scan_id) + 1)
+                
                 response_data['code'] = 'L1000'
                 response_data['message'] = '请求成功'
                 return json.dumps(response_data)
@@ -757,8 +765,193 @@ def start_scan():
         response_data['message'] = '系统异常'
         return json.dumps(response_data)
 
+@app.route('/api/scan/pause', methods = ['POST'])
+def pause_scan():
+
+    """
+    暂停扫描的接口
+
+    :param:
+    :return str response_data: 需要返回的数据
+    """
+
+    response_data = {'code': '', 'message': '', 'data': ''}
+    try:
+        if request.method == 'POST':
+            request_data = request.form.to_dict()
+            request_data = rsa_crypto.decrypt(request_data['data'])
+            request_data = json.loads(request_data)
+            target = request_data['target']
+            scan_id = request_data['scan_id']
+            token = request_data['token']
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            username_result = mysqldb.username(query_str)
+            if username_result == 'L1001':
+                response_data['code'] = 'L1001'
+                response_data['message'] = '系统异常'
+                return json.dumps(response_data)
+            elif username_result == None:
+                response_data['code'] = 'L1003'
+                response_data['message'] = '认证失败'
+                return json.dumps(response_data)
+            else:
+                scan_status = mysqldb.get_scan_status(username_result['username'], scan_id)
+                if scan_status == '扫描中':
+                    send_stop_job_command(redis_conn, scan_id)
+                    mysqldb.update_scan_status(username_result['username'], scan_id, '暂停扫描')
+                    mysqldb.update_target_scan_status(username_result['username'], target, '暂停扫描')
+                    response_data['data'] = '请求正常'
+                    response_data['code'] = 'L1000'
+                    response_data['message'] = '请求正常'
+                else:
+                    response_data['data'] = '目标不在扫描中,无法暂停扫描'
+                    response_data['code'] = 'L1000'
+                    response_data['message'] = '请求正常'
+
+                return json.dumps(response_data)
+        else:
+            response_data['code'] = 'L1002'
+            response_data['message'] = '请求方法异常'
+            return json.dumps(response_data)
+    except Exception as e:
+        print(e)
+        response_data['code'] = 'L1001'
+        response_data['message'] = '系统异常'
+        return json.dumps(response_data)
+
+@app.route('/api/scan/resume', methods = ['POST'])
+def resume_scan():
+
+    """
+    恢复扫描的接口
+
+    :param:
+    :return str response_data: 需要返回的数据
+    """
+
+    response_data = {'code': '', 'message': '', 'data': ''}
+    try:
+        if request.method == 'POST':
+            request_data = request.form.to_dict()
+            request_data = rsa_crypto.decrypt(request_data['data'])
+            request_data = json.loads(request_data)
+            target = request_data['target']
+            scan_id = request_data['scan_id']
+            token = request_data['token']
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            username_result = mysqldb.username(query_str)
+            if username_result == 'L1001':
+                response_data['code'] = 'L1001'
+                response_data['message'] = '系统异常'
+                return json.dumps(response_data)
+            elif username_result == None:
+                response_data['code'] = 'L1003'
+                response_data['message'] = '认证失败'
+                return json.dumps(response_data)
+            else:
+                scan_status = mysqldb.get_scan_status(username_result['username'], scan_id)
+                if scan_status == '暂停扫描':
+                    registry = high_queue.failed_job_registry
+                    registry.requeue(scan_id)
+                    mysqldb.update_scan_status(username_result['username'], scan_id, '正在扫描')
+                    mysqldb.update_target_scan_status(username_result['username'], target, '正在扫描')
+                    response_data['data'] = '请求正常'
+                    response_data['code'] = 'L1000'
+                    response_data['message'] = '请求正常'
+                else:
+                    response_data['data'] = '目标不处于暂停扫描状态,无法恢复扫描'
+                    response_data['code'] = 'L1000'
+                    response_data['message'] = '请求正常'
+                return json.dumps(response_data)
+        else:
+            response_data['code'] = 'L1002'
+            response_data['message'] = '请求方法异常'
+            return json.dumps(response_data)
+    except Exception as e:
+        print(e)
+        response_data['code'] = 'L1001'
+        response_data['message'] = '系统异常'
+        return json.dumps(response_data)
+
+@app.route('/api/scan/cancel', methods = ['POST'])
+def cancel_scan():
+
+    """
+    取消扫描的接口
+
+    :param:
+    :return str response_data: 需要返回的数据
+    """
+
+    response_data = {'code': '', 'message': '', 'data': ''}
+    try:
+        if request.method == 'POST':
+            request_data = request.form.to_dict()
+            request_data = rsa_crypto.decrypt(request_data['data'])
+            request_data = json.loads(request_data)
+            target = request_data['target']
+            scan_id = request_data['scan_id']
+            token = request_data['token']
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            username_result = mysqldb.username(query_str)
+            if username_result == 'L1001':
+                response_data['code'] = 'L1001'
+                response_data['message'] = '系统异常'
+                return json.dumps(response_data)
+            elif username_result == None:
+                response_data['code'] = 'L1003'
+                response_data['message'] = '认证失败'
+                return json.dumps(response_data)
+            else:
+                scan_status = mysqldb.get_scan_status(username_result['username'], scan_id)
+                if scan_status == '扫描结束':
+                    response_data['data'] = '扫描已结束,无法取消'
+                    response_data['code'] = 'L1000'
+                    response_data['message'] = '扫描已结束,无法取消'
+                elif scan_status == '已取消扫描':
+                    response_data['data'] = '已取消扫描,无法再次取消'
+                    response_data['code'] = 'L1000'
+                    response_data['message'] = '已取消扫描,无法再次取消'
+                else:
+                    send_stop_job_command(redis_conn, scan_id)
+                    time.sleep(0.5)
+                    registry = high_queue.failed_job_registry
+                    try:
+                        registry.remove(scan_id, delete_job = True)
+                        mysqldb.update_scan_status(username_result['username'], scan_id, '已取消扫描')
+                        mysqldb.update_target_scan_status(username_result['username'], target, '已取消扫描')
+                        response_data['data'] = '请求正常'
+                        response_data['code'] = 'L1000'
+                        response_data['message'] = '请求正常'
+                    except Exception as e:
+                        print(e)
+                        response_data['data'] = '系统异常'
+                        response_data['code'] = 'L10001'
+                        response_data['message'] = '系统异常'
+                    
+                return json.dumps(response_data)
+        else:
+            response_data['code'] = 'L1002'
+            response_data['message'] = '请求方法异常'
+            return json.dumps(response_data)
+    except Exception as e:
+        print(e)
+        response_data['code'] = 'L1001'
+        response_data['message'] = '系统异常'
+        return json.dumps(response_data)
+
 @app.route('/api/target/list', methods = ['POST'])
 def target_list():
+    
     """
     获取所有目标的接口
 
@@ -821,6 +1014,7 @@ def target_list():
 
 @app.route('/api/scan/list', methods = ['POST'])
 def scan_list():
+    
     """
     获取所有扫描信息的接口
 
@@ -884,6 +1078,7 @@ def scan_list():
 
 @app.route('/api/port/list', methods = ['POST'])
 def port_list():
+    
     """
     获取所有端口信息的接口
 
@@ -942,6 +1137,7 @@ def port_list():
 
 @app.route('/api/vulner/list', methods = ['POST'])
 def vuln_list():
+    
     """
     获取所有漏洞信息的接口
 
@@ -1000,6 +1196,7 @@ def vuln_list():
 
 @app.route('/api/account/add', methods = ['POST'])
 def account_add():
+    
     """
     添加用户的接口
 
@@ -1057,6 +1254,7 @@ def account_add():
 
 @app.route('/api/account/role', methods = ['POST'])
 def account_role():
+    
     """
     修改用户权限的接口
 
@@ -1110,6 +1308,7 @@ def account_role():
 
 @app.route('/api/account/password', methods = ['POST'])
 def account_password():
+    
     """
     修改用户密码的接口
 
@@ -1166,6 +1365,7 @@ def account_password():
 
 @app.route('/api/account/description', methods = ['POST'])
 def account_description():
+    
     """
     修改用户密码的接口
 
@@ -1217,6 +1417,7 @@ def account_description():
 
 @app.route('/api/delete/account', methods = ['POST'])
 def delete_account():
+    
     """
     删除用户的接口
 
@@ -1268,6 +1469,7 @@ def delete_account():
 
 @app.route('/api/account/list', methods = ['POST'])
 def account_list():
+    
     """
     获取所有用户信息的接口
 
@@ -1327,6 +1529,7 @@ def account_list():
 
 @app.route('/api/set/target', methods = ['POST'])
 def set_target():
+    
     """
     设置目标标识位的接口
 
@@ -1376,6 +1579,7 @@ def set_target():
 
 @app.route('/api/set/port', methods = ['POST'])
 def set_port():
+    
     """
     设置端口标识位的接口
 
@@ -1427,6 +1631,7 @@ def set_port():
 
 @app.route('/api/set/vulner', methods = ['POST'])
 def set_vulner():
+    
     """
     设置漏洞标识位的接口
 
@@ -1478,6 +1683,7 @@ def set_vulner():
 
 @app.route('/api/delete/target', methods = ['POST'])
 def delete_target():
+    
     """
     删除目标的接口
 
@@ -1526,6 +1732,7 @@ def delete_target():
 
 @app.route('/api/delete/port', methods = ['POST'])
 def delete_port():
+    
     """
     删除端口的接口
 
@@ -1576,6 +1783,7 @@ def delete_port():
 
 @app.route('/api/delete/vulner', methods = ['POST'])
 def delete_vulner():
+    
     """
     删除漏洞的接口
 
@@ -1626,6 +1834,7 @@ def delete_vulner():
 
 @app.route('/api/system/list', methods = ['POST'])
 def system_list():
+    
     """
     查看系统设置信息的接口
 
@@ -1676,6 +1885,7 @@ def system_list():
 
 @app.route('/api/system/set', methods = ['POST'])
 def system_set():
+    
     """
     进行系统设置的接口
 
@@ -1731,6 +1941,7 @@ def system_set():
 
 @app.route('/api/upload/image', methods = ['POST'])
 def upload_image():
+    
     """
     上传文件的接口
 
@@ -1779,6 +1990,7 @@ def upload_image():
 
 @app.route('/api/images/<filename>', methods = ['GET', 'POST'])
 def get_image(filename):
+    
     """
     获取用户头像内容的接口
 
@@ -1789,6 +2001,7 @@ def get_image(filename):
 
 @app.route('/api/change/avatar', methods = ['POST'])
 def change_avatar():
+    
     """
     修改用户头像的接口
 

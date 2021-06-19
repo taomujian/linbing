@@ -7,7 +7,7 @@ description: CVE-2020-1938文件包含漏洞,可查看任意文件内容
 
 import socket
 from urllib.parse import urlparse
-from app.plugins.Tomcat.ajpy import AjpBodyRequest, AjpForwardRequest, AjpResponse, NotFoundException
+from app.plugins.http.Tomcat.ajpy import AjpBodyRequest, AjpForwardRequest, AjpResponse, NotFoundException
 
 class CVE_2020_1938_BaseVerify(object):
     def __init__(self, url):

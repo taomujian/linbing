@@ -8,6 +8,7 @@
       <el-input v-model="listQuery.target" placeholder="目标关键字" class="header" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.scan_ip" placeholder="IP关键字" class="header" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.port" placeholder="端口关键字" class="header" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.finger" placeholder="Web框架关键字" class="header" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.product" placeholder="端口产品关键字" class="header" @keyup.enter.native="handleFilter" />
       <el-input v-model="listQuery.title" placeholder="标题关键字" class="header" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="button" type="primary" icon="el-icon-search" @click="handleFilter">
@@ -49,6 +50,11 @@
           <span class="link-type">
             <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
           </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="Web框架" sortable align="center" width="110">
+        <template slot-scope="{row}">
+          <span>{{ row.finger }}</span>
         </template>
       </el-table-column>
       <el-table-column label="协议" sortable align="center">
@@ -120,6 +126,7 @@ export default {
         target: '',
         scan_ip: '',
         port: '',
+        finger: '',
         product: '',
         title: ''
       }

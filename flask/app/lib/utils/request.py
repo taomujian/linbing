@@ -18,12 +18,13 @@ else:
     ssl._create_default_https_context = _create_unverified_https_context
 
 def get_conf():
-    '''
+
+    """"
     从配置文件中读取代理地址和超时时间
 
     :param:
     :return tuple result: 代理地址和超时时间
-    '''
+    """
     
     config = configparser.ConfigParser()
     config.read('conf.ini')
@@ -42,9 +43,10 @@ def get_conf():
     return proxies, timeout
     
 class request:
-    '''
+
+    """
     封装requests函数
-    '''
+    """
 
     def __init__(self):
         pass

@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 from app.lib.utils.request import request
 
 def get_useragent():
+    
     """
     随机生成一个请求头
 
@@ -20,6 +21,7 @@ def get_useragent():
 
     :return dict headers: 生成的请求头
     """
+    
     user_agent = [
         'Mozilla/5.0 (Windows; U; Win98; en-US; rv:1.8.1) Gecko/20061010 Firefox/2.0',
         'Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.6 Safari/532.0',
@@ -36,6 +38,15 @@ def get_useragent():
     return user_agent
 
 def get_capta():
+
+    """
+    随机生成一个字符串
+
+    :param:
+
+    :return str capta: 随机字符串
+    """
+
     capta = ''
     words = ''.join((string.ascii_letters,string.digits))
     for i in range(8):
@@ -43,6 +54,7 @@ def get_capta():
     return capta
 
 def get_live(url, num):
+    
     """
     确认目标是否存活,尝试访问一定次数后确认目标是否存活
 
@@ -75,6 +87,7 @@ def get_live(url, num):
     return None
 
 def parse_target(target):
+    
     """
     解析目标为ip格式
 
@@ -135,6 +148,7 @@ def filter_str(check_str):
     return temp
 
 def parser_cmd(cmd, type = 'string'):
+    
     """
     命令解析,将要执行的命令解析为字符串格式,如echo 123 解析为"echo", "123"
 
@@ -152,6 +166,7 @@ def parser_cmd(cmd, type = 'string'):
     return cmd_str
 
 def parser_url(url):
+    
     """
     解析出url的域名、端口信息
 
@@ -163,11 +178,13 @@ def parser_url(url):
     return parser_url
 
 def check(parameter):
+    
     """
     等待指定时间后杀掉指定的进程
 
     :param str parameter: 要查找的进程名字关键字
     :return:
+    
     """
     
     try:

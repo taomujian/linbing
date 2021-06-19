@@ -16,6 +16,30 @@ export function startScan(data) {
   })
 }
 
+export function pauseScan(data) {
+  return request({
+    url: '/api/scan/pause',
+    method: 'post',
+    data
+  })
+}
+
+export function resumeScan(data) {
+  return request({
+    url: '/api/scan/resume',
+    method: 'post',
+    data
+  })
+}
+
+export function cancelScan(data) {
+  return request({
+    url: '/api/scan/cancel',
+    method: 'post',
+    data
+  })
+}
+
 export function scanList(data) {
   return request({
     url: '/api/scan/list',

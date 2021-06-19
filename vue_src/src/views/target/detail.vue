@@ -61,7 +61,82 @@
         </el-table>
         <pagination v-show="domain_total>=0" :total="domain_total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
       </el-tab-pane>
-      <el-tab-pane name="path" :disabled="path_flag">
+      <el-tab-pane label="端口" name="port">
+        <span slot="label">
+          端口
+          <el-badge v-show="path_total>0" :value="port_total" class="badge-a" />
+        </span>
+        <el-table :data="portlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
+          <el-table-column
+            v-loading="loading"
+            align="center"
+            label="扫描ID"
+            sortable
+            width="100"
+            element-loading-text="请给我点时间！"
+          >
+            <template slot-scope="{row}">
+              <span>{{ row.scan_id }}</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column align="center" sortable label="扫描时间" width="110">
+            <template slot-scope="{row}">
+              <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="IP" sortable align="center" width="120">
+            <template slot-scope="{row}">
+              <span>{{ row.scan_ip }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="PORT" sortable align="center" width="100">
+            <template slot-scope="{row}">
+              <span class="link-type">
+                <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column label="Web框架" sortable align="center" width="110">
+            <template slot-scope="{row}">
+              <span>{{ row.finger }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="协议" sortable align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.protocol }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="产品" sortable align="center" width="120">
+            <template slot-scope="{row}">
+              <span>{{ row.product }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="版本" sortable align="center" width="80">
+            <template slot-scope="{row}">
+              <span>{{ row.version }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="标题" sortable align="center" width="100">
+            <template slot-scope="{row}">
+              <span>{{ row.title }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="横幅" sortable align="center" width="140">
+            <template slot-scope="{row}">
+              <span>{{ row.banner }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="扫描时间" sortable width="120px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+        <pagination v-show="path_total>=0" :total="path_total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
+      </el-tab-pane>
+      <el-tab-pane label="目录" name="path" :disabled="path_flag">
         <span slot="label">
           目录
           <el-badge v-show="path_total>0" :value="path_total" class="badge-a" />
@@ -119,6 +194,7 @@ export default {
     return {
       activeName: 'domain',
       domainlist: null,
+      portlist: null,
       pathlist: null,
       spanArr: [],
       pos: 0,
@@ -130,6 +206,7 @@ export default {
         'finger': ''
       },
       domain_total: 10,
+      port_total: 10,
       path_total: 10,
       page: {
         pageNum: 1,
@@ -175,10 +252,12 @@ export default {
         this.targetdata.scan_schedule = response.data.target.result[0].scan_schedule
         this.targetdata.vulner_number = response.data.target.result[0].vulner_number
         this.targetdata.finger = response.data.target.result[0].finger
+        this.portlist = response.data.port.result
         this.domainlist = response.data.domain.result
         this.pathlist = response.data.path.result
         this.getSpanArr()
         this.domain_total = response.data.domain.total
+        this.port_total = response.data.port.total
         this.path_total = response.data.path.total
         this.loading = false
       })
@@ -203,6 +282,26 @@ export default {
         }
         // 这里跳过已经重复的数据
         i = i + this.domainlist[i].rowspan - 1
+      }
+      this.portlist.forEach(v => {
+        v.rowspan = 1
+      })
+      // 双层循环
+      for (let i = 0; i < this.portlist.length; i++) {
+        // 内层循环，上面已经给所有的行都加了v.rowspan = 1
+        // 这里进行判断
+        // 如果当前行的id和下一行的id相等
+        // 就把当前v.rowspan + 1
+        // 下一行的v.rowspan - 1
+        for (let j = i + 1; j < this.portlist.length; j++) {
+          // 此处可根据相同字段进行合并，此处是根据的id
+          if (this.portlist[i].id === this.portlist[j].id) {
+            this.portlist[i].rowspan++
+            this.portlist[j].rowspan--
+          }
+        }
+        // 这里跳过已经重复的数据
+        i = i + this.portlist[i].rowspan - 1
       }
       this.pathlist.forEach(v => {
         v.rowspan = 1

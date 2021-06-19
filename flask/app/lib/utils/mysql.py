@@ -9,6 +9,7 @@ class Mysql_db:
         self.host, self.port, self.user, self.passwd, self.charset = host, int(port), user, passwd, charset
 
     def get_conn(self):
+        
         """
         获取一个mysql连接
 
@@ -24,12 +25,14 @@ class Mysql_db:
             pass
 
     def create_database(self, database):
+        
         """
         创建数据库
 
         :param str database: 要创建的数据库名
 
         :return:
+        
         """
     
         sql = "create database if not exists %s character set utf8 collate utf8_general_ci" %(database)
@@ -51,6 +54,7 @@ class Mysql_db:
         :param:
 
         :return:
+        
         """
         
         sql = "create table if not exists cms_finger (id integer auto_increment primary key, username varchar(255), cms_type varchar(255), path varchar(255), match_pattern varchar(255), options varchar(255), finger_type varchar(255), trash_flag varchar(255), time datetime) engine = innodb default charset = utf8;"
@@ -72,6 +76,7 @@ class Mysql_db:
         :param:
 
         :return:
+        
         """
         
         sql = "create table if not exists fofa_cms_finger (id integer auto_increment primary key, username varchar(255), fofa_cms_type varchar(255), key_str varchar(255), finger_type varchar(255), trash_flag varchar(255), time datetime) engine = innodb default charset = utf8;"
@@ -97,7 +102,7 @@ class Mysql_db:
         :param: str options: 匹配模式
         :param: str finger_type: 指纹类型
         
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -125,7 +130,7 @@ class Mysql_db:
         :param: str key: fofa指纹规则
         :param: str finger_type: 指纹类型
         
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -150,7 +155,7 @@ class Mysql_db:
 
         :param: filename:cdn json文件路径
         
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         cms_sql =  "select count(0) from cms_finger"
@@ -201,7 +206,7 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str flag: 筛选指纹的标识位
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
         
         cms_sql = "select id, cms_type, path, match_pattern, options, finger_type from cms_finger where (username = %s or username = 'common') and trash_flag = %s"
@@ -228,12 +233,14 @@ class Mysql_db:
             self.close_conn
 
     def create_user(self):
+        
         """
         创建用户表
 
         :param:
 
         :return:
+        
         """
 
         sql = "create table if not exists user (id integer auto_increment primary key, username varchar(128) unique, description varchar(128), token varchar(128) unique, password varchar(128), role varchar(128), avatar varchar(128), create_time varchar(255)) engine = innodb default charset = utf8;"
@@ -248,15 +255,17 @@ class Mysql_db:
             self.close_conn
     
     def create_port(self):
+        
         """
         创建保存端口信息的表,这个表格只保存最新扫描的端口,而不是保存所有的端口
 
         :param:
 
         :return:
+        
         """
 
-        sql = "create table if not exists port (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port varchar(255) unique key, scan_time varchar(255), scan_ip varchar(255), port varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists port (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port varchar(255) unique key, scan_time varchar(255), scan_ip varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -268,12 +277,14 @@ class Mysql_db:
             self.close_conn
     
     def create_vulner(self):
+        
         """
         创建保存漏洞信息的表,这个表格只保存最新扫描出的而不是,而不是保存所有的漏洞
 
         :param:
 
         :return:
+        
         """
 
         sql = "create table if not exists vulner (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port_vulner varchar(255) unique key, ip_port varchar(255), vulner_name varchar(255), vulner_descrip varchar(255), scan_time varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
@@ -288,12 +299,14 @@ class Mysql_db:
             self.close_conn
 
     def create_target(self):
+        
         """
         创建目标表
 
         :param:
 
         :return:
+        
         """
         sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
         conn = self.get_conn()
@@ -307,15 +320,17 @@ class Mysql_db:
             self.close_conn
     
     def create_target_scan(self):
+        
         """
         创建目标扫描任务的表
 
         :param:
         
         :return:
+        
         """
 
-        sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255) default '', target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(255) default '', target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '', scan_schedule varchar(255) default '', scan_option varchar(255) default '', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -327,15 +342,17 @@ class Mysql_db:
             self.close_conn
 
     def create_target_port(self):
+        
         """
         创建保存目标、端口等信息的表
 
         :param:
 
         :return:
+        
         """
 
-        sql = "create table if not exists target_port (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_ip varchar(255), scan_time varchar(255), port varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_port (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_ip varchar(255), scan_time varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -347,12 +364,14 @@ class Mysql_db:
             self.close_conn
 
     def create_target_domain(self):
+        
         """
         创建保存目标、域名等信息的表
 
         :param:
 
         :return:
+        
         """
 
         sql = "create table if not exists target_domain (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_time varchar(255), domain varchar(255), domain_ip varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
@@ -367,12 +386,14 @@ class Mysql_db:
             self.close_conn
 
     def create_target_vulner(self):
+        
         """
         创建保存漏洞信息的表
 
         :param:
 
         :return:
+        
         """
 
         sql = "create table if not exists target_vulner (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), ip_port varchar(255), vulner_name varchar(255), vulner_descrip varchar(255), scan_time varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
@@ -387,12 +408,14 @@ class Mysql_db:
             self.close_conn
     
     def create_target_path(self):
+        
         """
         创建保存目标目录信息的表
 
         :param:
 
         :return:
+        
         """
 
         sql = "create table if not exists target_path (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_time varchar(255), path varchar(255), status_code varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
@@ -407,12 +430,13 @@ class Mysql_db:
             self.close_conn
     
     def query_account(self, username):
+        
         """
         查询用户是否已存在
 
         :param: str username: 查询的用户名
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         conn = self.get_conn()
@@ -434,13 +458,14 @@ class Mysql_db:
             self.close_conn
     
     def query_target(self, username, target):
+        
         """
         查询目标是否已存在
 
         :param: str username: 用户名
         :param: str target: 查询的目标
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         conn = self.get_conn()
@@ -463,13 +488,14 @@ class Mysql_db:
             self.close_conn
     
     def query_password(self, username, password):
+        
         """
         查询用户名和密码是否匹配
 
         :param: str username: 查询字符串
         :param: str password: 查询的密码
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         conn = self.get_conn()
@@ -490,6 +516,7 @@ class Mysql_db:
             self.close_conn
 
     def login(self, username):
+        
         """
         获取用户的密码
 
@@ -513,12 +540,13 @@ class Mysql_db:
             self.close_conn
 
     def update_token(self, username, token):
+        
         """
         更新用户的token
 
         :param: str username: 用户名
         :param: str token: 用户凭证
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         sql =  "update user set token = %s where username = %s"
@@ -536,6 +564,7 @@ class Mysql_db:
             self.close_conn
 
     def userinfo(self, token):
+        
         """
         获取用户的信息
 
@@ -559,11 +588,12 @@ class Mysql_db:
             self.close_conn
 
     def changps(self, token, password):
+        
         """
         修改用户密码
 
         :param: str data: 修改用户所需的数据,有所需要修改的新密码,条件字段名和条件字段值
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         sql = "update user set password = %s where token = %s" 
@@ -581,11 +611,12 @@ class Mysql_db:
             self.close_conn
 
     def username(self, query_str):
+        
         """
         根据条件选取用户名
 
         :param: str query_str: 条件字段名和条件字段值
-        :return: str result:查询的结果 or 'ZXXXXX': 状态码
+        :return: str result:查询的结果 or 'LXXXXX': 状态码
         """
 
         sql = "select username, role from user where token = %s" 
@@ -604,6 +635,7 @@ class Mysql_db:
             self.close_conn
     
     def save_account(self, username, description, token, password, role, avatar):
+        
         """
         添加用户
 
@@ -613,7 +645,7 @@ class Mysql_db:
         :param: str role: 用户权限
         :param: str avatar: 用户头像初始值
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -632,6 +664,7 @@ class Mysql_db:
             self.close_conn
     
     def save_target(self, username, target, description, target_ip):
+        
         """
         保存目标
 
@@ -640,7 +673,7 @@ class Mysql_db:
         :param: str description: 描述字符串
         :param: str target_ip: 目标ip
     
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -659,6 +692,7 @@ class Mysql_db:
             self.close_conn
  
     def save_target_scan(self, username, target, description, target_ip, scan_id, scan_time, scan_status, scan_schedule):
+
         """
         保存目标扫描任务
 
@@ -667,9 +701,9 @@ class Mysql_db:
         :param: str scan_id: 扫描任务id
         :param: str scan_time: 扫描时间
         :param: str scan_status: 扫描状态
-        :param: str schedule: 扫描任务
+        :param: str scan_schedule: 扫描进度
         
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         
         sql =  "insert target_scan (username, target, description, target_ip, scan_id, scan_time, scan_status, scan_schedule) values (%s, %s, %s, %s, %s, %s, %s, %s)"
@@ -687,6 +721,7 @@ class Mysql_db:
             self.close_conn
 
     def save_target_domain(self, username, target, scan_id, domain, domain_ip):
+        
         """
         保存目标域名的信息
 
@@ -696,7 +731,7 @@ class Mysql_db:
         :param: str domain: 域名
         :param: str domain_ip: 域名的ip
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -714,7 +749,8 @@ class Mysql_db:
             cursor.close()
             self.close_conn
    
-    def save_port(self, username, target, ip_port, scan_ip, port, protocol, product, version, title, banner):
+    def save_port(self, username, target, ip_port, scan_ip, port, finger, protocol, product, version, title, banner):
+        
         """
         保存端口信息
 
@@ -723,20 +759,21 @@ class Mysql_db:
         :param: str ip_port: ip和端口
         :param: str scan_ip: ip地址
         :param: str port: 端口
+        :param: str finger: 端口web指纹
         :param: str protocol: 端口的协议
         :param: str product: 端口的产品
         :param: str version: 产品版本
         :param: str title: 端口的标题
         :param: str banner: 端口的banner
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql =  "insert port (username, target, ip_port, scan_time, scan_ip, port, protocol, product, version, title, banner) \
-            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update scan_time = %s, scan_ip = %s, \
-                port = %s, protocol = %s, product = %s, version = %s, title = %s, banner = %s"
-        values = [username, target, ip_port, datetime, scan_ip, port, protocol, product, version, title, banner, datetime, scan_ip, port, protocol, product, version, title, banner]
+        sql =  "insert port (username, target, ip_port, scan_time, scan_ip, port, finger, protocol, product, version, title, banner) \
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update scan_time = %s, scan_ip = %s, \
+                port = %s, finger = %s, protocol = %s, product = %s, version = %s, title = %s, banner = %s"
+        values = [username, target, ip_port, datetime, scan_ip, port, finger, protocol, product, version, title, banner, datetime, scan_ip, port, finger, protocol, product, version, title, banner]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -749,7 +786,8 @@ class Mysql_db:
             cursor.close()
             self.close_conn
 
-    def save_target_port(self, username, target, scan_id, scan_ip, port, protocol, product, version, title, banner):
+    def save_target_port(self, username, target, scan_id, scan_ip, port, finger, protocol, product, version, title, banner):
+        
         """
         保存目标端口的信息
 
@@ -757,18 +795,19 @@ class Mysql_db:
         :param: str target: 目标
         :param: str scan_id: 扫描id
         :param: str port: 端口
+        :param: str finger: 端口web指纹
         :param: str protocol: 端口的协议
         :param: str product: 端口的产品
         :param: str version: 产品版本
         :param: str title: 端口的标题
         :param: str banner: 端口的banner
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql =  "insert target_port (username, target, scan_id, scan_time, scan_ip, port, protocol, product, version, title, banner) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        values = [username, target, scan_id, datetime, scan_ip, port, protocol, product, version, title, banner]
+        sql =  "insert target_port (username, target, scan_id, scan_time, scan_ip, port, finger, protocol, product, version, title, banner) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        values = [username, target, scan_id, datetime, scan_ip, port, finger, protocol, product, version, title, banner]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -782,6 +821,7 @@ class Mysql_db:
             self.close_conn
     
     def save_target_path(self, username, target, scan_id, path, status_code):
+        
         """
         保存目标域名的信息
 
@@ -791,7 +831,7 @@ class Mysql_db:
         :param: str domain: 域名
         :param: str domain_ip: 域名的ip
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -809,18 +849,18 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def save_vulner(self, username, target, ip_port_vulner, ip_port, vulner_name, vulner_descrip):
+    def save_vulner(self, username, target, ip_port, vulner_name, vulner_descrip):
+        
         """
         保存漏洞信息
 
         :param: str username: 用户名
         :param: str target: 目标
-        :param: str ip_port: 存在漏洞的ip和端口、漏洞名字
         :param: str ip_port: 存在漏洞的ip和端口
         :param: str vulner_name: 漏洞名字
         :param: str vulner_descrip: 漏洞的描述信息
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -840,6 +880,7 @@ class Mysql_db:
             self.close_conn
 
     def save_target_vulner(self, username, target, scan_id, ip_port, vulner_name, vulner_descrip):
+        
         """
         保存漏洞信息
 
@@ -850,7 +891,7 @@ class Mysql_db:
         :param: str vulner_name: 漏洞名字
         :param: str vulner_descrip: 漏洞的描述信息
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -869,13 +910,14 @@ class Mysql_db:
             self.close_conn
 
     def update_account_role(self, username, role):
+        
         """
         更新用户的权限
 
         :param: str username: 用户名
         :param: str role: 用户权限
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql =  "update user set role = %s where username = %s"
@@ -893,13 +935,14 @@ class Mysql_db:
             self.close_conn
     
     def update_account_password(self, username, password):
+        
         """
         更新用户的权限
 
         :param: str username: 用户名
         :param: str password: 用户的新密码
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql =  "update user set password = %s where username = %s"
@@ -917,13 +960,14 @@ class Mysql_db:
             self.close_conn
     
     def update_account_description(self, username, description):
+        
         """
         更新用户的描述
 
         :param: str username: 用户名
         :param: str description: 用户描述
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql =  "update user set description = %s where username = %s"
@@ -941,6 +985,7 @@ class Mysql_db:
             self.close_conn
     
     def update_target_finger(self, username, target, finger):
+        
         """
         更新目标的指纹
 
@@ -949,6 +994,7 @@ class Mysql_db:
         :param: str finger: 指纹
 
         :return:
+        
         """
 
         sql =  "update target set finger = %s where username = %s and target = %s"
@@ -966,6 +1012,7 @@ class Mysql_db:
             self.close_conn
 
     def update_target_description(self, username, target, description):
+        
         """
         更新目标表中的描述信息
 
@@ -973,7 +1020,7 @@ class Mysql_db:
         :param: str target: 目标
         :param: str description: 描述信息
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql =  "update target set description = %s where username = %s and target = %s"
@@ -991,6 +1038,7 @@ class Mysql_db:
             self.close_conn
 
     def update_target_scan_status(self, username, target, scan_status):
+        
         """
         更新目标表中的扫描状态信息,以最新的扫描任务的状态为准
 
@@ -998,33 +1046,9 @@ class Mysql_db:
         :param: str target: 目标
         :param: str scan_status: 扫描的状态
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
-        sql =  "update target set scan_status = %s where username = %s and target = %s"
-        values = [scan_status, username, target]
-        conn = self.get_conn()
-        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
-        try:
-            cursor.execute(sql, values)
-            return 'L1000'
-        except Exception as e:
-            print(e)
-            return 'L1001'
-        finally:
-            cursor.close()
-            self.close_conn
-
-    def update_target_scan_status(self, username, target, scan_status):
-        """
-        更新目标表中的扫描状态信息,以最新的扫描任务的状态为准
-
-        :param: str username: 用户名
-        :param: str target: 目标
-        :param: str scan_status: 扫描的状态
-
-        :return: 'ZXXXXX': 状态码
-        """
         sql =  "update target set scan_status = %s where username = %s and target = %s"
         values = [scan_status, username, target]
         conn = self.get_conn()
@@ -1040,6 +1064,7 @@ class Mysql_db:
             self.close_conn
 
     def update_target_scan_schedule(self, username, target, scan_schedule):
+        
         """
         更新目标表中的扫描进度信息,以最新的扫描任务的进度为准
 
@@ -1047,7 +1072,7 @@ class Mysql_db:
         :param: str target: 目标
         :param: str scan_schedule: 扫描的进度
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql =  "update target set scan_schedule = %s where username = %s and target = %s"
@@ -1064,20 +1089,20 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def update_scan_status(self, username, target, scan_id, scan_status):
+    def update_scan_status(self, username, scan_id, scan_status):
+
         """
         更新扫描状态信息
 
         :param: str username: 用户名
-        :param: str target: 目标
         :param: str scan_id: 扫描任务id
         :param: str scan_status: 扫描的状态
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
-        sql =  "update target_scan set scan_status = %s where username = %s and target = %s and scan_id = %s"
-        values = [scan_status, username, target, scan_id]
+        sql =  "update target_scan set scan_status = %s where username = %s and scan_id = %s"
+        values = [scan_status, username, scan_id]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1090,20 +1115,20 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def update_scan_schedule(self, username, target, scan_id, scan_schedule):
+    def update_scan_schedule(self, username, scan_id, scan_schedule):
+
         """
         更新扫描进度
 
         :param: str username: 用户名
-        :param: str target: 目标
-         :param: str scan_id: 扫描任务id
+        :param: str scan_id: 扫描任务id
         :param: str scan_schedule: 扫描进度
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
-        sql =  "update target_scan set scan_schedule = %s where username = %s and target = %s and scan_id = %s"
-        values = [scan_schedule, username, target, scan_id]
+        sql =  "update target_scan set scan_schedule = %s where username = %s and scan_id = %s"
+        values = [scan_schedule, username, scan_id]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1116,13 +1141,40 @@ class Mysql_db:
             cursor.close()
             self.close_conn 
     
+    def update_scan_option(self, username, scan_id, scan_option):
+
+        """
+        更新扫描选项
+
+        :param: str username: 用户名
+        :param: str scan_id: 扫描任务id
+        :param: str scan_schedule: 扫描选项
+
+        :return: 'LXXXXX': 状态码
+        """
+
+        sql =  "update target_scan set scan_option = %s where username = %s and scan_id = %s"
+        values = [scan_option, username, scan_id]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            return 'L1000'
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+
     def account_list(self, list_query):
+        
         """
         获取所有用户的信息
 
         :param:
 
-        :return: str result:查询到的信息 or 'ZXXXXX': 状态码
+        :return: str result:查询到的信息 or 'LXXXXX': 状态码
         """
 
         sql = "select id, username, description, role, create_time from user where if (%s = '', 0 = 0, username like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, role = %s)"
@@ -1147,12 +1199,13 @@ class Mysql_db:
             self.close_conn
 
     def get_target(self, username):
+        
         """
         获取用户目标的信息
 
         :param: str username: 用户名
 
-        :return: str result:查询到的信息 or 'ZXXXXX': 状态码
+        :return: str result:查询到的信息 or 'LXXXXX': 状态码
         """
 
         sql = "select * from target where username = %s"
@@ -1170,12 +1223,42 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
+    def get_target_status(self, username, target):
+        
+        """
+        获取用户扫描状态
+
+        :param: str username: 用户名
+        :param: str target: 扫描状态
+
+        :return: str result:查询到的信息 or 'LXXXXX': 状态码
+        """
+
+        sql = "select scan_status from target_scan where username = %s and target = %s"
+        values = [username, target]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            result = cursor.fetchone()
+            if result:
+                return result['scan_status']
+            else:
+                return ''
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
     def get_scan_target(self, username):
+        
         """
         获取所有未开始扫描的目标
 
         :param: str username: 用户名
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql = "select target, description from target where username = %s and scan_status = '未开始' and trash_flag = '0'"
@@ -1196,12 +1279,13 @@ class Mysql_db:
             self.close_conn
     
     def get_scan_id(self, username):
+        
         """
         获取一个扫描id
 
         :param: str username: 用户名
         
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         scan_total_sql = "select count(0) from target_scan where username = %s"
@@ -1221,13 +1305,14 @@ class Mysql_db:
             self.close_conn
     
     def get_target_scan_id(self, username, target):
+        
         """
         获取一个扫描id
 
         :param: str username: 用户名
         :param: str target: 目标
         
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         sql = "select scan_id from target_scan where username = %s and target = %s order by scan_id desc"
@@ -1247,8 +1332,36 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
+    
+    def get_target_port(self, username, target, port):
+
+        """
+        获取目标端口的信息
+
+        :param: str username: 用户名
+        :param: str target: 目标
+        :param: str port: 端口号
+        
+        :return: 'LXXXXX': 状态码
+        """
+
+        sql = "select protocol, finger from port where username = %s and target = %s and port = %s"
+        values = [username, target, port]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            result = cursor.fetchone()
+            return result
+        except Exception as e:
+            print(e)
+            return False
+        finally:
+            cursor.close()
+            self.close_conn
 
     def scan_set(self, username, target, scanner, min_port, max_port, rate, concurren_number):
+        
         """
         设置扫描选项
 
@@ -1258,7 +1371,7 @@ class Mysql_db:
         :param: str min_port: 扫描范围的最小端口
         :param: str max_port: 扫描范围的最大端口
         
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         sql =  "update target set scanner = %s, min_port = %s, max_port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
@@ -1276,12 +1389,13 @@ class Mysql_db:
             self.close_conn
 
     def get_scan(self, username, target):
+        
         """
         获取扫描选项信息
 
         :param: str username: 用户名
         :param: str target: 目标
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         sql = "select scanner, min_port, max_port, rate, concurren_number from target where username = %s and target = %s"
         values = [username, target]
@@ -1297,14 +1411,73 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
+    
+    def get_scan_status(self, username, scan_id):
+
+        """
+        获取扫描状态
+
+        :param: str username: 用户名
+        :param: str scan_id: 扫描id
+
+        :return: str 'LXXXXX': 状态码
+        """
+
+        sql = "select scan_status from target_scan where username = %s and scan_id = %s"
+        values = [username, scan_id]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values) 
+            result = cursor.fetchone()
+            if result:
+                return result['scan_status']
+            else:
+                return ''
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def get_scan_option(self, username, scan_id):
+
+        """
+        获取扫描选项
+
+        :param: str username: 用户名
+        :param: str scan_id: 扫描id
+
+        :return: str 'LXXXXX': 状态码
+        """
+
+        sql = "select scan_option from target_scan where username = %s and scan_id = %s"
+        values = [username, scan_id]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values) 
+            result = cursor.fetchone()
+            if result:
+                return result['scan_option']
+            else:
+                return ''
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
 
     def start_scan(self, username, target):
+        
         """
         开始扫描选项
 
         :param: str username: 用户名
         :param: str target: 目标
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         sql =  "update target set scan_time = %s, scan_status = %s, scan_schedule = %s where username = %s and target = %s"
@@ -1322,6 +1495,7 @@ class Mysql_db:
             self.close_conn
 
     def target_list(self, username, pagenum, pagesize, flag, list_query):
+        
         """
         获取所有目标的信息
 
@@ -1331,7 +1505,7 @@ class Mysql_db:
         :param: str flag: 筛选目标的标识位
         :param: dict list_query: 筛选目标的条件
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
@@ -1358,6 +1532,7 @@ class Mysql_db:
             self.close_conn
     
     def get_target_detail(self, username, target, pagenum, pagesize):
+
         """
         获取目标子域名、目录等信息
 
@@ -1366,20 +1541,23 @@ class Mysql_db:
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
     
-        :return: str result: 获取到的信息 or 'ZXXXXX': 状态码
+        :return: str result: 获取到的信息 or 'LXXXXX': 状态码
         """
 
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
         target_sql = "select target, finger, scan_status, scan_schedule, vulner_number from target where username = %s and target = %s"
         domain_sql = "select scan_id, scan_time, domain, domain_ip from target_domain where username = %s and target = %s order by scan_time desc limit %s, %s"
+        port_sql = "select scan_id, target, scan_time, port, finger, product, protocol, version, title, banner from target_port where username = %s and target = %s order by scan_time desc limit %s, %s"
         path_sql = "select scan_id, scan_time, path, status_code from target_path where username = %s and target = %s order by scan_time desc limit %s, %s"
         
         domain_total_sql = "select count(0) from target_domain where username = %s and target = %s"
+        port_total_sql = "select count(0) from target_port where username = %s and target = %s"
         path_total_sql = "select count(0) from target_path where username = %s and target = %s"
 
         scan_id = self.get_target_scan_id(username, target)
         domain_label_total_sql = "select count(0) from target_domain where username = %s and target = %s and scan_id = %s"
+        port_label_total_sql = "select count(0) from target_port where username = %s and target = %s and scan_id = %s"
         path_label_total_sql = "select count(0) from target_path where username = %s and target = %s and scan_id = %s"
 
         conn = self.get_conn()
@@ -1402,6 +1580,19 @@ class Mysql_db:
            
             if not domain_result:
                 domain_result = list(domain_result)
+
+            port_values = [username, target, start, pagesize]
+            port_total_values = [username, target]
+            port_label_values = [username, target, scan_id]
+            cursor.execute(port_sql, port_values)
+            port_result = cursor.fetchall()
+            cursor.execute(port_total_sql, port_total_values)
+            port_total_result = cursor.fetchone()['count(0)']
+            cursor.execute(port_label_total_sql, port_label_values)
+            port_label_total_result = cursor.fetchone()['count(0)']
+
+            if not port_result:
+                port_result = list(port_result)
 
             path_values = [username, target, start, pagesize]
             path_total_values = [username, target]
@@ -1427,6 +1618,12 @@ class Mysql_db:
                 'label_toal': domain_label_total_result
             }
 
+            result['port'] = {
+                'result': port_result,
+                'total': port_total_result,
+                'label_toal': port_label_total_result
+            }
+
             result['path'] = {
                 'result': path_result,
                 'total': path_total_result,
@@ -1442,12 +1639,13 @@ class Mysql_db:
             self.close_conn
     
     def get_card_count(self, username):
+        
         """
         获取目标、扫描任务、指纹的数量
 
         :param: str username: 用户名
     
-        :return: str result: 获取到的信息 or 'ZXXXXX': 状态码
+        :return: str result: 获取到的信息 or 'LXXXXX': 状态码
         """
         
         total_sql = "select count(0) a from target where username = %s union all select count(0) b from target_scan where username = %s \
@@ -1470,6 +1668,7 @@ class Mysql_db:
             self.close_conn
 
     def data_sort(self, item):
+        
         """
         数据排序
 
@@ -1480,12 +1679,13 @@ class Mysql_db:
         return item['click_date']
 
     def get_7day_count(self, username):
+        
         """
         获取7天内目标子域名、端口、目录等信息的数量
 
         :param: str username: 用户名
     
-        :return: str result: 获取到的信息 or 'ZXXXXX': 状态码
+        :return: str result: 获取到的信息 or 'LXXXXX': 状态码
         """
 
         target_total_sql = "select a.click_date,ifnull(b.count,0) as count from (select curdate() as click_date union all select date_sub(curdate(), \
@@ -1558,6 +1758,7 @@ class Mysql_db:
             self.close_conn
     
     def scan_list(self, username, pagenum, pagesize, flag, list_query):
+        
         """
         获取所有扫描任务的信息
 
@@ -1567,7 +1768,7 @@ class Mysql_db:
         :param: str flag: 筛选扫描任务的标识位
         :param: dict list_query: 筛选扫描任务的条件
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
@@ -1594,6 +1795,7 @@ class Mysql_db:
             self.close_conn
     
     def port_list(self, username, pagenum, pagesize, flag, list_query):
+        
         """
         获取所有端口的信息
 
@@ -1603,18 +1805,18 @@ class Mysql_db:
         :param: str flag: 筛选扫描任务的标识位
         :param: dict list_query: 筛选扫描任务的条件
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
-       
+
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select id, target, scan_time, scan_ip, port, protocol, product, version, title, banner from port \
+        sql = "select id, target, scan_time, scan_ip, port, finger, protocol, product, version, title, banner from port \
             where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
-                and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%', start, pagesize]
+                and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s) order by id desc limit %s, %s"
+        values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%', start, pagesize]
         total_sql = "select count(0) from port where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
-                and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s)"
-        total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']
+                and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s)"
+        total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1634,6 +1836,7 @@ class Mysql_db:
             self.close_conn
     
     def vulner_list(self, username, pagenum, pagesize, flag, list_query):
+        
         """
         获取所有漏洞的信息
 
@@ -1643,7 +1846,7 @@ class Mysql_db:
         :param: str flag: 筛选扫描任务的标识位
         :param: dict list_query: 筛选扫描任务的条件
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
@@ -1673,6 +1876,7 @@ class Mysql_db:
             self.close_conn
 
     def target_port_list(self, username, target, pagenum, pagesize):
+
         """
         获取目标端口扫描后的信息
 
@@ -1681,11 +1885,11 @@ class Mysql_db:
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select scan_id, target, scan_time, port, product, protocol, version, title, banner from target_port where username = %s and target = %s and trash_flag = '0' order by scan_id desc limit %s, %s"
+        sql = "select scan_id, target, scan_time, port, finger, product, protocol, version, title, banner from target_port where username = %s and target = %s and trash_flag = '0' order by scan_id desc limit %s, %s"
         values = [username, target, start, pagesize]
         total_sql = "select count(0) from target_port where username = %s and target = %s"
         total_values = [username, target]
@@ -1708,6 +1912,7 @@ class Mysql_db:
             self.close_conn
 
     def target_domain_list(self, username, target, pagenum, pagesize):
+        
         """
         获取目标和域名对应关系信息
 
@@ -1716,7 +1921,7 @@ class Mysql_db:
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
@@ -1743,6 +1948,7 @@ class Mysql_db:
             self.close_conn
 
     def target_scan_list(self, username, pagenum, pagesize):
+        
         """
         获取所有扫描任务的信息
 
@@ -1750,7 +1956,7 @@ class Mysql_db:
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
 
         start = (int(pagenum)-1) * int(pagesize)
@@ -1778,6 +1984,7 @@ class Mysql_db:
             self.close_conn
 
     def target_vulner_list(self, username, target, pagenum, pagesize):
+        
         """
         获取目标所有漏洞的信息
 
@@ -1786,7 +1993,7 @@ class Mysql_db:
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
         
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
@@ -1813,6 +2020,7 @@ class Mysql_db:
             self.close_conn
 
     def set_target(self, username, target, flag):
+        
         """
         设置目标标志位
 
@@ -1820,7 +2028,7 @@ class Mysql_db:
         :param: str target: 目标
         :param: str flag: 筛选目标的标识位
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         
         conn = self.get_conn()
@@ -1852,6 +2060,7 @@ class Mysql_db:
             self.close_conn
     
     def set_port(self, username, flag, target, scan_ip, port):
+        
         """
         设置漏洞标志位
 
@@ -1861,7 +2070,7 @@ class Mysql_db:
         :param: str port: 端口号
         :param: str flag: 设置端口的标识位
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         
         conn = self.get_conn()
@@ -1881,6 +2090,7 @@ class Mysql_db:
             self.close_conn
     
     def set_vulner(self, username, flag, target, ip_port, vulner_name):
+        
         """
         设置漏洞标志位
 
@@ -1890,7 +2100,7 @@ class Mysql_db:
         :param: str ip_port: ip和port
         :param: str vulner_name: 漏洞名字
 
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         
         conn = self.get_conn()
@@ -1910,12 +2120,13 @@ class Mysql_db:
             self.close_conn
 
     def change_avatar(self, username, imagename):
+        
         """
         修改用户头像
 
         :param: str username: 用户名
         :param: str imagename: 图片名字
-        :return: str 'ZXXXXX': 状态码
+        :return: str 'LXXXXX': 状态码
         """
         sql = "update user set avatar =%s where username = %s"
         values = [imagename, username]
@@ -1932,12 +2143,13 @@ class Mysql_db:
             self.close_conn
     
     def delete_account(self, username):
+        
         """
         用来删除用户
 
         :param: str username: 用户名
         
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
 
         del_sql = "delete from user where username = %s"
@@ -1955,13 +2167,14 @@ class Mysql_db:
             self.close_conn
 
     def delete_target(self, username, target):
+        
         """
         用来删除目标
 
         :param: str username: 用户名
         :param: str target: 目标
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
         
         conn = self.get_conn()
@@ -1989,6 +2202,7 @@ class Mysql_db:
             self.close_conn
     
     def delete_port(self, username, target, scan_ip, port):
+        
         """
         用来删除端口
 
@@ -1997,7 +2211,7 @@ class Mysql_db:
         :param: str scan_ip: 目标ip
         :param: str port: 端口
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
         
         conn = self.get_conn()
@@ -2017,6 +2231,7 @@ class Mysql_db:
             self.close_conn
 
     def delete_vulner(self, username, target, ip_port, vulner_name):
+        
         """
         用来删除目标或者漏洞
 
@@ -2025,7 +2240,7 @@ class Mysql_db:
         :param: str ip_port: ip和端口
         :param: str vulner_name: 漏洞名字
 
-        :return: 'ZXXXXX': 状态码
+        :return: 'LXXXXX': 状态码
         """
         
         conn = self.get_conn()
@@ -2045,12 +2260,14 @@ class Mysql_db:
             self.close_conn
 
     def close_conn(self, conn):
+        
         """
         关闭连接
 
         :param: str conn: 要关闭的连接
 
         :return:
+        
         """
         try:
             conn.close()

@@ -26,6 +26,7 @@ class Mssql_Weakpwd_BaseVerify:
                 pwd = pwd.strip()
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.settimeout(10)
                 s.connect((self.host, int(self.port)))
                 husername = binascii.b2a_hex('sa'.encode('utf-8'))
                 lusername = len('sa')

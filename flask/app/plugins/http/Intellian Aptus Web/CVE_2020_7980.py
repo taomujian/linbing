@@ -44,5 +44,5 @@ class CVE_2020_7980_BaseVerify:
             pass
 
 if __name__ == '__main__':
-    CVE_2020_7980 = CVE_2020_7980_BaseVerify('http://185.23.98.50')
+    CVE_2020_7980 = CVE_2020_7980_BaseVerify('http://127.0.0.1')
     CVE_2020_7980.run()
