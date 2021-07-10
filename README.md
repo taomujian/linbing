@@ -18,13 +18,12 @@
       * [redis](#redis)
          * [配置redis](#配置redis)
          * [启动redis](#启动redis)
-         * [执行uwsgi脚本(自制uwsgi-plugin-python38, ubuntu系统目前最高支持uwsgi-plugin-python36)](#执行uwsgi脚本自制uwsgi-plugin-python38-ubuntu系统目前最高支持uwsgi-plugin-python36)
-         * [配置uwsgi](#配置uwsgi)
-         * [启动uwsgi](#启动uwsgi)
+      * [gunicorn](#gunicorn)
+         * [配置gunicorn](#配置gunicorn)
+         * [启动gunicorn](#启动gunicorn)
    * [centos部署](#centos部署)
       * [设置源](#设置源)
       * [安装依赖](#安装依赖-1)
-      * [重新编译gcc](#重新编译gcc)
       * [安装python3.8](#安装python38)
       * [安装python3依赖库](#安装python3依赖库-1)
       * [nginx](#nginx-1)
@@ -37,9 +36,9 @@
       * [redis](#redis-1)
          * [配置redis](#配置redis-1)
          * [启动redis](#启动redis-1)
-         * [执行uwsgi脚本(自制uwsgi-plugin-python38, centos系统目前最高支持uwsgi-plugin-python36)](#执行uwsgi脚本自制uwsgi-plugin-python38-centos系统目前最高支持uwsgi-plugin-python36)
-         * [配置uwsgi](#配置uwsgi-1)
-         * [启动uwsgi](#启动uwsgi-1)
+      * [gunicorn](#gunicorn-1)
+         * [配置gunicorn](#配置gunicorn-1)
+         * [启动gunicorn](#启动gunicorn-1)
    * [自编译docker文件进行部署](#自编译docker文件进行部署)
       * [配置](#配置-2)
       * [编译镜像(进入项目根目录)](#编译镜像进入项目根目录)
@@ -61,13 +60,15 @@
       * [[v2.1] 2021.3.5](#v21-202135)
       * [[v2.2] 2021.3.26](#v22-2021326)
       * [[v2.3] 2021.5.20](#v23-2021520)
+      * [[v2.4] 2021.6.19](#v24-2021619)
+      * [[v2.5] 2021.10](#v25-202179)
    * [致谢](#致谢)
    * [免责声明](#免责声明)
    * [License](#license)
 
 # 临兵漏洞扫描系统
 
-> 本系统是对目标进行漏洞扫描的一个系统,前端采用vue技术,后端采用flask.poc有110多个,包含绝大部分的中间件漏洞,本系统的poc皆来源于网络或在此基础上进行修改
+> 本系统是对目标进行漏洞扫描的一个系统,前端采用vue技术,后端采用python.poc有110多个,包含绝大部分的中间件漏洞,本系统的poc皆来源于网络或在此基础上进行修改
 
 ## 修改加密key
 
@@ -75,13 +76,13 @@
 
 ### 修改aes key
 
-> python这块直接修改/flask/conf.ini中aes部分的配置即可,采用cbc模式,需要key和iv. vue部分则需要修改vue_src/src/libs/AES.js文件中第三行和第四行,要和conf.ini中保持一致
+> python这块直接修改/python/conf.ini中aes部分的配置即可,采用cbc模式,需要key和iv. vue部分则需要修改vue_src/src/libs/AES.js文件中第三行和第四行,要和conf.ini中保持一致
 
 ### 修改rsa key
 
 > 需要先生成rsa的公私钥(私钥1024位)[参考地址](https://www.jianshu.com/p/d614ba4720ec)
 
-> 修改flask/rsa.py文件中的公钥和私钥信息,vue部分则需要修改vue_src/src/libs/crypto.js文件中第77行的公钥,要和flask/rsa.py文件中的公钥保持一致
+> 修改python/rsa.py文件中的公钥和私钥信息,vue部分则需要修改vue_src/src/libs/crypto.js文件中第77行的公钥,要和python/rsa.py文件中的公钥保持一致
 
 
 修改vue部分后要重新打包,然后把打包后的文件夹dist中的内容复制到vue文件夹,vue原有的文件要删除.
@@ -108,9 +109,9 @@
 
 > DEBIAN_FRONTEND noninteractive apt install -y postfix
 
-> apt install -y mariadb-server python3.8 python3.8-dev python3-pip uwsgi uwsgi-src nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
+> apt install -y mariadb-server python3.8 python3.8-dev python3-pip nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
 
-> mkdir /root/flask && mkdir /var/log/uwsgi
+> mkdir /root/python
 
 ### 设置python3.8为python3
 
@@ -118,7 +119,7 @@
 
 ### 安装python3依赖库
 
-> pip3 install -r /root/flask/requirements.txt
+> pip3 install -r /root/python/requirements.txt
 
 > 如果你使用的是低于python3.8版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
 
@@ -134,17 +135,15 @@
 
 #### 配置
 
-> uwsgi配置文件已配置好,可以直接使用,可以根据自己的需求修改文件路径及端口.conf.ini文件中配置数据库信息和邮件配置
+> gunicorn配置文件已配置好,可以直接使用,可以根据自己的需求修改文件路径及端口.conf.ini文件中配置数据库信息
 
-> 在/etc/nginx/conf.d目录下放入flask.conf和vue.conf文件
+> 在/etc/nginx/conf.d目录下放入vue.conf文件
 
 > 在/etc/nginx目录下放入nginx.conf文件
 
 > conf配置文件中有注释
 
 > 把vue目录移到/usr/share/nginx/html中
-
-> 在flask/conf.ini中配置数据库和发送邮件设置
 
 ### mariadb
 
@@ -158,7 +157,7 @@
 
 > mysql -e "update mysql.user set plugin='mysql_native_password' where User='password';FLUSH PRIVILEGES;"
 
-> 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
+> 配置数据库密码后需要在python/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
 
 ### redis
 
@@ -168,7 +167,7 @@
 
 > sed -i "s|# requirepass foobared|requirepass '你的redis密码'|" /etc/redis/redis.conf
 
-> 配置数据库密码后需要在flask/conf.ini文件中配置连接redis数据库的密码信息
+> 配置数据库密码后需要在python/conf.ini文件中配置连接redis数据库的密码信息
 
 #### 启动redis
 
@@ -176,19 +175,15 @@
 
 > redis-server /etc/redis/redis.conf
 
-#### 执行uwsgi脚本(自制uwsgi-plugin-python38, ubuntu系统目前最高支持uwsgi-plugin-python36)
+### gunicorn
 
-> chmod +x ubuntu_uwsgi.sh
+#### 配置gunicorn
 
-> ./ubuntu_uwsgi.sh
+> 把gunicorn.conf文件放到python文件夹的根目录下
 
-#### 配置uwsgi
+#### 启动gunicorn
 
-> 把uwsgi.ini文件放到flask文件夹的根目录下(我的flask文件夹路径是/root/flask,如果各位不是这个路径,需要到uwsgi.ini文件和flask.conf中修改文件的路径)
-
-#### 启动uwsgi
-
-> 进入到/root/flask/目录下,uwsgi --ini uwsgi.ini(必须进到相关目录中执行)
+> 进入到/root/python/目录下,nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
 
 ## centos部署
 
@@ -200,17 +195,9 @@
 
 > yum install -y -q postfix
 
-> yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel uwsgi uwsgi-plugin-common redis
+> yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel redis
 
-> mkdir /root/flask && mkdir /var/log/uwsgi 
-
-### 重新编译gcc
-
-> wget https://ftp.gnu.org/gnu/gcc/gcc-9.2.0/gcc-9.2.0.tar.xz && tar xvf gcc-9.2.0.tar.xz
-
-> cd gcc-9.2.0 && ./contrib/download_prerequisites && mkdir build && cd build && ../configure --prefix=/usr/local --disable-multilib --enable-languages=c,c++ && make && make install 
-
-> ln -sf /usr/local/bin/gcc cc && yum remove -y gcc
+> mkdir /root/python
 
 ### 安装python3.8
 
@@ -226,7 +213,7 @@
 
 ### 安装python3依赖库
 
-> pip3 install -r /root/flask/requirements.txt
+> pip3 install -r /root/python/requirements.txt
 
 > 如果你使用的是低于python3.8版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
 
@@ -242,17 +229,15 @@
 
 #### 配置
 
-> 配置文件已配置好,可以直接使用,可以根据自己的需求修改文件路径及端口.
+> gunicorn配置文件已配置好,可以直接使用,可以根据自己的需求修改文件路径及端口.conf.ini配置数据库
 
-> 在/etc/nginx/conf.d目录下放入flask.conf和vue.conf文件
+> 在/etc/nginx/conf.d目录下放入vue.conf文件
 
 > 在/etc/nginx目录下放入nginx.conf文件
 
 > conf配置文件中有注释
 
 > 把vue目录移到/usr/share/nginx/html中
-
-> 在flask/conf.ini中配置数据库和发送邮件设置
 
 ### mariadb
 
@@ -263,7 +248,7 @@
 #### 进行数据库配置(如设置密码等)
 
 > mysql_secure_installation(具体步骤略去,可参考<https://www.cnblogs.com/yhongji/p/9783065.html>)
-> 配置数据库密码后需要在flask/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
+> 配置数据库密码后需要在python/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
 
 ### redis
 
@@ -273,7 +258,7 @@
 
 > sed -i "s|# requirepass foobared|requirepass '你的redis密码'|" /etc/redis/redis.conf
 
-> 配置数据库密码后需要在flask/conf.ini文件中配置连接redis数据库的密码信息
+> 配置数据库密码后需要在python/conf.ini文件中配置连接redis数据库的密码信息
 
 #### 启动redis
 
@@ -281,25 +266,21 @@
 
 > redis-server /etc/redis.conf
 
-#### 执行uwsgi脚本(自制uwsgi-plugin-python38, centos系统目前最高支持uwsgi-plugin-python36)
+### gunicorn
 
-> chmod +x centos_uwsgi.sh
+#### 配置gunicorn
 
-> ./centos_uwsgi.sh
+> 把gunicorn.conf文件放到python文件夹的根目录下
 
-#### 配置uwsgi
+#### 启动gunicorn
 
-> 把uwsgi.ini文件放到flask文件夹的根目录下(我的flask文件夹路径是/root/flask,如果各位不是这个路径,需要到uwsgi.ini文件和flask.conf中修改文件的路径)
-
-#### 启动uwsgi
-
-> 进入到/root/flask/目录下,uwsgi --ini uwsgi.ini(必须进到相关目录中执行)
+> 进入到/root/python/目录下,nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
 
 ## 自编译docker文件进行部署
 
 ### 配置
 
-> 首先下载项目到本地(https://github.com/taomujian/linbing.git),然后配置flask/conf.ini中发送邮件所用的账号和授权码,然后修改flask/conf.ini的mysql数据库账号密码,这个账号密码要和dockerfile中的设置的账号密码保持一致
+> 首先下载项目到本地(https://github.com/taomujian/linbing.git),然后配置python/conf.ini中发送邮件所用的账号和授权码,然后修改python/conf.ini的mysql数据库账号密码,这个账号密码要和dockerfile中的设置的账号密码保持一致
 
 ### 编译镜像(进入项目根目录)
 
@@ -383,6 +364,9 @@
 - 对插件进行分类,分为http类和非http类
 - 点击扫描时提供自定义扫描选项功能,分为指纹探测, 子域名扫描, 端口扫描, 目录扫描, POC扫描
 - 扫描列表中增加暂停扫描、恢复扫描、取消扫描功能
+
+###  [v2.5] 2021.7.10
+- 后端框架由flask更换为fastapi
 
 ## 致谢
 

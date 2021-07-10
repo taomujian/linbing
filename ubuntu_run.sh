@@ -9,7 +9,7 @@ if [ "$PIDS" = "" ]; then
     service mysql start
     service redis-server start
     redis-server /etc/redis/redis.conf
-    cd /root/flask
-    uwsgi --ini /root/flask/uwsgi.ini
+    cd /root/python
+    nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
     tail -f /dev/null
 fi

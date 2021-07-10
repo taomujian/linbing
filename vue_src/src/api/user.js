@@ -48,9 +48,10 @@ export function queryPassword(data) {
   })
 }
 
-export function logout() {
+export function logout(data) {
   return request({
     url: '/api/logout',
-    method: 'post'
+    method: 'post',
+    data
   })
 }

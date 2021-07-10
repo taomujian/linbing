@@ -117,7 +117,8 @@ export default {
         scan_ip: '',
         port: '',
         product: '',
-        title: ''
+        title: '',
+        finger: ''
       }
     }
   },

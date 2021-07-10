@@ -793,11 +793,11 @@ export default {
       this.loading = 1
       this.setStep(3)
       let data = {
-        'token': getToken()
+        'token': getToken(),
+        'imgdata': createImgUrl,
       }
       data = JSON.stringify(data)
       const imgparams = {
-        'imgdata': createImgUrl,
         'data': Encrypt(data)
       }
       uploadImage(imgparams).then(response => {

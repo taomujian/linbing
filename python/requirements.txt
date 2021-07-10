@@ -2,8 +2,12 @@
 rq
 cx-Oracle
 dnspython
-Flask
-Flask-Cors
+fastapi
+uvicorn
+gunicorn
+pydantic
+passlib
+aiofiles
 IPy
 kazoo
 paramiko

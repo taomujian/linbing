@@ -426,6 +426,7 @@ export default {
       })
     },
     handleScan(row) {
+      this.option = []
       this.target = row.target,
       this.description = row.description
       this.optionVisible = true

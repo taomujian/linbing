@@ -27,7 +27,7 @@ if [ "$PIDS" = "" ]; then
     
     nginx
     setsid mysqld_safe &
-    cd /root/flask
-    uwsgi --ini /root/flask/uwsgi.ini
+    cd /root/python
+    nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
     tail -f /dev/null
 fi
