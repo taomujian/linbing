@@ -1,0 +1,8 @@
+node_modules
+.vscode
+*.log
+*.lock
+.DS_Store
+.jekyll-cache
+*/.DS_Store
+*/*/.DS_Store

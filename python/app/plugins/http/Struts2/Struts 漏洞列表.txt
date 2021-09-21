@@ -1,0 +1,58 @@
+Struts 漏洞列表
+
+S2-001 利用表单错误进行远程代码利用
+S2-002 标签 <s:url>和<s:a> XSS漏洞
+S2-003 XWork ParameterInterceptors 绕过导致OGNL执行
+S2-004 提供静态文件时目录遍历漏洞
+S2-005 XWork ParameterInterceptors 绕过远程代码执行
+S2-006 XWork生成错误页面时的XSS漏洞
+S2-007 当存在错误转换时，用户输入被当作OGNL执行
+S2-008 Struts2的一些严重(多个)
+S2-009 ParameterInterceptor漏洞允许远程代码执行
+S2-010 当使用 Struts2 token机制防护CSRF漏洞时，滥用已知会话属性可能绕过token检测
+S2-011 长请求参数名称可能会提高DOS攻击
+S2-012 Showcase app漏洞可能导致远程代码执行
+S2-013 存在于URL和Anchor Tag的includeParams属性中的漏洞允许远程执行命令
+S2-014 通过在URL和Anchor Tag中强制插入参数引入的漏洞允许远程命令执行，会话访问和操作以及XSS攻击
+S2-015 由通配符匹配机制引入的漏洞或OGNL Expression的双重评估允许远程命令执行。
+S2-016 通过操作带有前缀'action：'/'redirect：'/'redirectAction：'的参数引入的漏洞允许远程命令执行
+S2-017 - 通过操作以“redirect：”/“redirectAction：”为前缀的参数引入的漏洞允许打开重定向
+S2-018 Apache Struts2中的访问控制漏洞
+S2-019 - 默认禁用动态方法调用
+S2-020 将Common Commons FileUpload升级到版本1.3.1（避免DoS攻击），并添加“class”来排除ParametersInterceptor中的参数（避免ClassLoader操作）
+S2-021 - 改进ParametersInterceptor和CookieInterceptor中的排除参数以避免ClassLoader操作
+S2-022 - 在CookieInterceptor中扩展排除参数以避免操纵Struts内部
+S2-023 - 令牌的生成值可以预测
+S2-024 - 错误的excludeParams覆 DefaultExcludedPatternsChecker
+S2-025 - 调试模式下和暴露的JSP文件中的跨站点脚本漏洞
+S2-026中定义的错误 - 特殊顶级对象可用于访问Struts的内部结构
+S2-027 - TextParseUtil.translateVariables不会过滤恶意的OGNL表达式
+S2-028 - 使用具有破坏的URLDecoder实现的JRE可能导致基于Struts 2的Web应用程序出现XSS漏洞。
+S2-029 - 对标签属性中的原始用户输入进行评估时，强制双重OGNL评估可能导致远程代码执行。
+S2-030 - I18NInterceptor
+S2-031中可能的XSS漏洞 - XSLTResult可用于解析任意样式表
+S2-032 - 启用动态方法调用时，可以通过方法：前缀执行远程代码执行。
+S2-033 - 使用REST插件时可以执行远程代码执行！运行时动态方法调用启用。
+S2-034 - OGNL缓存中毒可能导致DoS漏洞
+S2-035 - 动作名称清理很容易出错
+S2-036 - 强制性双重OGNL评估，当对原始用户输入的标记属性进行评估时，可能会导致远程代码执行（类似于S2-029）
+S2-037 - 使用REST插件时可以执行远程代码执行。
+S2-038 - 可以绕过令牌验证并执行CSRF攻击
+S2-039 - Getter作为操作方法导致安全绕过
+S2-040 - 使用现有默认操作方法进行输入验证旁路。
+S2-041 - 使用URLValidator
+S2-042 - 时可能发生DoS攻击 - Convention插件中可能的路径遍历
+S2-043 - 使用产品中的Config Browser插件
+S2-044 - 使用URLValidator
+S2-045时可能发生DoS攻击 - 基于Jakarta Multipart解析器执行文件上传时可能的远程执行代码。
+S2-046 - 基于Jakarta Multipart解析器（类似于S2-045）执行文件上传时的可能RCE
+S2-047 - 使用URLValidator时可能的DoS攻击（类似于S2-044）
+S2-048 - 可能的RCE Struts展示应用程序Struts 2.3.x系列中的Struts 1插件示例
+S2-049 - DoS攻击可用于Spring受保护的操作
+S2-050 ​​ - 使用URLValidator时的正则表达式拒绝服务（类似于S2-044＆ S2-047）
+S2-051 - 当使用Struts REST插件时，远程攻击者可能通过发送精心设计的xml请求来创建DoS攻击
+S2-052 - 使用带XStream处理程序的Struts REST插件处理XML时可能发生的远程执行代码攻击有效载荷
+S2-053 - 在Freemarker标记中使用非意图表达而不是字符串文字时可能发生的远程执行代码攻击
+S2-054 - ApacheStruts REST插件使用了过时的JSON-lib库，击者可以通过构造特制的JSON恶意请求造成DOS攻击。
+S2- 055 - 由于ApacheStruts调用了存在反序列化漏洞的Jackson JSON库，导致了反序列化漏洞的产生。
+S2-056	-	当使用XStream组件对XML格式的数据包进行反序列化操作，且未对数据内容进行有效验证时，攻击者可通过提交恶意XML数据对应用进行远程DoS攻击。
