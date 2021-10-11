@@ -1,0 +1,33 @@
+.text {
+  font-size: 14px;
+}
+
+.item {
+  margin-bottom: 18px;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+}
+.clearfix:after {
+  clear: both
+}
+.box-card {
+  margin-top:3%;
+  margin-left:0%;
+  margin-bottom:0%;
+  width: 90%
+}
+.tab {
+  margin-top:2%;
+  margin-left:0%;
+  margin-bottom:0%;
+  width: 90%
+}
+.p{
+  margin-top: 1%;
+  margin-bottom: 1%;
+  padding: 5px;
+}
