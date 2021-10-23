@@ -9,6 +9,7 @@ import configparser
 from rq import Queue
 from redis import Redis
 from fastapi import FastAPI, Request
+from fastapi import WebSocket
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from fastapi.responses import FileResponse
@@ -628,7 +629,7 @@ async def scan_set(request : VueRequest):
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 return response
-            else :
+            else:
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
                 return response
@@ -913,7 +914,7 @@ async def target_list(request : VueRequest):
             if target_list == 'L1001':
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
-            else :
+            else:
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 if total == 0:
@@ -971,7 +972,7 @@ async def scan_list(request : VueRequest):
             if scan_list == 'L1001':
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
-            else :
+            else:
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 response['total'] = total
@@ -1025,7 +1026,7 @@ async def port_list(request : VueRequest):
             if port_list == 'L1001':
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
-            else :
+            else:
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 response['total'] = total
@@ -1191,7 +1192,7 @@ async def vuln_list(request : VueRequest):
             if vulner_list == 'L1001':
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
-            else :
+            else:
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 response['total'] = total
@@ -1290,7 +1291,7 @@ async def auth_list(request : VueRequest):
             if target_list == 'L1001':
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
-            else :
+            else:
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 if total == 0:
@@ -1344,7 +1345,7 @@ async def log_list(request : VueRequest):
             if target_list == 'L1001':
                 response['code'] = 'L1001'
                 response['message'] = '系统异常'
-            else :
+            else:
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
                 if total == 0:
@@ -2314,7 +2315,7 @@ async def get_image(filename):
     """
     
     return FileResponse(UPLOAD_FOLDER + '/' + filename)
-    
+
 @app.post('/api/change/avatar')
 async def change_avatar(request : VueRequest):
     
@@ -2379,6 +2380,111 @@ async def log(token: str, data: str, request: Request):
             mysqldb.save_xss_log(username, path, data, ua, ip)
     except Exception as e:
         print(e)
+
+@app.websocket("/ws/target/status")
+async def target_status(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        try:
+            request = await websocket.receive_text()
+            request = json.loads(request)
+            response = {'code': '', 'message': '', 'data': ''}
+            request = rsa_crypto.decrypt(request['data'])
+            request = json.loads(request)
+            pagenum = request['pagenum']
+            pagesize = request['pagesize']
+            flag = request['flag']
+            token  = request['token']
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            list_query = json.loads(request['listQuery'])
+            if list_query['scan_status'] == '全部':
+                list_query['scan_status'] = ''
+            if list_query['scan_schedule'] == '全部':
+                list_query['scan_schedule'] = ''
+
+            username_result = mysqldb.username(query_str)
+            if username_result == 'L1001':
+                response['code'] = 'L1001'
+                response['message'] = '系统异常'
+            elif username_result == None:
+                response['code'] = 'L1003'
+                response['message'] = '认证失败'
+            else:
+                sql_result = mysqldb.target_list(username_result['username'], pagenum, pagesize, flag, list_query)
+                target_list = sql_result['result']
+                total = sql_result['total']
+                if target_list == 'L1001':
+                    response['code'] = 'L1001'
+                    response['message'] = '系统异常'
+                else:
+                    response['code'] = 'L1000'
+                    response['message'] = '请求成功'
+                    if total == 0:
+                        response['data'] = ''
+                    else:
+                        response['data'] = sql_result
+
+            await websocket.send_json(response)
+        except Exception as e:
+            print(e)
+            break
+    await websocket.close()
+
+@app.websocket("/ws/scan/status")
+async def scan_status(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        try:
+            request = await websocket.receive_text()
+            request = json.loads(request)
+            response = {'code': '', 'message': '', 'data': ''}
+            request = rsa_crypto.decrypt(request['data'])
+            request = json.loads(request)
+            pagenum = request['pagenum']
+            pagesize = request['pagesize']
+            flag = request['flag']
+            token  = request['token']
+            list_query = json.loads(request['listQuery'])
+            if list_query['scan_status'] == '全部':
+                list_query['scan_status'] = ''
+            if list_query['scan_schedule'] == '全部':
+                list_query['scan_schedule'] = ''
+
+            query_str = {
+                'type': 'token',
+                'data': token
+            }
+            username_result = mysqldb.username(query_str)
+            if username_result == 'L1001':
+                response['code'] = 'L1001'
+                response['message'] = '系统异常'
+            elif username_result == None:
+                response['code'] = 'L1003'
+                response['message'] = '认证失败'
+            else:
+                sql_result = mysqldb.scan_list(username_result['username'], pagenum, pagesize, flag, list_query)
+                scan_list = sql_result['result']
+                total = sql_result['total']
+                if scan_list == 'L1001':
+                    response['code'] = 'L1001'
+                    response['message'] = '系统异常'
+                else:
+                    response['code'] = 'L1000'
+                    response['message'] = '请求成功'
+                    response['total'] = total
+                    if total == 0:
+                        response['data'] = ''
+                    else:
+                        response['data'] = sql_result
+
+            await websocket.send_json(response)
+        except Exception as e:
+            print(e)
+            break
+    await websocket.close()
 
 if __name__ == '__main__':
     # uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 5000, reload = True, debug = True)

@@ -49,10 +49,18 @@ module.exports = {
       '/api': {
         target: process.env.VUE_APP_BASE_API,
         changeOrigin: true,
-        ws: true,
         secure: false,
         pathRewrite: {
           '^/api': '/api'
+        }
+      },
+      '/ws': {
+        target: process.env.VUE_APP_BASE_API,
+        changeOrigin: true,
+        ws: true,
+        secure: false,
+        pathRewrite: {
+          '^/ws': '/ws'
         }
       }
     }

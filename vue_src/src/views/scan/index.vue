@@ -119,6 +119,11 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
+      lockReconnect: false, // 是否真正建立连接
+      timeout: 30000, // 58秒一次心跳
+      timeoutObj: null, // 心跳心跳倒计时
+      serverTimeoutObj: null, // 心跳倒计时
+      timeoutnum: null, // 断开重连倒计时
       page: {
         pageNum: 1,
         pageSize: 10,
@@ -135,17 +140,16 @@ export default {
   },
   created() {
     this.getList()
+    this.initWebSocket()
+  },
+
+  destroyed() {
+    this.websock.close() // 离开路由之后断开websocket连接
   },
   mounted() {
     this.getList()
-    const timer = setInterval(() => {
-      this.getList()
-    }, 15000)
-    // 通过$once来监听定时器，在beforeDestroy钩子可以被清除。
-    this.$once('hook:beforeDestroy', () => {
-      clearInterval(timer)
-    })
   },
+  // 销毁定时器
   methods: {
     isurl(value) {
       const ip_reg = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/
@@ -274,6 +278,115 @@ export default {
     handleFilter() {
       this.page.pageNum = 1
       this.getList()
+    },
+    initWebSocket() {
+      // 初始化weosocket
+      const wsuri = 'ws://' + process.env.VUE_APP_BASE_API.replace('http://', '') + '/ws/scan/status'
+      this.websock = new WebSocket(wsuri)
+      // 客户端接收服务端数据时触发
+      this.websock.onmessage = this.websocketonmessage
+      // 连接建立时触发
+      this.websock.onopen = this.websocketonopen
+      // 通信发生错误时触发
+      this.websock.onerror = this.websocketonerror
+      // 连接关闭时触发
+      this.websock.onclose = this.websocketclose
+    },
+    // 连接建立时触发
+    websocketonopen() {
+      // 开启心跳
+      this.start()
+      // 连接建立之后执行send方法发送数据
+      let data = {
+        'pagenum': this.page.pageNum,
+        'pagesize': this.page.pageSize,
+        'flag': '0',
+        'token': getToken(),
+        'listQuery': JSON.stringify(this.listQuery)
+      }
+      data = JSON.stringify(data)
+      const params = { 'data': Encrypt(data) }
+      this.websocketsend(JSON.stringify(params))
+    },
+    // 通信发生错误时触发
+    websocketonerror() {
+      console.log('出现错误')
+      this.reconnect()
+    },
+    // 客户端接收服务端数据时触发
+    websocketonmessage(response) {
+      var data = JSON.parse(response.data)
+      // 收到变化的数据重新更新数据
+      if (data.data.result !== this.list) {
+        this.listLoading = true
+        this.list = data.data.result
+        if (data.data === '') {
+          this.list = []
+          this.page.total = 0
+        } else {
+          this.list = data.data.result
+          this.page.total = data.data.total
+        }
+        setTimeout(() => {
+          this.listLoading = false
+        }, 0.5 * 1000)
+      }
+      // 收到服务器信息，心跳重置
+      this.reset()
+    },
+    websocketsend(Data) {
+      // 数据发送
+      this.websock.send(Data)
+    },
+    // 连接关闭时触发
+    websocketclose(e) {
+      // 关闭
+      this.reconnect()
+    },
+    reconnect() {
+      // 重新连接
+      var that = this
+      if (that.lockReconnect) {
+        return
+      }
+      that.lockReconnect = true
+      // 没连接上会一直重连，设置延迟避免请求过多
+      that.timeoutnum && clearTimeout(that.timeoutnum)
+      that.timeoutnum = setTimeout(function() {
+        // 新连接
+        that.initWebSocket()
+        that.lockReconnect = false
+      }, 5000)
+    },
+    reset() {
+      // 重置心跳
+      var that = this
+      // 清除时间
+      clearTimeout(that.timeoutObj)
+      clearTimeout(that.serverTimeoutObj)
+      // 重启心跳
+      that.start()
+    },
+    start() {
+      // 开启心跳
+      // console.log('开启心跳')
+      var self = this
+      self.timeoutObj && clearTimeout(self.timeoutObj)
+      self.serverTimeoutObj && clearTimeout(self.serverTimeoutObj)
+      self.timeoutObj = setTimeout(function() {
+        // 这里发送一个心跳，后端收到后，返回一个心跳消息，
+        if (self.websock.readyState === 1) {
+          // 如果连接正常
+          // self.websock.send("heartCheck"); //这里可以自己跟后端约定
+        } else {
+          // 否则重连
+          self.reconnect()
+        }
+        self.serverTimeoutObj = setTimeout(function() {
+          // 超时关闭
+          self.websock.close()
+        }, self.timeout)
+      }, self.timeout)
     }
   }
 }
