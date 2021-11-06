@@ -22,27 +22,27 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞名字" sortable align="center">
+      <el-table-column label="漏洞名字" sortable prop="poc_name" align="center">
         <template slot-scope="{row}">
           <span>{{ row.poc_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞描述" sortable align="center">
+      <el-table-column label="漏洞描述" sortable prop="poc_description" align="center">
         <template slot-scope="{row}">
           <span>{{ row.poc_description }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞日期" sortable align="center">
+      <el-table-column label="漏洞日期" sortable prop="time" align="center">
         <template slot-scope="{row}">
           <span>{{ row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞类型" sortable align="center">
+      <el-table-column label="漏洞类型" sortable prop="type" align="center">
         <template slot-scope="{row}">
           <span>{{ row.type }}</span>
         </template>

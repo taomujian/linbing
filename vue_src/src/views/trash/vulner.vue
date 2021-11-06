@@ -23,32 +23,32 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="目标" sortable align="center" width="200">
+      <el-table-column label="目标" sortable prop="target" align="center" width="200">
         <template slot-scope="{row}">
           <span>{{ row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="IP:PORT" sortable align="center" width="140">
+      <el-table-column label="IP:PORT" sortable prop="ip_port" align="center" width="140">
         <template slot-scope="{row}">
           <span>{{ row.ip_port }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞名字" sortable align="center">
+      <el-table-column label="漏洞名字" sortable prop="vulner_name" align="center">
         <template slot-scope="{row}">
           <span>{{ row.vulner_name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞描述" sortable align="center">
+      <el-table-column label="漏洞描述" sortable prop="vulner_descrip" align="center">
         <template slot-scope="{row}">
           <span>{{ row.vulner_descrip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="扫描时间" sortable width="140px" align="center">
+      <el-table-column label="扫描时间" sortable prop="scan_time" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>

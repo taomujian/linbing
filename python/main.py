@@ -8,18 +8,17 @@ import uvicorn
 import configparser
 from rq import Queue
 from redis import Redis
-from fastapi import FastAPI, Request
-from fastapi import WebSocket
 from pydantic import BaseModel
-from passlib.context import CryptContext
-from fastapi.responses import FileResponse
-from rq.command import send_stop_job_command
 from app.lib.utils.encode import md5
+from passlib.context import CryptContext
 from app.lib.utils.mysql import Mysql_db
-from app.lib.utils.queue import queue_scan
-from app.lib.utils.common import get_capta, parse_target
 from app.lib.crypto.rsa import Rsa_Crypto
 from app.lib.crypto.aes import Aes_Crypto
+from fastapi.responses import FileResponse
+from rq.command import send_stop_job_command
+from fastapi import FastAPI, WebSocket, Request
+from app.lib.utils.common import get_capta, parse_target
+from app.lib.utils.queue import queue_target_list, queue_scan_list
 
 UPLOAD_FOLDER = 'images'  #文件存放路径
 if not os.path.exists("images"):
@@ -58,6 +57,7 @@ mysqldb.save_account('admin', '系统内置管理员,不可删除,不可修改',
 
 redis_conn = Redis(host = config.get('redis', 'ip'), password = config.get('redis', 'password'), port = config.get('redis', 'port'))
 high_queue = Queue("high", connection = redis_conn)
+high_queue.delete(delete_jobs=True)
 
 os.popen('nohup python3 worker.py > log.log 2>&1 &')
 
@@ -475,20 +475,7 @@ async def target_new(request : VueRequest):
             response['message'] = '认证失败'
             return response
         else:
-            for target in target_list:
-                target = target.strip()
-                scan_ip = parse_target(target)[0]
-                if not scan_ip:
-                    scan_ip = target
-                target = target
-                description = request['description']
-                save_result = mysqldb.save_target(username_result['username'], target, description, scan_ip)
-                if save_result == 'L1000':
-                    pass
-                else:
-                    response['code'] = 'L1001'
-                    response['message'] = '系统异常'
-                    return response
+            high_queue.enqueue_call(queue_target_list, args = (username_result['username'], target_list, request['description'], mysqldb,), timeout = 7200000)
             response['code'] = 'L1000'
             response['message'] = '请求成功'
             return response
@@ -681,22 +668,8 @@ async def start_scan(request : VueRequest):
             if request['target'] == 'all':
                 target_list = mysqldb.get_scan_target(username_result['username'])
             else:
-                target_list.append({'target': request['target']})
-            scan_id = mysqldb.get_scan_id(username_result['username'])
-            for item in target_list:
-                target = item['target']
-                scan_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                mysqldb.update_target_scan_status(username_result['username'], target, '扫描中')
-                mysqldb.update_target_scan_schedule(username_result['username'], target, '正在排队')
-                result = mysqldb.get_target_status(username_result['username'], target)
-                if result != '扫描中':
-                    check = False
-                    high_queue.enqueue_call(queue_scan, job_id = scan_id, args = (username_result['username'], target, scan_id, scan_time, option_list, mysqldb, check,), timeout = 7200000)
-                else:
-                    check = True
-                    high_queue.enqueue_call(queue_scan, job_id = scan_id, args = (username_result['username'], target, scan_id, scan_time, option_list, mysqldb, check,), timeout = 7200000)
-                scan_id = str(int(scan_id) + 1)
-            
+                target_list.append({'target': target})
+            high_queue.enqueue_call(queue_scan_list, args = (username_result['username'], target_list, option_list, mysqldb,), timeout = 7200000)
             response['code'] = 'L1000'
             response['message'] = '请求成功'
             return response
@@ -2487,5 +2460,5 @@ async def scan_status(websocket: WebSocket):
     await websocket.close()
 
 if __name__ == '__main__':
-    # uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 5000, reload = True, debug = True)
-    uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 8000, reload = False, debug = False, docs_url = None, redoc_url = None)
+    uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 5000, reload = True, debug = True)
+    # uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 8000, reload = False, debug = False, docs_url = None, redoc_url = None)

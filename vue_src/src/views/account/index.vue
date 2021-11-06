@@ -27,29 +27,29 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="username" sortable align="center">
+      <el-table-column label="username" sortable prop="username" align="center">
         <template slot-scope="{row}">
           <span>{{ row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" sortable align="center">
+      <el-table-column label="描述" sortable prop="description" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleEditDescription(row)">{{ row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="权限" sortable class-name="status-col">
+      <el-table-column label="权限" sortable prop="role" class-name="status-col">
         <template slot-scope="{row}">
           <el-tag effect="dark" :type="row.role | statusFilter">
             {{ row.role }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" sortable align="center">
+      <el-table-column label="创建时间" sortable prop="create_time" align="center">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>

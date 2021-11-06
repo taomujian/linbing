@@ -27,41 +27,41 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="目标" sortable align="center" width="200">
+      <el-table-column label="目标" sortable prop="target" align="center" width="200">
         <template slot-scope="{row}">
           <span>{{ row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" sortable>
+      <el-table-column label="描述" prop="description" sortable>
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" sortable width="150px" align="center">
+      <el-table-column label="创建时间" sortable prop="create_time" width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="扫描状态" sortable class-name="status-col">
+      <el-table-column label="扫描状态" sortable prop="scan_status" class-name="status-col">
         <template slot-scope="{row}">
           <el-tag effect="dark" :type="row.scan_status | statusFilter">
             {{ row.scan_status }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="扫描进度" sortable align="center">
+      <el-table-column label="扫描进度" sortable prop="scan_schedule" align="center">
         <template slot-scope="{row}">
           <el-tag effect="dark" :type="row.scan_schedule | statusFilter">
             {{ row.scan_schedule }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞数量" sortable align="center">
+      <el-table-column label="漏洞数量" sortable prop="vulner_number" align="center">
         <template slot-scope="{row}">
           <span>{{ row.vulner_number }}</span>
         </template>

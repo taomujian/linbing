@@ -87,7 +87,6 @@
 
 > 修改python/rsa.py文件中的公钥和私钥信息,vue部分则需要修改vue_src/src/libs/crypto.js文件中第77行的公钥,要和python/rsa.py文件中的公钥保持一致
 
-
 修改vue部分后要重新打包,然后把打包后的文件夹dist中的内容复制到vue文件夹,vue原有的文件要删除.
 
 ## 打包vue源代码(进入到vue_src目录下)
@@ -192,7 +191,7 @@
 
 ### 设置源
 
-> mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup && curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo && curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo && sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo yum clean all && yum makecache && yum update -y
+> mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup && curl -o /etc/yum.repos.d/epel.repo <http://mirrors.aliyun.com/repo/epel-7.repo> && curl -o /etc/yum.repos.d/CentOS-Base.repo <https://mirrors.aliyun.com/repo/Centos-7.repo> && sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo yum clean all && yum makecache && yum update -y
 
 ### 安装依赖
 
@@ -204,7 +203,7 @@
 
 ### 安装python3.8
 
-> wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz 
+> wget <https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz>
 
 > tar -zxvf Python-3.8.1.tgz
 
@@ -283,7 +282,7 @@
 
 ### 配置
 
-> 首先下载项目到本地(https://github.com/taomujian/linbing.git),然后配置python/conf.ini中发送邮件所用的账号和授权码,然后修改python/conf.ini的mysql数据库账号密码,这个账号密码要和dockerfile中的设置的账号密码保持一致
+> 首先下载项目到本地(<https://github.com/taomujian/linbing.git),然后配置python/conf.ini中发送邮件所用的账号和授权码,然后修改python/conf.ini的mysql数据库账号密码,这个账号密码要和dockerfile>中的设置的账号密码保持一致
 
 ### 编译镜像(进入项目根目录)
 
@@ -291,13 +290,13 @@
 
 ### 启动容器(进入项目根目录)
 
-> docker run -it -d -p 11000:11000 -p 8800:8800 linbing 
+> docker run -it -d -p 11000:11000 -p 8800:8800 linbing
 
 ## 从dockerhub中获取镜像
 
 > docker pull taomujian/linbing:latest
 
-> docker run -it -d -p 11000:11000 -p 8800:8800 taomujian/linbing 
+> docker run -it -d -p 11000:11000 -p 8800:8800 taomujian/linbing
 
 ## 访问
 
@@ -306,43 +305,54 @@
 ## CHANGELOG
 
 ### [v1.0] 2020.2.28
+
 - 初步完成扫描器功能
 
 ### [v1.1] 2020.7.28
+
 - 新增F5 BIG IP插件
 
 ### [v1.2] 2020.8.12
+
 - 增加docker部署
 
 ### [v1.3] 2020.9.13
+
 - 增加phpstudy_back_rce插件数量
 - 添加目标时可添加多行目标
 
 ### [v1.4] 2020.10.18
+
 - 增加查看端口详情(端口、协议、产品、版本)
 - 增加子域名详情(子域名,子域名ip),子域名是用的oneforall工具
 
 ### [v1.5] 2020.10.30
+
 - 修改一些插件的错误
 - 扫描设置中可设置POC检测时协程的并发数量
 - 增加asyncio多协程功能,提高POC扫描速度
 
 ### [v1.6] 2020.11.27
+
 - 修改默认头像,若想替换的话直接flask/images/default.png图片就可以了
 - 优化前端修复一些小BUG
 
 ### [v1.7] 2020.12.5
+
 - 增加设置代理和扫描的超时时间功能
 - 优化前端修复一些小BUG
 - 优化文件结构,同步docker时间
 
 ### [v1.8] 2020.12.11
+
 - 优化前端刷新后头像丢失BUG
 
 ### [v1.9] 2020.12.18
+
 - 修改发送邮件的方式,使用postfix发送邮件
 
 ### [v2.0] 2021.3.1
+
 - 前端ui框架由iview换为element,重构前端代码
 - 取消账号注册,改由内置管理员账号添加
 - 增加对url目标的目录扫描功能
@@ -350,37 +360,45 @@
 - 优化数据库表格数据结构和sql语句
 
 ### [v2.1] 2021.3.5
+
 - 前端界面优化
 - 多个目标扫描同时扫描时,增加任务队列管理
 
 ### [v2.2] 2021.3.26
+
 - 增加CVE-2021-22986插件
 
 ### [v2.3] 2021.5.20
+
 - 优化扫描逻辑
 - 增加指纹探测,探测使用的框架
 - 优化Struts2 系列漏洞的检测
 
 ### [v2.4] 2021.6.19
+
 - 增加指纹判断功能
 - 对扫出来的端口进行指纹识别,指纹识别后去加载对应的插件,减少发包数量
 - 对插件进行分类,分为http类和非http类
 - 点击扫描时提供自定义扫描选项功能,分为指纹探测, 子域名扫描, 端口扫描, 目录扫描, POC扫描
 - 扫描列表中增加暂停扫描、恢复扫描、取消扫描功能
 
-###  [v2.5] 2021.7.10
+### [v2.5] 2021.7.10
+
 - 后端框架由flask更换为fastapi
 
 ### [v2.6] 2021.9.21
+
 - 扫描时可选择POC插件
 - 增加POC列表
 - 修复已知BUG
 
 ### [v2.7] 2021.10.11
+
 - 修复扫描所有目标时的错误
 - 增加XSS LOG功能(接收数据的url参考生成token后的url)
 
 ### [v2.8] 2021.10.24
+
 - 目标管理和扫描管理中状态信息更新由Ajax轮询换成websocket
 
 ## 致谢
@@ -392,13 +410,13 @@
 > <https://hub.docker.com/r/2d8ru/struts2>
 
 > POC也参考了很多项目:
-> 
+>
 > <https://github.com/Xyntax/POC-T>、
-> 
+>
 > <https://github.com/ysrc/xunfeng>、
-> 
+>
 > <https://github.com/se55i0n/DBScanner>、
-> 
+>
 > <https://github.com/vulscanteam/vulscan>
 
 > 感谢师傅pan带我入门安全,也感谢呆橘同学在vue上对我的指导

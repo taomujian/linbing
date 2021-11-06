@@ -358,7 +358,7 @@ class Mysql_db:
         :return:
         
         """
-        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255), description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -380,7 +380,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '', scan_schedule varchar(255) default '', scan_option varchar(255) default '', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '', scan_schedule varchar(255) default '', scan_option longtext, vulner_number varchar(255) default '0', trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -820,8 +820,8 @@ class Mysql_db:
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql =  "insert target (username, target, description, target_ip, create_time) values (%s, %s, %s, %s, %s)"
-        values = [username, target, description, target_ip, datetime]
+        sql =  "insert target (username, target, description, target_ip, create_time) values (%s, %s, %s, %s, %s) on duplicate key update target = %s, description = %s, target_ip = %s"
+        values = [username, target, description, target_ip, datetime, target, description, target_ip]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1208,6 +1208,33 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
+
+    def update_target_ip(self, username, target, ip):
+
+        """
+        更新目标的ip
+
+        :param: str username: 用户名
+        :param: str target: 目标
+        :param: str ip: 目标的最新ip
+
+        :return:
+
+        """
+
+        sql =  "update target set target_ip = %s where username = %s and target = %s"
+        values = [ip, username, target]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            return 'L1000'
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
     
     def update_target_finger(self, username, target, finger):
         
@@ -1441,6 +1468,35 @@ class Mysql_db:
             cursor.execute(sql, values)
             result = cursor.fetchone()
             return result
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def get_target_ip(self, username, target):
+        
+        """
+        获取目标的IP
+
+        :param: str username: 用户名
+        :param: str target: 目标
+
+        :return: str result:查询到的信息 or 'LXXXXX': 状态码
+        """
+
+        sql = "select * from target where username = %s and target = %s"
+        values = [username, target]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            result = cursor.fetchone()
+            if result:
+                return result['target_ip']
+            else:
+                return ''
         except Exception as e:
             print(e)
             return 'L1001'

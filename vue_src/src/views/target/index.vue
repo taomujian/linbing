@@ -33,51 +33,46 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="目标" sortable width="200px" align="center">
+      <el-table-column label="目标" sortable width="200px" prop="target" align="center">
         <template slot-scope="{row}">
-          <div v-if="isurl(row.target) === true">
-            <span class="link-type" @click="handleDetail(row)">{{ row.target }}</span>
-          </div>
-          <div v-else>
-            <span>{{ row.target }}</span>
-          </div>
+          <span class="link-type" @click="handleDetail(row)">{{ row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" sortable align="center">
+      <el-table-column label="描述" sortable prop="description" align="center">
         <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="框架信息" sortable align="center">
+      <el-table-column label="框架信息" sortable prop="finger" align="center">
         <template slot-scope="{row}">
           <span>{{ row.finger }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" sortable align="center">
+      <el-table-column label="创建时间" sortable prop="create_time" align="center">
         <template slot-scope="{row}">
           <span>{{ row.create_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="扫描状态" sortable class-name="status-col">
+      <el-table-column label="扫描状态" sortable prop="scan_status" class-name="status-col">
         <template slot-scope="{row}">
           <el-tag effect="dark" :type="row.scan_status | statusFilter">
             {{ row.scan_status }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="扫描进度" sortable align="center">
+      <el-table-column label="扫描进度" sortable prop="scan_schedule" align="center">
         <template slot-scope="{row}">
           <el-tag effect="dark" :type="row.scan_schedule | statusFilter">
             {{ row.scan_schedule }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="漏洞数量" sortable align="center">
+      <el-table-column label="漏洞数量" sortable prop="vulner_number" align="center">
         <template slot-scope="{row}">
           <span>{{ row.vulner_number }}</span>
         </template>
@@ -221,7 +216,7 @@ export default {
       query: false,
       listLoading: true,
       lockReconnect: false, // 是否真正建立连接
-      timeout: 30000, // 58秒一次心跳
+      timeout: 60000, // 60秒一次心跳
       timeoutObj: null, // 心跳心跳倒计时
       serverTimeoutObj: null, // 心跳倒计时
       timeoutnum: null, // 断开重连倒计时
@@ -456,14 +451,16 @@ export default {
             const params = { 'data': Encrypt(data) }
             newTarget(params).then(() => {
               this.list.unshift(this.targetTemp)
-              this.editFormVisible = false
-              this.getList()
               this.query = false
+              setTimeout(() => {
+                this.getList()
+                this.editFormVisible = false
+              }, 1500)
               this.$notify({
                 message: '目标添加成功!',
                 type: 'success',
                 center: true,
-                duration: 3 * 1000
+                duration: 2 * 1000
               })
             })
           }
@@ -578,13 +575,16 @@ export default {
         data = JSON.stringify(data)
         const params = { 'data': Encrypt(data) }
         startScan(params).then(() => {
+          setTimeout(() => {
+            this.getList()
+            this.editFormVisible = false
+          }, 1500)
           this.$notify({
             message: '已开始扫描!',
             type: 'success',
             center: true,
-            duration: 3 * 1000
+            duration: 2 * 1000
           })
-          this.getList()
         })
       }
       this.optionVisible = false
@@ -696,7 +696,7 @@ export default {
     },
     initWebSocket() {
       // 初始化weosocket
-      const wsuri = 'ws://' + process.env.VUE_APP_BASE_API.replace('http://', '') + '/ws/trget/status'
+      const wsuri = 'ws://' + process.env.VUE_APP_BASE_API.replace('http://', '') + '/ws/target/status'
       this.websock = new WebSocket(wsuri)
       // 客户端接收服务端数据时触发
       this.websock.onmessage = this.websocketonmessage

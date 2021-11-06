@@ -41,19 +41,19 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间">
+          <el-table-column align="center" sortable prop="scan_time" label="扫描时间">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="子域名">
+          <el-table-column align="center" sortable prop="domain" label="子域名">
             <template slot-scope="{row}">
               <span>{{ row.domain }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="子域名IP">
+          <el-table-column align="center" sortable prop="domain_ip" label="子域名IP">
             <template slot-scope="{row}">
               <span>{{ row.domain_ip }}</span>
             </template>
@@ -80,55 +80,55 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间" width="110">
+          <el-table-column align="center" sortable prop="scan_time" label="扫描时间" width="110">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="IP" sortable align="center" width="120">
+          <el-table-column label="IP" sortable prop="scan_ip" align="center" width="120">
             <template slot-scope="{row}">
               <span>{{ row.scan_ip }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="PORT" sortable align="center" width="100">
+          <el-table-column label="PORT" sortable prop="port" align="center" width="100">
             <template slot-scope="{row}">
               <span class="link-type">
                 <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
               </span>
             </template>
           </el-table-column>
-          <el-table-column label="Web框架" sortable align="center" width="110">
+          <el-table-column label="Web框架" sortable prop="finger" align="center" width="110">
             <template slot-scope="{row}">
               <span>{{ row.finger }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="协议" sortable align="center">
+          <el-table-column label="协议" sortable prop="protocol" align="center">
             <template slot-scope="{row}">
               <span>{{ row.protocol }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="产品" sortable align="center" width="120">
+          <el-table-column label="产品" sortable prop="product" align="center" width="120">
             <template slot-scope="{row}">
               <span>{{ row.product }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="版本" sortable align="center" width="80">
+          <el-table-column label="版本" sortable prop="version" align="center" width="80">
             <template slot-scope="{row}">
               <span>{{ row.version }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="标题" sortable align="center" width="100">
+          <el-table-column label="标题" sortable prop="title" align="center" width="100">
             <template slot-scope="{row}">
               <span>{{ row.title }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="横幅" sortable align="center" width="140">
+          <el-table-column label="横幅" sortable prop="banner" align="center" width="140">
             <template slot-scope="{row}">
               <span>{{ row.banner }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="扫描时间" sortable width="120px" align="center">
+          <el-table-column label="扫描时间" sortable prop="scan_time" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
@@ -155,13 +155,13 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间">
+          <el-table-column align="center" sortable prop="scan_time" label="扫描时间">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="路径">
+          <el-table-column align="center" sortable prop="path" label="路径">
             <template slot-scope="{row}">
               <span class="link-type">
                 <a :href="target+'/'+row.path" target="_blank" class="buttonText">{{ row.path }}</a>
@@ -169,7 +169,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="状态码">
+          <el-table-column align="center" sortable prop="status_code" label="状态码">
             <template slot-scope="{row}">
               <span>{{ row.status_code }}</span>
             </template>
@@ -196,19 +196,19 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间">
+          <el-table-column align="center" sortable prop="scan_time" label="扫描时间">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="漏洞名称">
+          <el-table-column align="center" sortable prop="vulner_name" label="漏洞名称">
             <template slot-scope="{row}">
               <span>{{ row.vulner_name }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="漏洞描述">
+          <el-table-column align="center" sortable prop="vulner_descrip" label="漏洞描述">
             <template slot-scope="{row}">
               <span>{{ row.vulner_descrip }}</span>
             </template>

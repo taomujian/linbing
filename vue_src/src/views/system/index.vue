@@ -15,12 +15,12 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="代理IP" sortable align="center">
+      <el-table-column label="代理IP" sortable prop="proxy" align="center">
         <template slot-scope="{row}">
           <span>{{ row.proxy }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="扫描超时时间" sortable align="center">
+      <el-table-column label="扫描超时时间" sortable prop="timeout" align="center">
         <template slot-scope="{row}">
           <span>{{ row.timeout }}</span>
         </template>

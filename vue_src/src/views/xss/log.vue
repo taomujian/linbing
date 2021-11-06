@@ -23,32 +23,32 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="路径" sortable width="200px" align="center">
+      <el-table-column label="路径" sortable prop="url" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.url }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="数据" sortable align="center">
+      <el-table-column label="数据" sortable prop="data" align="center">
         <template slot-scope="{row}">
           <span>{{ row.data }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="UA" sortable align="center">
+      <el-table-column label="UA" sortable prop="ua" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ua }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="IP" sortable align="center">
+      <el-table-column label="IP" sortable prop="ip" align="center">
         <template slot-scope="{row}">
           <span>{{ row.ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="接收时间" sortable align="center">
+      <el-table-column label="接收时间" sortable prop="time" align="center">
         <template slot-scope="{row}">
           <span>{{ row.time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>

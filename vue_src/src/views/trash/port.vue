@@ -24,52 +24,52 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="目标" sortable align="center" width="200">
+      <el-table-column label="目标" sortable prop="target" align="center" width="200">
         <template slot-scope="{row}">
           <span>{{ row.target }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="IP" sortable align="center" width="100">
+      <el-table-column label="IP" sortable prop="scan_ip" align="center" width="100">
         <template slot-scope="{row}">
           <span class="link-type">{{ row.scan_ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="PORT" sortable align="center" width="100">
+      <el-table-column label="PORT" sortable prop="port" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.port }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="协议" sortable align="center" width="100">
+      <el-table-column label="协议" sortable prop="protocol" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.protocol }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="产品" sortable align="center" width="120">
+      <el-table-column label="产品" sortable prop="product" align="center" width="120">
         <template slot-scope="{row}">
           <span>{{ row.product }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="版本" sortable align="center" width="100">
+      <el-table-column label="版本" sortable prop="version" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.version }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="标题" sortable align="center" width="100">
+      <el-table-column label="标题" sortable prop="title" align="center" width="100">
         <template slot-scope="{row}">
           <span>{{ row.title }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="横幅" sortable align="center">
+      <el-table-column label="横幅" sortable prop="banner" align="center">
         <template slot-scope="{row}">
           <span>{{ row.banner }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="扫描时间" sortable width="140px" align="center">
+      <el-table-column label="扫描时间" sortable prop="scan_time" width="140px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>

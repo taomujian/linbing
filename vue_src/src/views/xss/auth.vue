@@ -27,22 +27,22 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" sortable align="center" width="100">
+      <el-table-column label="ID" sortable align="center" prop="id" width="100">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="token" sortable width="200px" align="center">
+      <el-table-column label="token" sortable prop="token" width="200px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.token }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="url" sortable align="center">
+      <el-table-column label="url" sortable prop="url" align="center">
         <template slot-scope="{row}">
           <span>{{ row.url }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" sortable class-name="status-col">
+      <el-table-column label="状态" sortable prop="token_status" class-name="status-col">
         <template slot-scope="{row}">
           <el-tag effect="dark" :type="row.token_status | statusFilter">
             {{ row.token_status }}
