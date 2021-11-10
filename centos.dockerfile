@@ -1,6 +1,5 @@
 # 底层为centos
 FROM centos:7
-MAINTAINER taomujian
 
 # 设置相关环境变量,数据库账号密码
 ENV MARIADB_USER root

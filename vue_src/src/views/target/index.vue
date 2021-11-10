@@ -696,8 +696,9 @@ export default {
     },
     initWebSocket() {
       // 初始化weosocket
-      const wsuri = 'ws://' + process.env.VUE_APP_BASE_API.replace('http://', '') + '/ws/target/status'
-      this.websock = new WebSocket(wsuri)
+      const { protocol, host } = location
+      const url = `${protocol === 'https' ? 'wss' : 'ws'}://${host}/ws/target/status`
+      this.websock = new WebSocket(url)
       // 客户端接收服务端数据时触发
       this.websock.onmessage = this.websocketonmessage
       // 连接建立时触发

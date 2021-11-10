@@ -43,7 +43,12 @@
       <el-table-column label="PORT" sortable prop="port" align="center" width="100">
         <template slot-scope="{row}">
           <span class="link-type">
-            <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
+            <div v-if="row.port === '443'">
+              <a :href="'https://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
+            </div>
+            <div v-else>
+              <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
+            </div>
           </span>
         </template>
       </el-table-column>

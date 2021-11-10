@@ -1,6 +1,5 @@
 # 底层为ubuntu
 FROM ubuntu:18.04
-MAINTAINER taomujian
 
 # 设置相关环境变量,数据库账号密码
 ENV DEBIAN_FRONTEND noninteractive

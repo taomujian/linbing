@@ -2460,5 +2460,5 @@ async def scan_status(websocket: WebSocket):
     await websocket.close()
 
 if __name__ == '__main__':
-    uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 5000, reload = True, debug = True)
-    # uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 8000, reload = False, debug = False, docs_url = None, redoc_url = None)
+    # uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 5000, reload = True, debug = True)
+    uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 8000, reload = False, debug = False, docs_url = None, redoc_url = None)
