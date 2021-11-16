@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { authList, generateAuth, updateAuth, setAuth } from '@/api/xss'
+import { authList, generateAuth, updateAuth, deleteAuth } from '@/api/xss'
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
 import waves from '@/directive/waves' // waves directive
@@ -117,7 +117,6 @@ export default {
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }
@@ -155,7 +154,6 @@ export default {
       let data = {
         'xss_token': row.token,
         'token_status': status,
-        'flag': '1',
         'token': getToken()
       }
       data = JSON.stringify(data)
@@ -173,12 +171,11 @@ export default {
     handleDelete(row) {
       let data = {
         'xss_token': row.token,
-        'flag': '1',
         'token': getToken()
       }
       data = JSON.stringify(data)
       const params = { 'data': Encrypt(data) }
-      setAuth(params).then(() => {
+      deleteAuth(params).then(() => {
         this.getList()
         this.$notify({
           message: 'token删除成功!',

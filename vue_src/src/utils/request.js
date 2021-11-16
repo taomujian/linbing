@@ -1,4 +1,3 @@
-import qs from 'qs'
 import axios from 'axios'
 import { Notification } from 'element-ui'
 import store from '@/store'

@@ -32,14 +32,6 @@ export function targetDetail(data) {
   })
 }
 
-export function setTarget(data) {
-  return request({
-    url: '/api/set/target',
-    method: 'post',
-    data
-  })
-}
-
 export function targetList(data) {
   return request({
     url: '/api/target/list',

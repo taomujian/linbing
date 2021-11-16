@@ -14,7 +14,6 @@ import vulnerRouter from './modules/vulner'
 import PocRouter from './modules/poc'
 import portRouter from './modules/port'
 import accountRouter from './modules/account'
-import trashRouter from './modules/trash'
 import systemRouter from './modules/system'
 import xssRouter from './modules/xss'
 
@@ -65,7 +64,6 @@ export const constantRoutes = [
   xssRouter,
   vulnerRouter,
   PocRouter,
-  trashRouter,
   systemRouter,
   {
     path: '/redirect',

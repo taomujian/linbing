@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { vulnerList, setVulner } from '@/api/vulner'
+import { vulnerList, deleteVulner } from '@/api/vulner'
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
 import waves from '@/directive/waves' // waves directive
@@ -100,26 +100,11 @@ export default {
     this.getList()
   },
   methods: {
-    isurl(value) {
-      const ip_reg = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/
-      const domain_reg = /^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/
-      if (value.startsWith('http://') === true) {
-        return true
-      } else if (value.startsWith('https://') === true) {
-        return true
-      } else if (ip_reg.test(value)) {
-        return false
-      } else if (domain_reg.test(value)) {
-        return true
-      }
-      return false
-    },
     getList() {
       this.listLoading = true
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }
@@ -155,12 +140,11 @@ export default {
         'target': row.target,
         'ip_port': row.ip_port,
         'vulner_name': row.vulner_name,
-        'flag': '1',
         'token': getToken()
       }
       data = JSON.stringify(data)
       const params = { 'data': Encrypt(data) }
-      setVulner(params).then(() => {
+      deleteVulner(params).then(() => {
         this.getList()
         this.$notify({
           message: '漏洞删除成功!',

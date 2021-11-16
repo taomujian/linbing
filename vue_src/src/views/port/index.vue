@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import { portList, setPort } from '@/api/port'
+import { portList, deletePort } from '@/api/port'
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
 import waves from '@/directive/waves' // waves directive
@@ -136,26 +136,11 @@ export default {
     this.getList()
   },
   methods: {
-    isurl(value) {
-      const ip_reg = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/
-      const domain_reg = /^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/
-      if (value.startsWith('http://') === true) {
-        return true
-      } else if (value.startsWith('https://') === true) {
-        return true
-      } else if (ip_reg.test(value)) {
-        return false
-      } else if (domain_reg.test(value)) {
-        return true
-      }
-      return false
-    },
     getList() {
       this.listLoading = true
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }
@@ -191,12 +176,11 @@ export default {
         'target': row.target,
         'scan_ip': row.scan_ip,
         'port': row.port,
-        'flag': '1',
         'token': getToken()
       }
       data = JSON.stringify(data)
       const params = { 'data': Encrypt(data) }
-      setPort(params).then(() => {
+      deletePort(params).then(() => {
         this.getList()
         this.$notify({
           message: '端口删除成功!',

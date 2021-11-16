@@ -91,7 +91,6 @@ export default {
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }

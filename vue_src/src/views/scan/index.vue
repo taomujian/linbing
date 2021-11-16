@@ -111,14 +111,9 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
       listLoading: true,
-      lockReconnect: false, // 是否真正建立连接
-      timeout: 60000, // 60秒一次心跳
-      timeoutObj: null, // 心跳心跳倒计时
-      serverTimeoutObj: null, // 心跳倒计时
-      timeoutnum: null, // 断开重连倒计时
       page: {
         pageNum: 1,
         pageSize: 10,
@@ -134,38 +129,20 @@ export default {
     }
   },
   created() {
-    this.getList()
+    this.websocketclose()
     this.initWebSocket()
-  },
-
-  destroyed() {
-    this.websock.close() // 离开路由之后断开websocket连接
-  },
-  mounted() {
     this.getList()
+  },
+  destroyed() {
+    this.websocketclose()
   },
   // 销毁定时器
   methods: {
-    isurl(value) {
-      const ip_reg = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/
-      const domain_reg = /^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$/
-      if (value.startsWith('http://') === true) {
-        return true
-      } else if (value.startsWith('https://') === true) {
-        return true
-      } else if (ip_reg.test(value)) {
-        return false
-      } else if (domain_reg.test(value)) {
-        return true
-      }
-      return false
-    },
     getList() {
       this.listLoading = true
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }
@@ -277,26 +254,21 @@ export default {
     initWebSocket() {
       // 初始化weosocket
       const { protocol, host } = location
-      const url = `${protocol === 'https' ? 'wss' : 'ws'}://${host}/ws/target/status`
-      this.websock = new WebSocket(url)
-      // 客户端接收服务端数据时触发
-      this.websock.onmessage = this.websocketonmessage
+      this.websocket = new WebSocket(`${protocol === 'https' ? 'wss' : 'ws'}://${host}/ws/scan/status`)
+      this.websocket.onmessage = this.websocketonmessage
       // 连接建立时触发
-      this.websock.onopen = this.websocketonopen
+      this.websocket.onopen = this.websocketonopen
       // 通信发生错误时触发
-      this.websock.onerror = this.websocketonerror
+      this.websocket.onerror = this.websocketonerror
       // 连接关闭时触发
-      this.websock.onclose = this.websocketclose
+      this.websocket.onclose = this.websocketclose
     },
     // 连接建立时触发
     websocketonopen() {
-      // 开启心跳
-      this.start()
       // 连接建立之后执行send方法发送数据
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }
@@ -307,82 +279,37 @@ export default {
     // 通信发生错误时触发
     websocketonerror() {
       console.log('出现错误')
-      this.reconnect()
     },
     // 客户端接收服务端数据时触发
     websocketonmessage(response) {
       var data = JSON.parse(response.data)
       // 收到变化的数据重新更新数据
-      if (data.data.result !== this.list) {
+      if (data.data !== '' && JSON.stringify(data.data.result) !== JSON.stringify(this.list)) {
         this.listLoading = true
         this.list = data.data.result
         if (data.data === '') {
           this.list = []
           this.page.total = 0
         } else {
-          this.list = data.data.result
           this.page.total = data.data.total
         }
         setTimeout(() => {
           this.listLoading = false
         }, 0.5 * 1000)
       }
-      // 收到服务器信息，心跳重置
-      this.reset()
     },
     websocketsend(Data) {
       // 数据发送
-      this.websock.send(Data)
+      if (this.websocket.readyState === 1) {
+        this.websocket.send(Data)
+      }
     },
     // 连接关闭时触发
-    websocketclose(e) {
+    websocketclose() {
       // 关闭
-      this.reconnect()
-    },
-    reconnect() {
-      // 重新连接
-      var that = this
-      if (that.lockReconnect) {
-        return
+      if (this.websocket) {
+        this.websocket.close()
       }
-      that.lockReconnect = true
-      // 没连接上会一直重连，设置延迟避免请求过多
-      that.timeoutnum && clearTimeout(that.timeoutnum)
-      that.timeoutnum = setTimeout(function() {
-        // 新连接
-        that.initWebSocket()
-        that.lockReconnect = false
-      }, 5000)
-    },
-    reset() {
-      // 重置心跳
-      var that = this
-      // 清除时间
-      clearTimeout(that.timeoutObj)
-      clearTimeout(that.serverTimeoutObj)
-      // 重启心跳
-      that.start()
-    },
-    start() {
-      // 开启心跳
-      // console.log('开启心跳')
-      var self = this
-      self.timeoutObj && clearTimeout(self.timeoutObj)
-      self.serverTimeoutObj && clearTimeout(self.serverTimeoutObj)
-      self.timeoutObj = setTimeout(function() {
-        // 这里发送一个心跳，后端收到后，返回一个心跳消息，
-        if (self.websock.readyState === 1) {
-          // 如果连接正常
-          // self.websock.send("heartCheck"); //这里可以自己跟后端约定
-        } else {
-          // 否则重连
-          self.reconnect()
-        }
-        self.serverTimeoutObj = setTimeout(function() {
-          // 超时关闭
-          self.websock.close()
-        }, self.timeout)
-      }, self.timeout)
     }
   }
 }

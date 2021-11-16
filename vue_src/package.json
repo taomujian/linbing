@@ -29,6 +29,7 @@
     "file-saver": "2.0.1",
     "fuse.js": "3.4.4",
     "js-cookie": "2.2.0",
+    "js-md5": "^0.7.3",
     "jsencrypt": "^3.0.1",
     "jsonlint": "1.6.3",
     "jszip": "3.2.1",

@@ -59,7 +59,7 @@ class Mysql_db:
         
         """
         
-        sql = "create table if not exists cms_finger (id integer auto_increment primary key, username varchar(255), cms_type varchar(255), path varchar(255), match_pattern varchar(255), options varchar(255), finger_type varchar(255), trash_flag varchar(255), time datetime) engine = innodb default charset = utf8;"
+        sql = "create table if not exists cms_finger (id integer auto_increment primary key, username varchar(255), cms_type varchar(255), path varchar(255), match_pattern varchar(255), options varchar(255), finger_type varchar(255), time datetime) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -81,7 +81,7 @@ class Mysql_db:
         
         """
         
-        sql = "create table if not exists fofa_cms_finger (id integer auto_increment primary key, username varchar(255), fofa_cms_type varchar(255), key_str varchar(255), finger_type varchar(255), trash_flag varchar(255), time datetime) engine = innodb default charset = utf8;"
+        sql = "create table if not exists fofa_cms_finger (id integer auto_increment primary key, username varchar(255), fofa_cms_type varchar(255), key_str varchar(255), finger_type varchar(255), time datetime) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -108,8 +108,8 @@ class Mysql_db:
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql =  "insert cms_finger (username, cms_type, path, match_pattern, options, finger_type, trash_flag, time) values (%s, %s, %s, %s, %s, %s, %s, %s)"
-        values = [username, cms_type, path, match_pattern, options, finger_type, '0', datetime]
+        sql =  "insert cms_finger (username, cms_type, path, match_pattern, options, finger_type, time) values (%s, %s, %s, %s, %s, %s, %s)"
+        values = [username, cms_type, path, match_pattern, options, finger_type, datetime]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -136,8 +136,8 @@ class Mysql_db:
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql =  "insert fofa_cms_finger (username, fofa_cms_type, key_str, finger_type, trash_flag, time) values (%s, %s, %s, %s, %s, %s)"
-        values = [username, fofa_cms_type, key, finger_type, '0', datetime]
+        sql =  "insert fofa_cms_finger (username, fofa_cms_type, key_str, finger_type, time) values (%s, %s, %s, %s, %s)"
+        values = [username, fofa_cms_type, key, finger_type, datetime]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -218,7 +218,6 @@ class Mysql_db:
             count_result = cursor.fetchone()['count(0)']
             if count_result == 0:
                 print('start init poc table')
-                name_datas = []
                 for item in os.listdir('app/plugins/http'):
                     file_names = os.listdir('app/plugins/http/' + item)
                     for file_name in file_names:
@@ -248,20 +247,19 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def all_finger(self, username, flag):
+    def all_finger(self, username):
         
         """
         获取所有指纹的信息,无数量限制
 
         :param: str username: 用户名
-        :param: str flag: 筛选指纹的标识位
 
         :return: 'LXXXXX': 状态码
         """
         
-        cms_sql = "select id, cms_type, path, match_pattern, options, finger_type from cms_finger where (username = %s or username = 'common') and trash_flag = %s"
-        fofa_sql = "select id, fofa_cms_type, key_str, finger_type from fofa_cms_finger where (username = %s or username = 'common') and trash_flag = %s"
-        values = [username, flag]
+        cms_sql = "select id, cms_type, path, match_pattern, options, finger_type from cms_finger where (username = %s or username = 'common')"
+        fofa_sql = "select id, fofa_cms_type, key_str, finger_type from fofa_cms_finger where (username = %s or username = 'common')"
+        values = [username]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -315,7 +313,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists port (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port varchar(255) unique key, scan_time varchar(255), scan_ip varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists port (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port varchar(255) unique key, scan_time varchar(255), scan_ip varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -337,7 +335,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists vulner (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port_vulner varchar(255) unique key, ip_port varchar(255), vulner_name varchar(255), vulner_descrip longtext, scan_time varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists vulner (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port_vulner varchar(255) unique key, ip_port varchar(255), vulner_name varchar(255), vulner_descrip longtext, scan_time varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -358,7 +356,7 @@ class Mysql_db:
         :return:
         
         """
-        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', trash_flag varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -380,7 +378,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '', scan_schedule varchar(255) default '', scan_option longtext, vulner_number varchar(255) default '0', trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '', scan_schedule varchar(255) default '', scan_option longtext, vulner_number varchar(255) default '0') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -402,7 +400,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists target_port (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_ip varchar(255), scan_time varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_port (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_ip varchar(255), scan_time varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -424,7 +422,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists target_domain (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_time varchar(255), domain varchar(255), domain_ip varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_domain (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_time varchar(255), domain varchar(255), domain_ip varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -446,7 +444,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists target_vulner (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), ip_port varchar(255), vulner_name varchar(255), vulner_descrip longtext, scan_time varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_vulner (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), ip_port varchar(255), vulner_name varchar(255), vulner_descrip longtext, scan_time varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -468,7 +466,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists target_path (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_time varchar(255), path varchar(255), status_code varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target_path (id integer auto_increment primary key, username varchar(255), target varchar(255), scan_id varchar(255), scan_time varchar(255), path varchar(255), status_code varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -512,7 +510,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists xss_log (id integer auto_increment primary key, username varchar(255), url varchar(255), ua varchar(255), data longtext, time varchar(255), ip varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists xss_log (id integer auto_increment primary key, username varchar(255), url varchar(255), ua varchar(255), data longtext, time varchar(255), ip varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -534,7 +532,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists xss_auth (id integer auto_increment primary key, username varchar(255), token varchar(255), url varchar(255), time varchar(255), token_status varchar(255), trash_flag varchar(255) default '0') engine = innodb default charset = utf8;"
+        sql = "create table if not exists xss_auth (id integer auto_increment primary key, username varchar(255), token varchar(255), url varchar(255), time varchar(255), token_status varchar(255)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -589,7 +587,7 @@ class Mysql_db:
         try:
             target_list = target.split(';')
             for target in target_list:
-                sql = "select * from target where username = %s and (trash_flag = 0 or trash_flag = 1) and target = %s"
+                sql = "select * from target where username = %s  and target = %s"
                 values =  [username, target]
                 cursor.execute(sql, values)
                 result = cursor.fetchone()
@@ -1542,7 +1540,7 @@ class Mysql_db:
         :return: 'LXXXXX': 状态码
         """
 
-        sql = "select target from target where username = %s and scan_status = '未开始' and trash_flag = '0'"
+        sql = "select target from target where username = %s and scan_status = '未开始'"
         values = [username]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
@@ -1773,7 +1771,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
 
-    def target_list(self, username, pagenum, pagesize, flag, list_query):
+    def target_list(self, username, pagenum, pagesize, list_query):
         
         """
         获取所有目标的信息
@@ -1781,7 +1779,6 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
-        :param: str flag: 筛选目标的标识位
         :param: dict list_query: 筛选目标的条件
 
         :return: str 'LXXXXX': 状态码
@@ -1789,10 +1786,10 @@ class Mysql_db:
         
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select id, target, description, finger, create_time, scan_status, scan_schedule, vulner_number from target where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule'], start, pagesize]
-        total_sql = "select count(0) from target where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s)"
-        total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule']]
+        sql = "select id, target, description, finger, create_time, scan_status, scan_schedule, vulner_number from target where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc limit %s, %s"
+        values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule'], start, pagesize]
+        total_sql = "select count(0) from target where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s)"
+        total_values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule']]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2088,7 +2085,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def scan_list(self, username, pagenum, pagesize, flag, list_query):
+    def scan_list(self, username, pagenum, pagesize, list_query):
         
         """
         获取所有扫描任务的信息
@@ -2096,17 +2093,16 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
-        :param: str flag: 筛选扫描任务的标识位
         :param: dict list_query: 筛选扫描任务的条件
 
         :return: str 'LXXXXX': 状态码
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select id, target, target_ip, scan_id, scan_time, scan_status, scan_schedule, vulner_number from target_scan where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule'], start, pagesize]
-        total_sql = "select count(0) from target_scan where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s)"
-        total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule']]
+        sql = "select id, target, target_ip, scan_id, scan_time, scan_status, scan_schedule, vulner_number from target_scan where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc limit %s, %s"
+        values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule'], start, pagesize]
+        total_sql = "select count(0) from target_scan where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s)"
+        total_values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule']]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2125,7 +2121,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def port_list(self, username, pagenum, pagesize, flag, list_query):
+    def port_list(self, username, pagenum, pagesize, list_query):
         
         """
         获取所有端口的信息
@@ -2133,7 +2129,6 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
-        :param: str flag: 筛选扫描任务的标识位
         :param: dict list_query: 筛选扫描任务的条件
 
         :return: str 'LXXXXX': 状态码
@@ -2142,12 +2137,12 @@ class Mysql_db:
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
         sql = "select id, target, scan_time, scan_ip, port, finger, protocol, product, version, title, banner from port \
-            where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
+            where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
                 and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%', start, pagesize]
-        total_sql = "select count(0) from port where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
+        values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%', start, pagesize]
+        total_sql = "select count(0) from port where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
                 and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s)"
-        total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']
+        total_values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2166,7 +2161,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def vulner_list(self, username, pagenum, pagesize, flag, list_query):
+    def vulner_list(self, username, pagenum, pagesize, list_query):
         
         """
         获取所有漏洞的信息
@@ -2174,7 +2169,6 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
-        :param: str flag: 筛选扫描任务的标识位
         :param: dict list_query: 筛选扫描任务的条件
 
         :return: str 'LXXXXX': 状态码
@@ -2182,12 +2176,12 @@ class Mysql_db:
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
         sql = "select id, target, scan_time, ip_port, vulner_name, vulner_descrip from vulner \
-            where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, ip_port like %s) \
+            where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, ip_port like %s) \
                 and if (%s = '', 0 = 0, vulner_name like %s) and if (%s = '', 0 = 0, vulner_descrip like %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['ip_port'], '%' + list_query['ip_port'] + '%', list_query['vulner_name'], '%' + list_query['vulner_name'] + '%', list_query['vulner_descrip'], '%' + list_query['vulner_descrip'] + '%', start, pagesize]
-        total_sql = "select count(0) from vulner where username = %s and trash_flag = %s and if (%s = '', 0 = 0, target like %s) \
+        values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['ip_port'], '%' + list_query['ip_port'] + '%', list_query['vulner_name'], '%' + list_query['vulner_name'] + '%', list_query['vulner_descrip'], '%' + list_query['vulner_descrip'] + '%', start, pagesize]
+        total_sql = "select count(0) from vulner where username = %s and if (%s = '', 0 = 0, target like %s) \
             and if (%s = '', 0 = 0, ip_port like %s) and if (%s = '', 0 = 0, vulner_name like %s) and if (%s = '', 0 = 0, vulner_descrip like %s)"
-        total_values = [username, flag, list_query['target'], '%' + list_query['target'] + '%', list_query['ip_port'], '%' + list_query['ip_port'] + '%', list_query['vulner_name'], '%' + list_query['vulner_name'] + '%', list_query['vulner_descrip'], '%' + list_query['vulner_descrip'] + '%']
+        total_values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['ip_port'], '%' + list_query['ip_port'] + '%', list_query['vulner_name'], '%' + list_query['vulner_name'] + '%', list_query['vulner_descrip'], '%' + list_query['vulner_descrip'] + '%']
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2220,7 +2214,7 @@ class Mysql_db:
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select scan_id, target, scan_time, port, finger, product, protocol, version, title, banner from target_port where username = %s and target = %s and trash_flag = '0' order by scan_id + 0 desc limit %s, %s"
+        sql = "select scan_id, target, scan_time, port, finger, product, protocol, version, title, banner from target_port where username = %s and target = %s order by scan_id + 0 desc limit %s, %s"
         values = [username, target, start, pagesize]
         total_sql = "select count(0) from target_port where username = %s and target = %s"
         total_values = [username, target]
@@ -2256,7 +2250,7 @@ class Mysql_db:
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select scan_id, target, scan_time, domain, domain_ip from target_domain where username = %s and target = %s and trash_flag = '0' order by scan_id + 0 desc limit %s, %s"
+        sql = "select scan_id, target, scan_time, domain, domain_ip from target_domain where username = %s and target = %s order by scan_id + 0 desc limit %s, %s"
         values = [username, target, start, pagesize]
         total_sql = "select count(0) from target_domain where username = %s and target = %s"
         total_values = [username, target]
@@ -2292,7 +2286,7 @@ class Mysql_db:
 
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select scan_id, target, scan_time, scan_status, scan_schedule, vulner_number from target_scan where username = %s and trash_flag = '0' order by scan_id + 0 desc limit %s, %s"
+        sql = "select scan_id, target, scan_time, scan_status, scan_schedule, vulner_number from target_scan where username = %s order by scan_id + 0 desc limit %s, %s"
         values = [username, start, pagesize]
         total_sql = "select count(0) from target_scan where username = %s"
         total_values = [username]
@@ -2328,9 +2322,9 @@ class Mysql_db:
         """
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select scan_id, target, description, ip_port, scan_time, vulner_name, vulner_descrip, scan_time from target_vulner where username = '0' and target = %s and trash_flag = '0' order by scan_id + 0 desc limit %s, %s"
+        sql = "select scan_id, target, description, ip_port, scan_time, vulner_name, vulner_descrip, scan_time from target_vulner where username = '0' and target = %s order by scan_id + 0 desc limit %s, %s"
         values = [username, target, start, pagesize]
-        total_sql = "select count(0) from target_vulner where username = %s and target = %s and trash_flag = '0'" 
+        total_sql = "select count(0) from target_vulner where username = %s and target = %s" 
         total_values = [username, target]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
@@ -2350,7 +2344,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def xss_log_list(self, username, pagenum, pagesize, flag, list_query):
+    def xss_log_list(self, username, pagenum, pagesize, list_query):
         
         """
         获取xss log的信息
@@ -2358,7 +2352,6 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
-        :param: str flag: 筛选目标的标识位
         :param: dict list_query: 筛选目标的条件
 
         :return: str result:查询到的信息 or 'LXXXXX': 状态码
@@ -2366,10 +2359,10 @@ class Mysql_db:
 
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select id, url, data, ua, ip, time from xss_log where username = %s and trash_flag = %s and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, data like %s) and if (%s = '', 0 = 0, ua = %s) and if (%s = '', 0 = 0, ip = %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['url'], '%' + list_query['url'] + '%', list_query['data'], '%' + list_query['data'] + '%', list_query['ua'], list_query['ua'], list_query['ip'], list_query['ip'], start, pagesize]
-        total_sql = "select count(0) from xss_log where username = %s and trash_flag = %s and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, data like %s) and if (%s = '', 0 = 0, ua = %s) and if (%s = '', 0 = 0, ip = %s)"
-        total_values = [username, flag, list_query['url'], '%' + list_query['url'] + '%', list_query['data'], '%' + list_query['data'] + '%', list_query['ua'], list_query['ua'], list_query['ip'], list_query['ip']]
+        sql = "select id, url, data, ua, ip, time from xss_log where username = %s and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, data like %s) and if (%s = '', 0 = 0, ua = %s) and if (%s = '', 0 = 0, ip = %s) order by id desc limit %s, %s"
+        values = [username,  list_query['url'], '%' + list_query['url'] + '%', list_query['data'], '%' + list_query['data'] + '%', list_query['ua'], list_query['ua'], list_query['ip'], list_query['ip'], start, pagesize]
+        total_sql = "select count(0) from xss_log where username = %s and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, data like %s) and if (%s = '', 0 = 0, ua = %s) and if (%s = '', 0 = 0, ip = %s)"
+        total_values = [username, list_query['url'], '%' + list_query['url'] + '%', list_query['data'], '%' + list_query['data'] + '%', list_query['ua'], list_query['ua'], list_query['ip'], list_query['ip']]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2388,7 +2381,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def xss_auth_list(self, username, pagenum, pagesize, flag, list_query):
+    def xss_auth_list(self, username, pagenum, pagesize, list_query):
         
         """
         获取xss auth的信息
@@ -2396,7 +2389,6 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str pagenum: 每页显示的数据数量
         :param: str pagesize: 显示的第几页
-        :param: str flag: 筛选目标的标识位
         :param: dict list_query: 筛选目标的条件
 
         :return: str result:查询到的信息 or 'LXXXXX': 状态码
@@ -2404,10 +2396,10 @@ class Mysql_db:
         
         start = (int(pagenum)-1) * int(pagesize)
         pagesize = int (pagesize)
-        sql = "select id, token, url, token_status from xss_auth where username = %s and trash_flag = %s and if (%s = '', 0 = 0, token like %s) and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, token_status = %s) order by id desc limit %s, %s"
-        values = [username, flag, list_query['token'], '%' + list_query['token'] + '%', list_query['url'], '%' + list_query['url'] + '%', list_query['token_status'], list_query['token_status'], start, pagesize]
-        total_sql = "select count(0) from xss_auth where username = %s and trash_flag = %s and if (%s = '', 0 = 0, token like %s) and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, token_status = %s)"
-        total_values = [username, flag, list_query['token'], '%' + list_query['token'] + '%', list_query['url'], '%' + list_query['url'] + '%', list_query['token_status'], list_query['token_status']]
+        sql = "select id, token, url, token_status from xss_auth where username = %s and if (%s = '', 0 = 0, token like %s) and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, token_status = %s) order by id desc limit %s, %s"
+        values = [username, list_query['token'], '%' + list_query['token'] + '%', list_query['url'], '%' + list_query['url'] + '%', list_query['token_status'], list_query['token_status'], start, pagesize]
+        total_sql = "select count(0) from xss_auth where username = %s and if (%s = '', 0 = 0, token like %s) and if (%s = '', 0 = 0, url like %s) and if (%s = '', 0 = 0, token_status = %s)"
+        total_values = [username, list_query['token'], '%' + list_query['token'] + '%', list_query['url'], '%' + list_query['url'] + '%', list_query['token_status'], list_query['token_status']]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2425,59 +2417,7 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
-    
-    def set_xss_log(self, username, id, flag):
-        
-        """
-        设置目标标志位
 
-        :param: str username: 用户名
-        :param: str id: 日志id号
-        :param: str flag: 设置的标识位
-
-        :return: str 'LXXXXX': 状态码
-        """
-        
-        conn = self.get_conn()
-        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
-        try:
-            sql = "update xss_log set trash_flag =%s where username = %s and id = %s"
-            values = [flag, username, id]
-            cursor.execute(sql, values)
-            return 'L1000'
-        except Exception as e:
-            print(e)
-            return 'L1001'
-        finally:
-            cursor.close()
-            self.close_conn
-    
-    def set_xss_auth(self, username, token, flag):
-        
-        """
-        设置目标标志位
-
-        :param: str username: 用户名
-        :param: str token: token
-        :param: str flag: 设置的标识位
-
-        :return: str 'LXXXXX': 状态码
-        """
-        
-        conn = self.get_conn()
-        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
-        try:
-            sql = "update xss_auth set trash_flag =%s where username = %s and token = %s"
-            values = [flag, username, token]
-            cursor.execute(sql, values)
-            return 'L1000'
-        except Exception as e:
-            print(e)
-            return 'L1001'
-        finally:
-            cursor.close()
-            self.close_conn
-    
     def update_xss_auth(self, username, token, token_status):
         
         """
@@ -2503,109 +2443,9 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
-    
-    def set_target(self, username, target, flag):
-        
-        """
-        设置目标标志位
-
-        :param: str username: 用户名
-        :param: str target: 目标
-        :param: str flag: 筛选目标的标识位
-
-        :return: str 'LXXXXX': 状态码
-        """
-        
-        conn = self.get_conn()
-        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
-        try:
-            sql = "update target set trash_flag =%s where username = %s and target = %s"
-            target_scan_sql = "update target_scan set trash_flag =%s where username = %s and target = %s"
-            target_domain_sql = "update target_domain set trash_flag =%s where username = %s and target = %s"
-            target_port_sql = "update target_port set trash_flag =%s where username = %s and target = %s" 
-            target_path_sql = "update target_path set trash_flag =%s where username = %s and target = %s"
-            target_vulner_sql = "update target_vulner set trash_flag =%s where username = %s and target = %s"
-            vulner_sql = "update vulner set trash_flag =%s where username = %s and target = %s"
-            port_sql = "update port set trash_flag =%s where username = %s and target = %s"
-            values = [flag, username, target]
-            cursor.execute(sql, values)
-            cursor.execute(target_scan_sql, values)
-            cursor.execute(target_domain_sql, values)
-            cursor.execute(target_port_sql, values)
-            cursor.execute(target_path_sql, values)
-            cursor.execute(target_vulner_sql, values)
-            cursor.execute(vulner_sql, values)
-            cursor.execute(port_sql, values)
-            return 'L1000'
-        except Exception as e:
-            print(e)
-            return 'L1001'
-        finally:
-            cursor.close()
-            self.close_conn
-    
-    def set_port(self, username, flag, target, scan_ip, port):
-        
-        """
-        设置漏洞标志位
-
-        :param: str username: 用户名
-        :param: str target: 目标
-        :param: str scan_ip: 目标ip
-        :param: str port: 端口号
-        :param: str flag: 设置端口的标识位
-
-        :return: str 'LXXXXX': 状态码
-        """
-        
-        conn = self.get_conn()
-        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
-        try:
-            port_sql = "update port set trash_flag = %s where username = %s and target = %s and scan_ip = %s and port = %s"
-            target_port_sql = "update target_port set trash_flag = %s where username = %s and target = %s and scan_ip = %s and port = %s"
-            values = [flag, username, target, scan_ip, port]
-            cursor.execute(port_sql, values)
-            cursor.execute(target_port_sql, values)
-            return 'L1000'
-        except Exception as e:
-            print(e)
-            return 'L1001'
-        finally:
-            cursor.close()
-            self.close_conn
-    
-    def set_vulner(self, username, flag, target, ip_port, vulner_name):
-        
-        """
-        设置漏洞标志位
-
-        :param: str username: 用户名
-        :param: str flag: 设置漏洞的标识位
-        :param: str target: 目标
-        :param: str ip_port: ip和port
-        :param: str vulner_name: 漏洞名字
-
-        :return: str 'LXXXXX': 状态码
-        """
-        
-        conn = self.get_conn()
-        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
-        try:
-            vuln_sql = "update vulner set trash_flag = %s where username = %s and target = %s and ip_port = %s and vulner_name = %s"
-            target_vuln_sql = "update target_vulner set trash_flag = %s where username = %s and target = %s and ip_port = %s and vulner_name = %s"
-            values = [flag, username, target, ip_port, vulner_name]
-            cursor.execute(vuln_sql, values)
-            cursor.execute(target_vuln_sql, values)
-            return 'L1000'
-        except Exception as e:
-            print(e)
-            return 'L1001'
-        finally:
-            cursor.close()
-            self.close_conn
 
     def change_avatar(self, username, imagename):
-        
+
         """
         修改用户头像
 

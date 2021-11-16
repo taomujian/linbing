@@ -32,22 +32,6 @@ export function updateAuth(data) {
   })
 }
 
-export function setLog(data) {
-  return request({
-    url: '/api/delete/log',
-    method: 'post',
-    data
-  })
-}
-
-export function setAuth(data) {
-  return request({
-    url: '/api/delete/auth',
-    method: 'post',
-    data
-  })
-}
-
 export function deleteLog(data) {
   return request({
     url: '/api/delete/log',

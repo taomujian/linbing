@@ -69,7 +69,7 @@
 <script>
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
-import { logList, setLog } from '@/api/xss'
+import { logList, deleteLog } from '@/api/xss'
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -107,7 +107,6 @@ export default {
       let data = {
         'pagenum': this.page.pageNum,
         'pagesize': this.page.pageSize,
-        'flag': '0',
         'token': getToken(),
         'listQuery': JSON.stringify(this.listQuery)
       }
@@ -133,12 +132,11 @@ export default {
     handleDelete(row) {
       let data = {
         'id': row.id,
-        'flag': '1',
         'token': getToken()
       }
       data = JSON.stringify(data)
       const params = { 'data': Encrypt(data) }
-      setLog(params).then(() => {
+      deleteLog(params).then(() => {
         this.getList()
         this.$notify({
           message: '日志删除成功!',
