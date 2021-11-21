@@ -370,7 +370,9 @@ async def changp_assword(request : VueRequest):
                 response['message'] = '密码错误'
                 return response
             else:
-                changps_result = mysqldb.changps(token, pwd_context.hash(new_password))
+                random_str = get_capta()
+                token = aes_crypto.encrypt('admin' + random_str)
+                changps_result = mysqldb.changps(username, token, pwd_context.hash(new_password))
                 if changps_result == 'L1000':
                     response['code'] = 'L1000'
                     response['message'] = '请求成功'
@@ -2243,4 +2245,4 @@ async def scan_status(websocket: WebSocket):
 
 if __name__ == '__main__':
     # uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 5000, reload = True, debug = True)
-    uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 8000, reload = False, debug = False, docs_url = None, redoc_url = None)
+    uvicorn.run(app = 'main:app', host = '0.0.0.0', port = 8000, reload = False, debug = False)

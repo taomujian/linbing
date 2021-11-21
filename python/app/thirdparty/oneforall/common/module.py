@@ -60,7 +60,7 @@ class Module(object):
         self.elapse = round(self.end - self.start, 1)
         logger.log('DEBUG', f'Finished {self.source} module to '
                             f'collect {self.domain}\'s subdomains')
-        logger.log('INFOR', f'The {self.source} module took {self.elapse} seconds '
+        logger.log('INFOR', f'{self.source} module took {self.elapse} seconds '
                             f'found {len(self.subdomains)} subdomains')
         logger.log('DEBUG', f'{self.source} module found subdomains of {self.domain}\n'
                             f'{self.subdomains}')
@@ -87,7 +87,7 @@ class Module(object):
                                 verify=self.verify,
                                 **kwargs)
         except Exception as e:
-            logger.log('ERROR', e.args)
+            logger.log('ERROR', e.args[0])
             return None
         if not check:
             return resp
@@ -124,9 +124,9 @@ class Module(object):
         except Exception as e:
             if raise_error:
                 if isinstance(e, requests.exceptions.ConnectTimeout):
-                    logger.log(level, e.args)
+                    logger.log(level, e.args[0])
                     raise e
-            logger.log(level, e.args)
+            logger.log(level, e.args[0])
             return None
         if not check:
             return resp
@@ -156,7 +156,7 @@ class Module(object):
                                 verify=self.verify,
                                 **kwargs)
         except Exception as e:
-            logger.log('ERROR', e.args)
+            logger.log('ERROR', e.args[0])
             return None
         if not check:
             return resp
@@ -184,7 +184,7 @@ class Module(object):
                                   verify=self.verify,
                                   **kwargs)
         except Exception as e:
-            logger.log('ERROR', e.args)
+            logger.log('ERROR', e.args[0])
             return None
         if not check:
             return resp
@@ -275,7 +275,6 @@ class Module(object):
                       'alive': None,
                       'request': None,
                       'resolve': None,
-                      'new': None,
                       'url': None,
                       'subdomain': None,
                       'port': None,
@@ -291,7 +290,8 @@ class Module(object):
                       'header': None,
                       'history': None,
                       'response': None,
-                      'times': None,
+                      'ip_times': None,
+                      'cname_times': None,
                       'ttl': None,
                       'cidr': None,
                       'asn': None,
@@ -313,27 +313,26 @@ class Module(object):
                     info = dict()
                 cname = info.get('cname')
                 ip = info.get('ip')
-                times = info.get('times')
+                ip_times = info.get('ip_times')
+                cname_times = info.get('cname_times')
                 ttl = info.get('ttl')
-                public = info.get('public')
                 if isinstance(cname, list):
                     cname = ','.join(cname)
                     ip = ','.join(ip)
-                    times = ','.join([str(num) for num in times])
+                    ip_times = ','.join([str(num) for num in ip_times])
+                    cname_times = ','.join([str(num) for num in cname_times])
                     ttl = ','.join([str(num) for num in ttl])
-                    public = ','.join([str(num) for num in public])
                 result = {'id': None,
                           'alive': info.get('alive'),
                           'request': info.get('request'),
                           'resolve': info.get('resolve'),
-                          'new': None,
                           'url': url,
                           'subdomain': subdomain,
                           'port': 80,
                           'level': level,
                           'cname': cname,
                           'ip': ip,
-                          'public': public,
+                          'public': info.get('public'),
                           'cdn': info.get('cdn'),
                           'status': None,
                           'reason': info.get('reason'),
@@ -342,7 +341,8 @@ class Module(object):
                           'header': None,
                           'history': None,
                           'response': None,
-                          'times': times,
+                          'ip_times': ip_times,
+                          'cname_times': cname_times,
                           'ttl': ttl,
                           'cidr': info.get('cidr'),
                           'asn': info.get('asn'),

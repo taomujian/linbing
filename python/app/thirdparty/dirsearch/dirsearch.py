@@ -20,13 +20,15 @@
 import os
 import sys
 
-if sys.version_info < (3, 0):
-    sys.stdout.write("Sorry, dirsearch requires Python 3.x\n")
+if sys.version_info < (3, 7):
+    sys.stdout.write("Sorry, dirsearch requires Python 3.7 or higher\n")
     sys.exit(1)
 
-from app.thirdparty.dirsearch.lib.core import ArgumentParser
-from app.thirdparty.dirsearch.lib.controller import Controller
-from app.thirdparty.dirsearch.lib.output import CLIOutput, PrintOutput
+from lib.core.argument_parser import ArgumentParser
+from lib.controller.controller import Controller
+from lib.output.verbose_output import CLIOutput
+from lib.output.silent_output import PrintOutput
+
 
 class Program(object):
     def __init__(self, url):
@@ -42,5 +44,7 @@ class Program(object):
         self.controller = Controller(self.script_path, self.arguments, self.output)
         self.result = self.controller.result
 
+
 if __name__ == "__main__":
     main = Program()
+    print(main.result)

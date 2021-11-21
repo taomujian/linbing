@@ -1,13 +1,13 @@
 #/usr/bin/python3
+
 import os
 import re
-import socket
 import asyncio
 import functools
 import importlib
 from urllib.parse import urlparse
 from app.lib.utils.common import get_live
-from app.lib.utils.port_scan import Port_Scan
+from app.scan.port_scan import Port_Scan
 from app.lib.utils.finger import WhatCms, Fofa_Scanner
 from app.thirdparty.oneforall.oneforall import OneForAll
 from app.thirdparty.dirsearch.dirsearch import Program
@@ -102,73 +102,44 @@ class Scan:
         else:
             scan_option = kwargs['scan_option']
         # 目标为ip类型时,不再探测指纹、扫描子域名和目录
-        if ip_result and kwargs['target'] in ip_result:
-            pass
+       
+        target = get_live(kwargs['target'], 3)
 
-        else:
-            # 目标为域名类型时
-            if domain_result and kwargs['target'] in domain_result:
-                if not kwargs['scan_ip']:
-                    self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
-                    self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描失败')                                 
-                    self.mysqldb.update_scan_status(kwargs['username'], kwargs['scan_id'], '扫描失败')
-                    self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '扫描失败')
-                    return None
+        if target and '1' in scan_option and not ip_result:
+            self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '指纹探测中')
+            self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '指纹探测中')
+
+            finger_data = self.mysqldb.all_finger(kwargs['username'])
+            cms = Fofa_Scanner(kwargs['target'], finger_data['fofa_cms'])
+            fofa_finger = cms.run()
+            cms_name = ''
+            cms_name_flag = 0
+            for fofa_finger_tmp in fofa_finger:
+                if fofa_finger_tmp.lower() in cms.cms_finger_list:
+                    cms_name = fofa_finger_tmp
+                    cms_name_flag = 1
+                    self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
             
-            target = get_live(kwargs['target'], 3)
+            if not cms_name_flag:
+                whatcms = WhatCms(kwargs['target'], finger_data['cms'])
+                result = whatcms.run()
+                cms_name = ''
+                if result:
+                    cms_name = result['cms_name']
+                    self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
+            scan_option.remove('1')
+            self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
+
+        if '2' in scan_option and not ip_result:
             
-            if not target:
-                if not kwargs['scan_ip']:
-                    self.mysqldb.update_target_scan_status(kwargs['username'], kwargs['target'], '扫描失败')
-                    self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '扫描失败')                                 
-                    self.mysqldb.update_scan_status(kwargs['username'], kwargs['scan_id'], '扫描失败')
-                    self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '扫描失败')
-                    return None
-
-            else:
-                if '1' in scan_option:
-                    self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '指纹探测中')
-                    self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '指纹探测中')
-
-                    finger_data = self.mysqldb.all_finger(kwargs['username'], '0')
-                    cms = Fofa_Scanner(kwargs['target'], finger_data['fofa_cms'])
-                    fofa_finger = cms.run()
-                    cms_name = ''
-                    cms_name_flag = 0
-                    for fofa_finger_tmp in fofa_finger:
-                        if fofa_finger_tmp.lower() in cms.cms_finger_list:
-                            cms_name = fofa_finger_tmp
-                            cms_name_flag = 1
-                            self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
-                    
-                    if not cms_name_flag:
-                        whatcms = WhatCms(kwargs['target'], finger_data['cms'])
-                        result = whatcms.run()
-                        cms_name = ''
-                        if result:
-                            cms_name = result['cms_name']
-                            self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
-                    scan_option.remove('1')
-                    self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
-
-                if '2' in scan_option:
-                    
-                    if kwargs['domain']:
-                        self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '子域名探测中')
-                        self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '子域名探测中')
-                        self.sub_domain(kwargs['username'], kwargs['target'], kwargs['main_domain'], kwargs['scan_id'])
-                        scan_option.remove('2')
-                        self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
-
-                if '4' in scan_option:
-                    if 'http://' in kwargs['target'] or 'https://' in kwargs['target']:
-                        self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '目录扫描中')
-                        self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
-                        self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
-                        scan_option.remove('4')
-                        self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
-
-        if '3' in scan_option or '5' in scan_option:
+            if kwargs['domain']:
+                self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '子域名探测中')
+                self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '子域名探测中')
+                self.sub_domain(kwargs['username'], kwargs['target'], kwargs['main_domain'], kwargs['scan_id'])
+                scan_option.remove('2')
+                self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
+        
+        if kwargs['scan_ip'] and '3' in scan_option or '5' in scan_option:
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '端口扫描中')
             self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
             if scan_set['scanner'] == 'nmap':
@@ -178,8 +149,14 @@ class Scan:
             if '3' in scan_option:
                 scan_option.remove('3')
                 self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
-        else:
-            scan_list = '不进行POC检测'
+
+        if target and '4' in scan_option and not ip_result:
+            if 'http://' in kwargs['target'] or 'https://' in kwargs['target']:
+                self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '目录扫描中')
+                self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
+                self.dir_scan(kwargs['username'], kwargs['target'], kwargs['target'], kwargs['scan_id'])
+                scan_option.remove('4')
+                self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 
         if '5' in scan_option and scan_list != '不进行POC检测':
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], 'POC扫描中')

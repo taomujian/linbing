@@ -22,8 +22,7 @@ class Collect(object):
             for module in modules:
                 module_path = settings.module_dir.joinpath(module)
                 for path in module_path.rglob('*.py'):
-                    # Classes to be imported
-                    import_module = ('modules.' + module, path.stem)
+                    import_module = f'app.thirdparty.oneforall.modules.{module}.{path.stem}'
                     self.modules.append(import_module)
         else:
             self.modules = settings.enable_partial_module
@@ -32,8 +31,9 @@ class Collect(object):
         """
         Import do function
         """
-        for package, name in self.modules:
-            import_object = importlib.import_module('.' + name, 'app.thirdparty.oneforall.' + package)
+        for module in self.modules:
+            name = module.split('.')[-1]
+            import_object = importlib.import_module(module)
             func = getattr(import_object, 'run')
             self.collect_funcs.append([func, name])
 
@@ -47,8 +47,7 @@ class Collect(object):
 
         threads = []
         # Create subdomain collection threads
-        for collect_func in self.collect_funcs:
-            func_obj, func_name = collect_func
+        for func_obj, func_name in self.collect_funcs:
             thread = threading.Thread(target=func_obj, name=func_name,
                                       args=(self.domain,), daemon=True)
             threads.append(thread)

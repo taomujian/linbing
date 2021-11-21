@@ -32,12 +32,10 @@ fire
 future
 idna
 loguru
-pysocks
 requests-file
 six
 redis
 soupsieve
-sqlalchemy
 tenacity
 termcolor
 tldextract
@@ -46,3 +44,7 @@ treelib
 configparser
 win32-setctime
 chardet
+PySocks
+SQLAlchemy
+cffi
+markupsafe

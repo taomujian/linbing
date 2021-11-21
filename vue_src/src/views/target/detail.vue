@@ -27,12 +27,14 @@
           子域名
           <el-badge v-show="domain_label_total>0" :value="domain_label_total" class="badge-a" />
         </span>
-        <el-table :data="domainlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
+        <el-table :data="domainlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%" @sort-change="domainSortChange">
           <el-table-column
             v-loading="loading"
             align="center"
             label="扫描ID"
-            sortable
+            prop="scan_id"
+            sortable="custom"
+            :sort-orders="['ascending','descending']"
             width="100"
             element-loading-text="请给我点时间！"
           >
@@ -41,19 +43,19 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间">
+          <el-table-column align="center" label="扫描时间">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable prop="domain" label="子域名">
+          <el-table-column align="center" prop="domain" label="子域名">
             <template slot-scope="{row}">
               <span>{{ row.domain }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="子域名IP">
+          <el-table-column align="center" label="子域名IP">
             <template slot-scope="{row}">
               <span>{{ row.domain_ip }}</span>
             </template>
@@ -64,14 +66,16 @@
       <el-tab-pane label="端口" name="port">
         <span slot="label">
           端口
-          <el-badge v-show="path_label_total>0" :value="port_label_total" class="badge-a" />
+          <el-badge v-show="port_label_total>0" :value="port_label_total" class="badge-a" />
         </span>
-        <el-table :data="portlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
+        <el-table :data="portlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%" @sort-change="portSortChange">
           <el-table-column
             v-loading="loading"
             align="center"
             label="扫描ID"
-            sortable
+            prop="scan_id"
+            sortable="custom"
+            :sort-orders="['ascending','descending']"
             width="100"
             element-loading-text="请给我点时间！"
           >
@@ -80,55 +84,55 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间" width="110">
+          <el-table-column align="center" prop="scan_time" label="扫描时间" width="110">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column label="IP" sortable align="center" width="120">
+          <el-table-column label="IP" prop="scan_ip" align="center" width="120">
             <template slot-scope="{row}">
               <span>{{ row.scan_ip }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="PORT" sortable align="center" width="100">
+          <el-table-column label="PORT" prop="port" align="center" width="100">
             <template slot-scope="{row}">
               <span class="link-type">
                 <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
               </span>
             </template>
           </el-table-column>
-          <el-table-column label="Web框架" sortable align="center" width="110">
+          <el-table-column label="Web框架" prop="finger" align="center" width="110">
             <template slot-scope="{row}">
               <span>{{ row.finger }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="协议" sortable align="center">
+          <el-table-column label="协议" prop="protocol" align="center">
             <template slot-scope="{row}">
               <span>{{ row.protocol }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="产品" sortable align="center" width="120">
+          <el-table-column label="产品" prop="product" align="center" width="120">
             <template slot-scope="{row}">
               <span>{{ row.product }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="版本" sortable align="center" width="80">
+          <el-table-column label="版本" prop="version" align="center" width="80">
             <template slot-scope="{row}">
               <span>{{ row.version }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="标题" sortable align="center" width="100">
+          <el-table-column label="标题" prop="title" align="center" width="100">
             <template slot-scope="{row}">
               <span>{{ row.title }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="横幅" sortable align="center" width="140">
+          <el-table-column label="横幅" prop="banner" align="center" width="140">
             <template slot-scope="{row}">
               <span>{{ row.banner }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="扫描时间" sortable prop="scan_time" width="120px" align="center">
+          <el-table-column label="扫描时间" prop="scan_time" width="120px" align="center">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
@@ -141,12 +145,14 @@
           目录
           <el-badge v-show="path_label_total>0" :value="path_label_total" class="badge-a" />
         </span>
-        <el-table :data="pathlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
+        <el-table :data="pathlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%" @sort-change="pathSortChange">
           <el-table-column
             v-loading="loading"
             align="center"
             label="扫描ID"
-            sortable
+            prop="scan_id"
+            sortable="custom"
+            :sort-orders="['ascending','descending']"
             width="100"
             element-loading-text="请给我点时间！"
           >
@@ -155,13 +161,13 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间">
+          <el-table-column align="center" label="扫描时间">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="路径">
+          <el-table-column align="center" label="路径">
             <template slot-scope="{row}">
               <span class="link-type">
                 <a :href="target+'/'+row.path" target="_blank" class="buttonText">{{ row.path }}</a>
@@ -169,7 +175,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="状态码">
+          <el-table-column align="center" label="状态码">
             <template slot-scope="{row}">
               <span>{{ row.status_code }}</span>
             </template>
@@ -182,12 +188,14 @@
           漏洞
           <el-badge v-show="vulner_label_total>0" :value="vulner_label_total" class="badge-a" />
         </span>
-        <el-table :data="vulnerlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%">
+        <el-table :data="vulnerlist" :span-method="objectSpanMethod" border fit highlight-current-row style="width: 100%" @sort-change="vulnerSortChange">
           <el-table-column
             v-loading="loading"
             align="center"
             label="扫描ID"
-            sortable
+            prop="scan_id"
+            sortable="custom"
+            :sort-orders="['ascending','descending']"
             width="100"
             element-loading-text="请给我点时间！"
           >
@@ -196,19 +204,19 @@
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="扫描时间">
+          <el-table-column align="center" label="扫描时间">
             <template slot-scope="{row}">
               <span>{{ row.scan_time | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="漏洞名称">
+          <el-table-column align="center" label="漏洞名称">
             <template slot-scope="{row}">
               <span>{{ row.vulner_name }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column align="center" sortable label="漏洞描述">
+          <el-table-column align="center" label="漏洞描述">
             <template slot-scope="{row}">
               <span>{{ row.vulner_descrip }}</span>
             </template>
@@ -316,7 +324,7 @@ export default {
         this.loading = false
       })
     },
-    getSpanArr(data) {
+    getSpanArr() {
       this.domainlist.forEach(v => {
         v.rowspan = 1
       })
@@ -337,7 +345,6 @@ export default {
         // 这里跳过已经重复的数据
         i = i + this.domainlist[i].rowspan - 1
       }
-
       this.portlist.forEach(v => {
         v.rowspan = 1
       })
@@ -406,6 +413,34 @@ export default {
         return {
           rowspan: row.rowspan,
           colspan: 1
+        }
+      }
+    },
+    domainSortChange({ prop, order }) {
+      this.domainlist.sort(this.compare(prop, order))
+    },
+    portSortChange({ prop, order }) {
+      this.portlist.sort(this.compare(prop, order))
+    },
+    pathSortChange({ prop, order }) {
+      this.pathlist.sort(this.compare(prop, order))
+    },
+    vulnerSortChange({ prop, order }) {
+      this.vulnerlist.sort(this.compare(prop, order))
+    },
+    compare(propertyName, sort) {
+      return function(obj1, obj2) {
+        var value1 = obj1[propertyName]
+        var value2 = obj2[propertyName]
+        if (typeof value1 === 'string' && typeof value2 === 'string') {
+          const res = value1.localeCompare(value2, 'zh')
+          return sort === 'ascending' ? res : -res
+        } else {
+          if (value1 <= value2) {
+            return sort === 'ascending' ? -1 : 1
+          } else if (value1 > value2) {
+            return sort === 'ascending' ? 1 : -1
+          }
         }
       }
     }

@@ -61,6 +61,7 @@ def queue_scan_list(username, target_list, option_list, mysqldb):
         if result != '扫描中':
             check = False
         else:
+            # check = False
             check = True
         high_queue.enqueue_call(queue_scan, job_id = scan_id, args = (username, target, scan_id, scan_time, option_list, mysqldb, check,), timeout = 7200000)
         scan_id = str(int(scan_id) + 1)
@@ -92,29 +93,22 @@ def queue_scan(username, target, scan_id, scan_time, scan_option, mysqldb, check
     if not scan_status:
         mysqldb.save_target_scan(username, target, scan_ip, scan_id, scan_time, '扫描中', '正在排队')
 
-    if not scan_ip:
-        mysqldb.update_target_live_status(username, target, '失活')
-        mysqldb.update_target_scan_status(username, target, '扫描失败')
-        mysqldb.update_target_scan_schedule(username, target, '扫描失败')
-        mysqldb.update_scan_status(username, scan_id, '扫描失败')
-        mysqldb.update_scan_schedule(username, scan_id, '扫描失败')
-    else:
-        if check:
-            while True:
-                result = mysqldb.get_target_status(username, target)
-                if result != '扫描中':
-                    break
-                else:
-                    time.sleep(5)
+    if check:
+        while True:
+            result = mysqldb.get_target_status(username, target)
+            if result != '扫描中':
+                break
+            else:
+                time.sleep(5)
 
-        scan_data = {
-            'username': username,
-            'target': target,
-            'scan_id': scan_id,
-            'scan_ip': scan_ip,
-            'main_domain': main_domain,
-            'domain': domain,
-            'scan_option': scan_option
-        }
-        scan = Scan(mysqldb)
-        scan.run(scan_data)
+    scan_data = {
+        'username': username,
+        'target': target,
+        'scan_id': scan_id,
+        'scan_ip': scan_ip,
+        'main_domain': main_domain,
+        'domain': domain,
+        'scan_option': scan_option
+    }
+    scan = Scan(mysqldb)
+    scan.run(scan_data)

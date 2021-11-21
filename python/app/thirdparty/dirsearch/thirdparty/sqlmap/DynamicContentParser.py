@@ -1,7 +1,7 @@
 from difflib import SequenceMatcher
 import re
 
-from app.thirdparty.dirsearch.thirdparty import chardet
+from thirdparty import chardet
 
 
 class DynamicContentParser:

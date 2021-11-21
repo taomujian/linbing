@@ -13,10 +13,8 @@ const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 router.beforeEach(async(to, from, next) => {
   // start progress bar
   NProgress.start()
-
   // set page title
   document.title = getPageTitle(to.meta.title)
-
   // determine whether the user has logged in
   const hasToken = getToken()
 
@@ -58,10 +56,15 @@ router.beforeEach(async(to, from, next) => {
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
-      next()
+      if (to.query.redirect === '/change/password') {
+        next(`/login?redirect=/dashboard`)
+      } else {
+        next()
+      }
     } else {
       // other pages that do not have permission to access are redirected to the login page.
       next(`/login?redirect=${to.path}`)
+
       NProgress.done()
     }
   }

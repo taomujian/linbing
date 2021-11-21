@@ -701,17 +701,20 @@ class Mysql_db:
             cursor.close()
             self.close_conn
 
-    def changps(self, token, password):
+    def changps(self, username, token, password):
         
         """
         修改用户密码
 
-        :param: str data: 修改用户所需的数据,有所需要修改的新密码,条件字段名和条件字段值
+        :param: str username: 用户名
+        :param: str token: 新的token
+        :param: str password: 新密码
+        
         :return: str 'LXXXXX': 状态码
         """
 
-        sql = "update user set password = %s where token = %s" 
-        values = [password, token]
+        sql = "update user set password = %s, token = %s where username = %s" 
+        values = [password, token, username]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2543,10 +2546,8 @@ class Mysql_db:
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
             del_port_sql = "delete from port where username = %s and target = %s and scan_ip = %s and port = %s"
-            del_target_port_sql = "delete from target_port where username = %s and target = %s and scan_ip = %s and port = %s"
             values = [username, target, scan_ip, port]
             cursor.execute(del_port_sql, values)
-            cursor.execute(del_target_port_sql, values)
             return 'L1000'
         except Exception as e:
             print(e)
