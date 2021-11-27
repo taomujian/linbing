@@ -185,7 +185,7 @@ class Mysql_db:
                 print('start init fofa_cms_finger table')
                 sqlconn = sqlite3.connect(filename)
                 sqlcursor = sqlconn.cursor()
-                sqlcursor.execute('select * from fofa')
+                sqlcursor.execute('select * from fofa_cms')
                 cms_list = sqlcursor.fetchall()
                 sqlcursor.close()
                 sqlconn.close()
@@ -1954,7 +1954,7 @@ class Mysql_db:
                 'total': path_total_result,
                 'label_toal': path_label_total_result
             }
-            
+
             result['vulner'] = {
                 'result': vulner_result,
                 'total': vulner_total_result,
@@ -2652,12 +2652,5 @@ class Mysql_db:
             pass
 
 if __name__ == '__main__':
-    mysqldb = Mysql_db()
-    mysqldb.create_database('linbing')
-    mysqldb.create_user()
-    mysqldb.create_target()
-    mysqldb.create_target_port()
-    mysqldb.create_target_domain()
-    mysqldb.create_vulnerability()
-    mysqldb.create_delete_vulnerability()
-    mysqldb.create_delete_target()
+    mysqldb = Mysql_db('192.168.202.128', '3306', 'root', '123456')
+    

@@ -104,8 +104,7 @@ class Scan:
         # 目标为ip类型时,不再探测指纹、扫描子域名和目录
        
         target = get_live(kwargs['target'], 3)
-
-        if target and '1' in scan_option and not ip_result:
+        if target and '1' in scan_option and ('http://' in target or 'https://' in target):
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '指纹探测中')
             self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '指纹探测中')
 
@@ -113,20 +112,18 @@ class Scan:
             cms = Fofa_Scanner(kwargs['target'], finger_data['fofa_cms'])
             fofa_finger = cms.run()
             cms_name = ''
-            cms_name_flag = 0
             for fofa_finger_tmp in fofa_finger:
                 if fofa_finger_tmp.lower() in cms.cms_finger_list:
                     cms_name = fofa_finger_tmp
-                    cms_name_flag = 1
                     self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
-            
-            if not cms_name_flag:
-                whatcms = WhatCms(kwargs['target'], finger_data['cms'])
-                result = whatcms.run()
-                cms_name = ''
+
+            whatcms = WhatCms(kwargs['target'], finger_data['cms'])
+            result = whatcms.run()
+            result = list(set(result))
+            if result:
                 if result:
-                    cms_name = result['cms_name']
-                    self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
+                    cms_name = cms_name + '\n' + ''.join(result)
+                self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
             scan_option.remove('1')
             self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 
@@ -143,14 +140,14 @@ class Scan:
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '端口扫描中')
             self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
             if scan_set['scanner'] == 'nmap':
-                scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'])
+                scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['domain'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'])
             else:
-                scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
+                scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['domain'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
             if '3' in scan_option:
                 scan_option.remove('3')
                 self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 
-        if target and '4' in scan_option and not ip_result:
+        if target and '4' in scan_option and ('http://' in target or 'https://' in target):
             if 'http://' in kwargs['target'] or 'https://' in kwargs['target']:
                 self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '目录扫描中')
                 self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '目录扫描中')
