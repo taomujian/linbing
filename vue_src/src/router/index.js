@@ -16,6 +16,7 @@ import portRouter from './modules/port'
 import accountRouter from './modules/account'
 import systemRouter from './modules/system'
 import xssRouter from './modules/xss'
+import dnsRouter from './modules/dns'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -61,6 +62,7 @@ export const constantRoutes = [
   targetRouter,
   scanRouter,
   portRouter,
+  dnsRouter,
   xssRouter,
   vulnerRouter,
   PocRouter,

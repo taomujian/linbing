@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function logList(data) {
+export function xsslogList(data) {
   return request({
     url: '/api/xss/log',
     method: 'post',
@@ -32,9 +32,9 @@ export function updateAuth(data) {
   })
 }
 
-export function deleteLog(data) {
+export function deletexssLog(data) {
   return request({
-    url: '/api/delete/log',
+    url: '/api/delete/xss/log',
     method: 'post',
     data
   })

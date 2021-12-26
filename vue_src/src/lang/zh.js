@@ -6,6 +6,7 @@ export default {
     XssManager: 'XSS管理',
     XssLog: 'XSS日志',
     XssAuth: 'XSS鉴权',
+    DnsLog: 'DNS日志',
     AccountManager: '账号管理',
     AssetManager: '资产管理',
     ScanManager: '扫描管理',

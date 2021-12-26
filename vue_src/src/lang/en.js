@@ -6,6 +6,7 @@ export default {
     AccountManager: 'Account Manager',
     XssManager: 'Xss Manager',
     XssLog: 'XSS Log',
+    DnsLog: 'DNS Log',
     XssAuth: 'XSS Auth',
     AssetManager: 'Asset Manager',
     ScanManager: 'Scan Manager',

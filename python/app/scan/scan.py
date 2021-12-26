@@ -116,14 +116,14 @@ class Scan:
                 if fofa_finger_tmp.lower() in cms.cms_finger_list:
                     cms_name = fofa_finger_tmp
                     self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
-
-            whatcms = WhatCms(kwargs['target'], finger_data['cms'])
-            result = whatcms.run()
-            result = list(set(result))
-            if result:
-                if result:
-                    cms_name = cms_name + '\n' + ''.join(result)
-                self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
+            
+            if not cms_name:
+                whatcms = WhatCms(kwargs['target'], finger_data['cms'])
+                cms_result = whatcms.run()
+                cms_result = list(set(cms_result))
+                if cms_result:
+                    cms_name = cms_name + '\n' + ''.join(cms_result)
+                    self.mysqldb.update_target_finger(kwargs['username'], kwargs['target'], cms_name)
             scan_option.remove('1')
             self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 

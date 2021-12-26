@@ -5,6 +5,7 @@ import configparser
 from rq import Queue
 from redis import Redis
 from app.scan.scan import Scan
+from app.lib.utils.encode import md5
 from app.lib.utils.common import parse_target
 
 config = configparser.ConfigParser()
@@ -63,7 +64,7 @@ def queue_scan_list(username, target_list, option_list, mysqldb):
         else:
             # check = False
             check = True
-        high_queue.enqueue_call(queue_scan, job_id = scan_id, args = (username, target, scan_id, scan_time, option_list, mysqldb, check,), timeout = 7200000)
+        high_queue.enqueue_call(queue_scan, job_id = md5(username + scan_id), args = (username, target, scan_id, scan_time, option_list, mysqldb, check,), timeout = 7200000)
         scan_id = str(int(scan_id) + 1)
 
 def queue_scan(username, target, scan_id, scan_time, scan_option, mysqldb, check):

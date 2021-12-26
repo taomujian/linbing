@@ -3,14 +3,18 @@
 import os
 import json
 import time
+import ctypes
 import base64
+import inspect
 import uvicorn
 import asyncio
+import threading
 import configparser
 from rq import Queue
 from redis import Redis
 from pydantic import BaseModel
 from typing import List
+from dnslog import Dnslog
 from app.lib.utils.encode import md5
 from passlib.context import CryptContext
 from app.lib.utils.mysql import Mysql_db
@@ -45,6 +49,7 @@ mysqldb.create_target_vulner()
 mysqldb.create_cms_finger()
 mysqldb.create_fofa_cms_finger()
 mysqldb.create_xss_log()
+mysqldb.create_dns_log()
 mysqldb.create_xss_auth()
 mysqldb.init_finger('cms_finger.db')
 mysqldb.init_poc()
@@ -60,6 +65,8 @@ mysqldb.save_account('admin', '系统内置管理员,不可删除,不可修改',
 redis_conn = Redis(host = config.get('redis', 'ip'), password = config.get('redis', 'password'), port = config.get('redis', 'port'))
 high_queue = Queue("high", connection = redis_conn)
 high_queue.delete(delete_jobs=True)
+
+dns_thread_list = []
 
 os.popen('nohup python3 worker.py > log.log 2>&1 &')
 
@@ -85,10 +92,35 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-def test():
-    for connect in manager.active_connections:
-        print(connect)
-        print(connect.url)
+def stop_thread(thread):
+    tid = ctypes.c_long(thread.ident)
+    if not inspect.isclass(SystemExit):
+        exctype = type(SystemExit)
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+    if res == 0:
+        raise ValueError("invalid thread id")
+    elif res != 1:
+        # """if it returns a number greater than one, you're in trouble,
+        # and you should call it again with exc=NULL to revert the effect"""
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
+
+def handle_dns_log(username):
+    dnslog = Dnslog()
+    domain = dnslog.domain
+    config.set('Domain', 'domain', domain)
+    config.write(open('conf.ini','w',encoding='utf-8'))
+    
+    while True:
+        try:
+            log_list = dnslog.get_logs()
+            for log in log_list:
+                if not mysqldb.get_dns_log(username, log[0], log[1], log[2]):
+                    mysqldb.save_dns_log(username, log[0], log[1], log[2])
+        except Exception as e:
+            print(e)
+
+        time.sleep(10)
 
 class VueRequest(BaseModel):
     data: str = None
@@ -743,7 +775,7 @@ async def pause_scan(request : VueRequest):
         else:
             scan_status = mysqldb.get_scan_status(username_result['username'], scan_id)
             if scan_status == '扫描中':
-                send_stop_job_command(redis_conn, scan_id)
+                send_stop_job_command(redis_conn, md5(username_result['username'] + scan_id))
                 mysqldb.update_scan_status(username_result['username'], scan_id, '暂停扫描')
                 mysqldb.update_target_scan_status(username_result['username'], target, '暂停扫描')
                 response['data'] = '请求正常'
@@ -794,7 +826,7 @@ async def resume_scan(request : VueRequest):
             scan_status = mysqldb.get_scan_status(username_result['username'], scan_id)
             if scan_status == '暂停扫描':
                 registry = high_queue.failed_job_registry
-                registry.requeue(scan_id)
+                registry.requeue(md5(username_result['username'] + scan_id))
                 mysqldb.update_scan_status(username_result['username'], scan_id, '正在扫描')
                 mysqldb.update_target_scan_status(username_result['username'], target, '正在扫描')
                 response['data'] = '请求正常'
@@ -852,11 +884,11 @@ async def cancel_scan(request : VueRequest):
                 response['code'] = 'L1000'
                 response['message'] = '已取消扫描,无法再次取消'
             else:
-                send_stop_job_command(redis_conn, scan_id)
+                send_stop_job_command(redis_conn, md5(username_result['username'] + scan_id))
                 time.sleep(0.5)
                 registry = high_queue.failed_job_registry
                 try:
-                    registry.remove(scan_id, delete_job = True)
+                    registry.remove(md5(username_result['username'] + scan_id), delete_job = True)
                     mysqldb.update_scan_status(username_result['username'], scan_id, '已取消扫描')
                     mysqldb.update_target_scan_status(username_result['username'], target, '已取消扫描')
                     response['data'] = '请求正常'
@@ -1305,8 +1337,109 @@ async def auth_list(request : VueRequest):
         response['message'] = '系统异常'
         return response
 
+@app.post('/api/generate/domain')
+async def generate_domain(request : VueRequest):
+    
+    """
+    从dnslog.cn重新获取域名
+
+    :param:
+    :return: str response: 需要返回的数据
+    """
+
+    try:
+        response = {'code': '', 'message': '', 'data': ''}
+        request = rsa_crypto.decrypt(request.data)
+        request = json.loads(request)
+        token  = request['token']
+        query_str = {
+            'type': 'token',
+            'data': token
+        }
+        username_result = mysqldb.username(query_str)
+        if username_result == 'L1001':
+            response['code'] = 'L1001'
+            response['message'] = '系统异常'
+            return response
+        elif username_result == None:
+            response['code'] = 'L1003'
+            response['message'] = '认证失败'
+            return response
+        else:
+            for thread in dns_thread_list:
+                stop_thread(thread)
+
+            t = threading.Thread(target= handle_dns_log, daemon = True, args = (username_result['username'],))
+            t.start()
+            time.sleep(1)
+            response['code'] = 'L1000'
+            response['message'] = '请求正常'
+            domain = config.get('Domain', 'domain')
+            response['data'] = domain
+            return response
+    except Exception as e:
+        print(e)
+        response['code'] = 'L1001'
+        response['message'] = '系统异常'
+        return response
+
+@app.post('/api/dns/log')
+async def dns_log_list(request : VueRequest):
+    
+    """
+    获取dns log的接口
+
+    :param:
+    :return: str response: 需要返回的数据
+    """
+
+    try:
+        response = {'code': '', 'message': '', 'data': ''}
+        request = rsa_crypto.decrypt(request.data)
+        request = json.loads(request)
+        pagenum = request['pagenum']
+        pagesize = request['pagesize']
+        token  = request['token']
+        query_str = {
+            'type': 'token',
+            'data': token
+        }
+        list_query = json.loads(request['listQuery'])
+
+        username_result = mysqldb.username(query_str)
+        if username_result == 'L1001':
+            response['code'] = 'L1001'
+            response['message'] = '系统异常'
+            return response
+        elif username_result == None:
+            response['code'] = 'L1003'
+            response['message'] = '认证失败'
+            return response
+        else:
+            sql_result = mysqldb.dns_log_list(username_result['username'], pagenum, pagesize, list_query)
+            target_list = sql_result['result']
+            total = sql_result['total']
+            if target_list == 'L1001':
+                response['code'] = 'L1001'
+                response['message'] = '系统异常'
+            else:
+                response['code'] = 'L1000'
+                response['message'] = '请求成功'
+                if total == 0:
+                    response['data'] = ''
+                else:
+                    response['data'] = sql_result
+
+                response['domain'] = config.get('Domain', 'domain')
+                return response
+    except Exception as e:
+        print(e)
+        response['code'] = 'L1001'
+        response['message'] = '系统异常'
+        return response
+
 @app.post('/api/xss/log')
-async def log_list(request : VueRequest):
+async def xss_log_list(request : VueRequest):
     
     """
     获取xss log的接口
@@ -1838,8 +1971,53 @@ async def delete_vulner(request : VueRequest):
         response['message'] = '系统异常'
         return response
 
-@app.post('/api/delete/log')
-async def delete_log(request : VueRequest):
+@app.post('/api/delete/dns/log')
+async def delete_dns_log(request : VueRequest):
+    
+    """
+    删除dns log的接口
+
+    :param:
+    :return: str response: 需要返回的数据
+    """
+
+    try:
+        response = {'code': '', 'message': '', 'data': ''}
+        request = rsa_crypto.decrypt(request.data)
+        request = json.loads(request)
+        id = request['id']
+        token = request['token']
+        query_str = {
+            'type': 'token',
+            'data': token
+        }
+        username_result = mysqldb.username(query_str)
+        if username_result == 'L1001':
+            response['code'] = 'L1001'
+            response['message'] = '系统异常'
+            return response
+        elif username_result == None:
+            response['code'] = 'L1003'
+            response['message'] = '认证失败'
+            return response
+        else:
+            delete_result = mysqldb.delete_dns_log(username_result['username'], id)
+            if delete_result == 'L1000':
+                response['code'] = 'L1000'
+                response['message'] = '请求成功'
+            elif delete_result == 'L1001':
+                response['code'] = 'L1001'
+                response['message'] = '系统异常'
+            return response
+        
+    except Exception as e:
+        print(e)
+        response['code'] = 'L1001'
+        response['message'] = '系统异常'
+        return response
+
+@app.post('/api/delete/xss/log')
+async def delete_xss_log(request : VueRequest):
     
     """
     删除xss log的接口

@@ -4,7 +4,6 @@ import re
 import time
 import socket
 import hashlib
-from itertools import product
 from base64 import b64encode
 from urllib.parse import urlparse
 
@@ -68,19 +67,21 @@ class Rsync_Weakpwd_BaseVerify:
         ver_string = self._rsync_init()
         if self._get_ver_num(ver_string=ver_string) < 30:
             print('Error info:', ver_string)
+        
         payload = path_name + '\n'
-        self.sock.send(payload)
-        result = self.sock.recv(1024)
+        self.sock.send(payload.encode())
+        result = self.sock.recv(1024).decode()
         if result == '\n':
-            result = self.sock.recv(1024)
+            result = self.sock.recv(1024).decode()
+        
         if result:
             hash_o = hashlib.md5()
-            hash_o.update(passwd)
-            hash_o.update(result[18:].rstrip('\n'))
-            auth_string = b64encode(hash_o.digest())
+            hash_o.update(passwd.encode())
+            hash_o.update((result[18:].rstrip('\n')).encode())
+            auth_string = b64encode(hash_o.digest()).decode()
             send_data = username + ' ' + auth_string.rstrip('==') + '\n'
-            self.sock.send(send_data)
-            res = self.sock.recv(1024)
+            self.sock.send(send_data.encode())
+            res = self.sock.recv(1024).decode()
             if res.startswith('@RSYNCD: OK'):
                 return (True, username, passwd)
             else:
@@ -89,7 +90,7 @@ class Rsync_Weakpwd_BaseVerify:
     def _get_ver_num(self, ver_string=''):
         ver_num_com = re.compile('@RSYNCD: (\d+)')
         if ver_string:
-            ver_num = ver_num_com.match(ver_string).group(1)
+            ver_num = ver_num_com.match(ver_string.decode()).group(1)
             if ver_num.isdigit():
                 return int(ver_num)
             else: return 0
@@ -124,6 +125,9 @@ class Rsync_Weakpwd_BaseVerify:
                                     flag = 1
                                     weak_auth_list.append((path_name, user, pwd))
                     except Exception as e:
+                        print(e)
+                        print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
+                        print(e.__traceback__.tb_lineno)            # 发生异常所在的行数
                         pass
         except Exception as e:
             print(e)
@@ -143,4 +147,4 @@ class Rsync_Weakpwd_BaseVerify:
 
 if __name__ == '__main__':
     Rsync_Weakpwd = Rsync_Weakpwd_BaseVerify('http://127.0.0.1:873')
-    Rsync_Weakpwd.check()
+    result = Rsync_Weakpwd.check()

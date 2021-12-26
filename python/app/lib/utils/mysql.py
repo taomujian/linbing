@@ -521,6 +521,28 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
+    def create_dns_log(self):
+        
+        """
+        创建保存dns_log信息的表
+
+        :param:
+
+        :return:
+        
+        """
+
+        sql = "create table if not exists dns_log (id integer auto_increment primary key, username varchar(255), dns_log varchar(255), ip varchar(255), time varchar(255)) engine = innodb default charset = utf8;"
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql)
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            self.close_conn
+    
     def create_xss_auth(self):
         
         """
@@ -1111,7 +1133,7 @@ class Mysql_db:
     def save_xss_log(self, username, url, data, ua, ip):
         
         """
-        保存漏洞信息
+        保存xsslog信息
 
         :param: str username: 用户名
         :param: str data: 获取到的data
@@ -1123,6 +1145,59 @@ class Mysql_db:
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         sql = "insert xss_log (username, url, data, ua, ip, time) values (%s, %s, %s, %s, %s, %s)"
         values = [username, url, data, ua, ip, datetime]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(sql, values)
+            return 'L1000'
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
+    def get_dns_log(self, username, dns_log, ip, time):
+        
+        """
+        查看数据库中是否已有dnslog信息
+
+        :param: str username: 用户名
+        :param: str dns_log: dns log
+        :param: str ip: 来源ip
+        :param: str time: 时间
+
+        :return: str 'LXXXXX': 状态码
+        """
+        
+        sql = "select * from dns_log where username = %s and dns_log = %s and ip = %s and time = %s"
+        values = [username, dns_log, ip, time]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            result = cursor.execute(sql, values)
+            return result
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+
+    def save_dns_log(self, username, dns_log, ip, time):
+        
+        """
+        保存dnslog信息
+
+        :param: str username: 用户名
+        :param: str dns_log: dns log
+        :param: str ip: 来源ip
+
+        :return: str 'LXXXXX': 状态码
+        """
+        
+        sql = "insert dns_log (username, dns_log, ip, time) values (%s, %s, %s, %s)"
+        values = [username, dns_log, ip, time]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -2347,6 +2422,43 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
+    def dns_log_list(self, username, pagenum, pagesize, list_query):
+        
+        """
+        获取dns log的信息
+
+        :param: str username: 用户名
+        :param: str pagenum: 每页显示的数据数量
+        :param: str pagesize: 显示的第几页
+        :param: dict list_query: 筛选目标的条件
+
+        :return: str result:查询到的信息 or 'LXXXXX': 状态码
+        """
+
+        start = (int(pagenum)-1) * int(pagesize)
+        pagesize = int (pagesize)
+        sql = "select id, dns_log, ip, time from dns_log where username = %s and if (%s = '', 0 = 0, dns_log = %s) order by id desc limit %s, %s"
+        values = [username,  list_query['dns_log'], '%' + list_query['dns_log'] + '%',  start, pagesize]
+        total_sql = "select count(0) from dns_log where username = %s and if (%s = '', 0 = 0, dns_log = %s)"
+        total_values = [username, list_query['dns_log'], '%' + list_query['dns_log'] + '%']
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(total_sql, total_values)
+            total_result = cursor.fetchone()['count(0)']
+            cursor.execute(sql, values)
+            result = cursor.fetchall()
+            data = {}
+            data['total'] = total_result
+            data ['result'] = result
+            return data
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+    
     def xss_log_list(self, username, pagenum, pagesize, list_query):
         
         """
@@ -2383,7 +2495,7 @@ class Mysql_db:
         finally:
             cursor.close()
             self.close_conn
-    
+
     def xss_auth_list(self, username, pagenum, pagesize, list_query):
         
         """
@@ -2585,6 +2697,31 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
+    def delete_dns_log(self, username, id):
+        
+        """
+        用来删除dns log
+
+        :param: str username: 用户名
+        :param: str id: id
+        
+        :return: 'LXXXXX': 状态码
+        """
+
+        del_sql = "delete from dns_log where username = %s and id = %s"
+        values = [username, id]
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(del_sql, values)
+            return 'L1000'
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+
     def delete_xss_log(self, username, id):
         
         """

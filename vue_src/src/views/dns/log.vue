@@ -1,16 +1,18 @@
 <style lang="scss" scoped>
-  @import '@/styles/xsslog.scss';
+  @import '@/styles/dnslog.scss';
 </style>
 
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.url" placeholder="路径关键字" class="header" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.data" placeholder="数据关键字" class="header" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.ua" placeholder="ua关键字" class="header" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.ip" placeholder="IP关键字" class="header" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.dns_log" placeholder="日志关键字" class="header" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.ip" placeholder="ip关键字" class="header" @keyup.enter.native="handleFilter" />
       <el-button v-waves class="button" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
+      </el-button>
+      <el-tag class="tag">当前域名: {{ domain }}</el-tag>
+      <el-button v-waves class="button" type="primary" @click="handleDomain">
+        重新生成域名
       </el-button>
     </div>
 
@@ -28,19 +30,9 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="路径" sortable prop="url" width="200px" align="center">
+      <el-table-column label="DNS Log" sortable prop="dns_log" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.url }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="数据" sortable prop="data" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.data }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="UA" sortable prop="ua" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.ua }}</span>
+          <span>{{ row.dns_log }}</span>
         </template>
       </el-table-column>
       <el-table-column label="IP" sortable prop="ip" align="center">
@@ -69,18 +61,19 @@
 <script>
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
-import { xsslogList, deletexssLog } from '@/api/xss'
+import { dnslogList, deletednsLog, generateDomain } from '@/api/dns'
 
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
-  name: 'XssLog',
+  name: 'DnsLog',
   components: { Pagination },
   directives: { waves },
   data() {
     return {
       tableKey: 0,
+      domain: '',
       list: null,
       total: 0,
       query: false,
@@ -91,9 +84,7 @@ export default {
         total: 10
       },
       listQuery: {
-        url: '',
-        data: '',
-        ua: '',
+        dns_log: '',
         ip: ''
       }
     }
@@ -112,7 +103,7 @@ export default {
       }
       data = JSON.stringify(data)
       const params = { 'data': Encrypt(data) }
-      xsslogList(params).then(response => {
+      dnslogList(params).then(response => {
         if (response.data === '') {
           this.list = []
           this.page.total = 0
@@ -120,6 +111,8 @@ export default {
           this.list = response.data.result
           this.page.total = response.data.total
         }
+        this.domain = response.domain
+        console.log(this.domain)
         setTimeout(() => {
           this.listLoading = false
         }, 0.5 * 1000)
@@ -136,10 +129,27 @@ export default {
       }
       data = JSON.stringify(data)
       const params = { 'data': Encrypt(data) }
-      deletexssLog(params).then(() => {
+      deletednsLog(params).then(() => {
         this.getList()
         this.$notify({
           message: '日志删除成功!',
+          type: 'success',
+          center: true,
+          duration: 3 * 1000
+        })
+      })
+    },
+    handleDomain() {
+      let data = {
+        'token': getToken()
+      }
+      data = JSON.stringify(data)
+      const params = { 'data': Encrypt(data) }
+      generateDomain(params).then(response => {
+        this.domain = response.data
+        this.getList()
+        this.$notify({
+          message: '重新获取域名成功!',
           type: 'success',
           center: true,
           duration: 3 * 1000

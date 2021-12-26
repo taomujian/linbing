@@ -7,6 +7,7 @@ export default {
     XssManager: 'XSS管理',
     XssLog: 'XSSログ',
     XssAuth: 'XSS検証',
+    DnsLog: 'Dnsログ',
     AssetManager: '資産管理',
     ScanManager: '走査管理',
     ScanDetail: 'スキャンの詳細',

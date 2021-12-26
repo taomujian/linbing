@@ -7,6 +7,7 @@ export default {
     AssetManger: 'gestión de activos',
     XssManager: 'gestión XSS',
     XssLog: 'registro XSS',
+    DnsLog: 'registro DNS',
     XssAuth: 'verificación XSS',
     ScanManager: 'Gestión del escaneo',
     ScanDetail: 'Detalles del escaneo',
