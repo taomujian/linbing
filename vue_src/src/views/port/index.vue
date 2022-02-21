@@ -42,14 +42,19 @@
       </el-table-column>
       <el-table-column label="PORT" sortable prop="port" align="center" width="100">
         <template slot-scope="{row}">
-          <span class="link-type">
-            <div v-if="row.port === '443'">
+          <div v-if="row.protocol == 'https'">
+            <span class="link-type">
               <a :href="'https://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
-            </div>
-            <div v-else>
+            </span>
+          </div>
+          <div v-else-if="row.protocol == 'http'">
+            <span class="link-type">
               <a :href="'http://'+row.scan_ip+':'+row.port" target="_blank" class="buttonText">{{ row.port }}</a>
-            </div>
-          </span>
+            </span>
+          </div>
+          <div v-else>
+            <span>{{ row.port }}</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="Web框架" sortable prop="finger" align="center" width="110">

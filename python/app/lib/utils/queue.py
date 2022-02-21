@@ -58,6 +58,7 @@ def queue_scan_list(username, target_list, option_list, mysqldb):
     # 开始把要扫描的目标入队列
     scan_id = mysqldb.get_scan_id(username)
     for item in target_list:
+        target = item['target']
         result = mysqldb.get_target_status(username, target)
         if result != '扫描中':
             check = False

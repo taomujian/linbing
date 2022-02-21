@@ -1939,7 +1939,7 @@ class Mysql_db:
         pagesize = int (pagesize)
         target_sql = "select target, finger, scan_status, scan_schedule, vulner_number from target where username = %s and target = %s"
         domain_sql = "select scan_id, scan_time, domain, domain_ip from target_domain where username = %s and target = %s order by scan_id + 0  desc limit %s, %s"
-        port_sql = "select scan_id, target, scan_time, port, finger, product, protocol, version, title, banner from target_port where username = %s and target = %s order by scan_id + 0 desc limit %s, %s"
+        port_sql = "select scan_id, target, scan_ip, scan_time, port, finger, product, protocol, version, title, banner from target_port where username = %s and target = %s order by scan_id + 0 desc limit %s, %s"
         path_sql = "select scan_id, scan_time, path, status_code from target_path where username = %s and target = %s order by scan_id + 0  desc limit %s, %s"
         vulner_sql = "select scan_id, scan_time, vulner_name, vulner_descrip from target_vulner where username = %s and target = %s order by scan_id + 0 desc limit %s, %s"
         

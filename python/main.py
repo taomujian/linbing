@@ -732,6 +732,7 @@ async def start_scan(request : VueRequest):
                 target_list = mysqldb.get_scan_target(username_result['username'])
             else:
                 target_list.append({'target': target})
+            
             high_queue.enqueue_call(queue_scan_list, args = (username_result['username'], target_list, option_list, mysqldb,), timeout = 7200000)
             response['code'] = 'L1000'
             response['message'] = '请求成功'

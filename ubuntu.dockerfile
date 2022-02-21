@@ -11,7 +11,7 @@ ENV LANG C.UTF-8
 
 # 暴露端口
 EXPOSE 8800
-EXPOSE 11000
+EXPOSE 1100
 
 # 更新apt源及安装依赖
 RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && apt-get clean && apt update \
