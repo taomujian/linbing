@@ -9,6 +9,7 @@ pydantic
 passlib
 aiofiles
 IPy
+aiohttp
 kazoo
 paramiko
 pycryptodome

@@ -18,7 +18,7 @@ def worker(listen):
 def run ():
     listen = ['high']
     try:
-        cpu_num = 4
+        cpu_num = 2
         p = Pool(cpu_num)
         for i in range(cpu_num):
             p.apply_async(worker, args=(listen,))  # 开启worker

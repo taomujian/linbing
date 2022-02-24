@@ -6,6 +6,7 @@ import asyncio
 import functools
 import importlib
 from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor
 from app.lib.utils.common import get_live
 from app.scan.port_scan import Port_Scan
 from app.lib.utils.finger import WhatCms, Fofa_Scanner
@@ -21,26 +22,27 @@ class Scan:
             raise EnvironmentError
         self.finger_list = ['memcached', 'mysql', 'mongod', 'mongodb', 'redis', 'oracle-tns', 'zookeeper', 'ms-sql-s', 'postgresql', 'java-rmi' ]
 
-    async def coroutine_execution(self, function, loop, semaphore, kwargs, ip_port, plugin_name, scan_id):
+    async def coroutine_execution(self, thread_executor, function, loop, semaphore, username, target, ip_port, scan_id):
 
         """
         多协程执行方法
         
-        :param str func: 待执行方法
-        :param str loop: loop 对象
-        :param str semaphore: 协程并发数量
+        :param: str thread_executor: 线程池对象
+        :param: str function: 待执行方法
+        :param: str loop: loop 对象
+        :param: str semaphore: 协程并发数量
         :param dict kwargs: kwargs参数,方便与数据库联动,保存到数据库
-        :param str ip_port: 目标的ip和端口,方便与数据库联动,保存到数据库
-        :param str plugin_name: 插件的名字,方便与数据库联动,保存到数据库
+        :param: str ip_port: 目标的ip和端口,方便与数据库联动,保存到数据库
+        :param: str plugin_name: 插件的名字,方便与数据库联动,保存到数据库
         :return:
         """
 
         async with semaphore:
             try:
-                result = await loop.run_in_executor(None, functools.partial(function.check))
+                result = await loop.run_in_executor(thread_executor, functools.partial(function.check))
                 if result:
-                    self.mysqldb.save_target_vulner(kwargs['username'], kwargs['target'], scan_id, ip_port, function.info['name'], function.info['description'])
-                    self.mysqldb.save_vulner(kwargs['username'], kwargs['target'], ip_port, function.info['name'], function.info['description'])
+                    self.mysqldb.save_target_vulner(username, target, scan_id, ip_port, function.info['name'], function.info['description'])
+                    self.mysqldb.save_vulner(username, target, ip_port, function.info['name'], function.info['description'])
                 else:
                     pass
             except Exception as e:
@@ -52,9 +54,9 @@ class Scan:
         """
         调用oneforall爆破子域名
         
-        :param str username: 用户名
-        :param str targer: 目标
-        :param str domain: 要爆破的域名
+        :param: str username: 用户名
+        :param: str targer: 目标
+        :param: str domain: 要爆破的域名
         :param: str scan_id: 扫描id
         :return:
         """
@@ -73,10 +75,10 @@ class Scan:
         """
         调用dirsearch爆破目录,查找后台
         
-        :param str username: 用户名
-        :param str targer: 目标
+        :param: str username: 用户名
+        :param: str targer: 目标
         :param: str scan_id: 扫描id
-        :param str url: 要爆破的url
+        :param: str url: 要爆破的url
 
         :return:
         """
@@ -90,6 +92,115 @@ class Scan:
                 url_header = url_parse.scheme + '://' + url_parse.netloc
                 path = path.replace(url_header, '')
             self.mysqldb.save_target_path(username, target, scan_id, path, str(status))
+    
+    async def poc_scan(self, username, target, scan_id, scan_list, concurren_number, loop, scan_option):
+        
+        """
+        加载POC插件去扫描
+        
+        :param: str username: 用户名
+        :param: str targer: 目标
+        :param: str scan_id: 扫描id
+        :param: list scan_list: 扫描的目标列表
+        :param: str url: 要爆破的url
+        :param: int concurren_number: 并发数量
+        :param: object loop: loop对象
+        :param: list loop: scan_option
+
+        :return:
+        """
+        
+        tasks = []
+        semaphore = asyncio.Semaphore(concurren_number)
+        thread_executor = ThreadPoolExecutor(concurren_number)
+        for ip_port in scan_list:
+            port_result = {'finger': '', 'protocol': ''}
+            if 'http' in ip_port:
+                items = os.listdir(self.plugin_path + '/http')
+                path = self.plugin_path + '/http/'
+            else:
+                items = os.listdir(self.plugin_path + '/port')
+                path = self.plugin_path + '/port/'
+                
+            port_result = self.mysqldb.get_target_port(username, target, ip_port.split(':')[-1])
+            poc_path_list = []
+            for item in items:
+                if port_result and port_result['finger']:
+                    if item.lower() in port_result['finger'].lower():
+                        poc_path = os.path.join(path + item)
+                        poc_path_list.append(poc_path)
+                        break
+
+                elif port_result and port_result['protocol']:
+                    if port_result['protocol'].lower() in self.finger_list:
+                        if port_result['protocol'].lower() == 'mongod' or port_result['protocol'].lower() == 'mongodb':
+                            poc_path = os.path.join(path + 'Mongodb')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'ms-sql-s':
+                            poc_path = os.path.join(path + 'Mssql')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'oracle-tns':
+                            poc_path = os.path.join(path + 'Oracle')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'java-rmi':
+                            poc_path = os.path.join(path + 'Javarmi')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'mysql':
+                            poc_path = os.path.join(path + 'Mysql')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'memcached':
+                            poc_path = os.path.join(path + 'Memcached')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'redis':
+                            poc_path = os.path.join(path + 'Redis')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'postgresql':
+                            poc_path = os.path.join(path + 'Postgresql')
+                            poc_path_list.append(poc_path)
+                            break
+                        elif port_result['protocol'].lower() == 'zookeeper':
+                            poc_path = os.path.join(path + 'Zookeeper')
+                            poc_path_list.append(poc_path)
+                            break
+            
+            if not poc_path_list:
+                for item in items:
+                    poc_path = os.path.join(path + item)
+                    poc_path_list.append(poc_path)
+            
+            for poc_path in poc_path_list:
+                if '.py' not in poc_path:
+                    poc_items = os.listdir(poc_path)
+                    for poc_item in poc_items:
+                        if poc_item.endswith(".py") and not poc_item.startswith('__') and 'ajpy' not in poc_item:
+                            plugin_name = poc_item[:-3]
+                            if plugin_name in scan_option:
+                                if 'http' in ip_port:
+                                    module = importlib.import_module('app.plugins.' + 'http' + '.' + poc_path.split('/')[-1] + '.' + plugin_name)
+                                else:
+                                    module = importlib.import_module('app.plugins.' + 'port' + '.' + poc_path.split('/')[-1] + '.' + plugin_name)
+                                try:
+                                    class_name = plugin_name + '_BaseVerify'
+                                    if 'http' not in ip_port:
+                                        url = 'http://' + ip_port
+                                    else:
+                                        url = ip_port
+                                    get_class = getattr(module, class_name)(url)
+                                    task = asyncio.create_task(self.coroutine_execution(thread_executor, get_class, loop, semaphore, username, target, ip_port, scan_id))
+                                    tasks.append(task)
+                                except Exception as e:
+                                    print(e)
+                                    pass
+                        else:
+                            continue
+
 
     def run(self, kwargs):
         scan_set = self.mysqldb.get_scan(kwargs['username'], kwargs['target'])
@@ -158,103 +269,9 @@ class Scan:
         if '5' in scan_option and scan_list != '不进行POC检测':
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], 'POC扫描中')
             self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], 'POC扫描中')
-
-            new_loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(new_loop)
-            semaphore = asyncio.Semaphore(int(scan_set['concurren_number']))
-            tasks = []
+            concurren_number = int(scan_set['concurren_number'])
             loop = asyncio.get_event_loop()
-
-            for ip_port in scan_list:
-                port_result = {'finger': '', 'protocol': ''}
-                if 'http' in ip_port:
-                    items = os.listdir(self.plugin_path + '/http')
-                    path = self.plugin_path + '/http/'
-                else:
-                    items = os.listdir(self.plugin_path + '/port')
-                    path = self.plugin_path + '/port/'
-                    
-                port_result = self.mysqldb.get_target_port(kwargs['username'], kwargs['target'], ip_port.split(':')[-1])
-                poc_path_list = []
-                for item in items:
-                    if port_result and port_result['finger']:
-                        if item.lower() in port_result['finger'].lower():
-                            poc_path = os.path.join(path + item)
-                            poc_path_list.append(poc_path)
-                            break
-
-                    elif port_result and port_result['protocol']:
-                        if port_result['protocol'].lower() in self.finger_list:
-                            if port_result['protocol'].lower() == 'mongod' or port_result['protocol'].lower() == 'mongodb':
-                                poc_path = os.path.join(path + 'Mongodb')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'ms-sql-s':
-                                poc_path = os.path.join(path + 'Mssql')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'oracle-tns':
-                                poc_path = os.path.join(path + 'Oracle')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'java-rmi':
-                                poc_path = os.path.join(path + 'Javarmi')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'mysql':
-                                poc_path = os.path.join(path + 'Mysql')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'memcached':
-                                poc_path = os.path.join(path + 'Memcached')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'redis':
-                                poc_path = os.path.join(path + 'Redis')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'postgresql':
-                                poc_path = os.path.join(path + 'Postgresql')
-                                poc_path_list.append(poc_path)
-                                break
-                            elif port_result['protocol'].lower() == 'zookeeper':
-                                poc_path = os.path.join(path + 'Zookeeper')
-                                poc_path_list.append(poc_path)
-                                break
-                
-                if not poc_path_list:
-                    for item in items:
-                        poc_path = os.path.join(path + item)
-                        poc_path_list.append(poc_path)
-                
-                for poc_path in poc_path_list:
-                    if '.py' not in poc_path:
-                        poc_items = os.listdir(poc_path)
-                        for poc_item in poc_items:
-                            if poc_item.endswith(".py") and not poc_item.startswith('__') and 'ajpy' not in poc_item:
-                                plugin_name = poc_item[:-3]
-                                if plugin_name in scan_option:
-                                    if 'http' in ip_port:
-                                        module = importlib.import_module('app.plugins.' + 'http' + '.' + poc_path.split('/')[-1] + '.' + plugin_name)
-                                    else:
-                                        module = importlib.import_module('app.plugins.' + 'port' + '.' + poc_path.split('/')[-1] + '.' + plugin_name)
-                                    try:
-                                        class_name = plugin_name + '_BaseVerify'
-                                        if 'http' not in ip_port:
-                                            url = 'http://' + ip_port
-                                        else:
-                                            url = ip_port
-                                        get_class = getattr(module, class_name)(url)
-                                        future = asyncio.ensure_future(self.coroutine_execution(get_class, loop, semaphore, kwargs, ip_port, plugin_name, kwargs['scan_id']))
-                                        tasks.append(future)
-                                    except Exception as e:
-                                        print(e)
-                                        pass
-                            else:
-                                continue
-
-            if tasks:
-                loop.run_until_complete(asyncio.wait(tasks))
+            loop.run_until_complete(self.poc_scan(kwargs['username'], kwargs['target'], kwargs['scan_id'], scan_list, concurren_number, loop, scan_option))
             scan_option.remove('5')
             self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 

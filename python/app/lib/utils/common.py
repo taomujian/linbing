@@ -73,14 +73,12 @@ def get_live(url, num):
             # 判断没有http协议类型的网站是http还是https,并判断是否存活
             if not url.startswith("http") and not url.startswith("https"):
                 url = 'http://' + url
-                req = request.get(url, headers = headers, allow_redirects = True)
-                if req.status_code == 200:
-                    return urlparse(req.url).scheme  + '://' + urlparse(req.url).netloc
+                req = request.get(url, headers = headers, verify = False, allow_redirects = True)
+                return urlparse(req.url).scheme  + '://' + urlparse(req.url).netloc
             # 并判断目标是否存活
             else:
-                req = request.get(url, headers = headers, allow_redirects = True)
-                if req.status_code == 200:
-                    return urlparse(req.url).scheme  + '://' + urlparse(req.url).netloc
+                req = request.get(url, headers = headers, verify = False, allow_redirects = True)
+                return urlparse(req.url).scheme  + '://' + urlparse(req.url).netloc
         except Exception as e:
             print(e)
             pass

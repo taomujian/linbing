@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 import re
+from socket import timeout
 import sys
 import time
 import asyncio
 import hashlib
-import functools
+from aiohttp import ClientSession
 from bs4 import BeautifulSoup as BS
 from app.lib.utils.request import request
 from app.lib.utils.common import get_useragent
@@ -190,7 +191,7 @@ class WhatCms:
         hash_str = m.hexdigest()
         return hash_str
 
-    def request_url(self, url):
+    async def request_url(self, url):
 
         """
         获取url的内容
@@ -200,22 +201,26 @@ class WhatCms:
         :return tuple req.text, req.content: url的内容和url内容的原始编码
         """
 
+        
+
         try:
-            UA = get_useragent()
-            headers = {
-                'User-Agent': UA
-            }
-            req = request.get(url = url, headers = headers, verify = False, allow_redirects = False)
-            req.encoding = 'utf-8'
-            if req.status_code == 200:
-                return req.text, req.content
-            else:
-                return '',''
+            async with ClientSession() as session:
+                UA = get_useragent()
+                headers = {
+                    'User-Agent': UA
+                }
+                async with session.get(url = url, headers = headers, timeout = 5, allow_redirects = False, verify_ssl = False) as response:
+                    if response.status == 200:
+                        response_text = await response.text()
+                        response_content = await response.content()
+                        return response_text, response_content
+                    else:
+                        return '',''
         except Exception as e:
             # print(e)
             return '', ''
 
-    async def coroutine_execution(self, function, loop, semaphore, url, cms_name, match_pattern, options):
+    async def coroutine_execution(self, semaphore, url, cms_name, match_pattern, options):
 
         """
         多协程执行方法
@@ -235,18 +240,11 @@ class WhatCms:
 
         async with semaphore:
             try:
-                response_html, response_content = await loop.run_in_executor(None, functools.partial(function, url = url))
+                response_html, response_content = await self.request_url(url)
                 if response_html and response_content:
                     if options == 'md5':
                         if match_pattern == self.getMD5(response_content):
                             self.info.append(cms_name + '\n')
-                            # self.info['finger_id'] = finger_id
-                            # self.info['cms_name'] = cms_name
-                            # self.info['path'] = path
-                            # self.info['match_pattern'] = match_pattern
-                            # self.info['options'] = options
-                            # self.info['finger_type'] = finger_type
-
                     elif options == 'keyword':
                         if match_pattern.lower() in response_html.lower():
                             self.info.append(cms_name + '\n')
@@ -260,7 +258,7 @@ class WhatCms:
                 # print(e)
                 pass
 
-    def find_powered_by(self):
+    async def find_powered_by(self):
 
         """
         根据powered by关键字获取cms类型
@@ -269,7 +267,7 @@ class WhatCms:
         :return bool True, False: 是否找到了关键字
         """
         
-        text, content = self.request_url(self.target)
+        text, content = await self.request_url(self.target)
         match = re.search('Powered by (.*)', text, re.I)
         if match:
             clear_html_cms = re.sub('<.*?>', '', match.group(1))
@@ -277,7 +275,7 @@ class WhatCms:
             if cms_name:
                 self.info.append(cms_name + '\n')
 
-    def find_cms_with_file(self):
+    async def find_cms_with_file(self):
 
         """
         根据数据库的指纹来判断网站类型
@@ -287,20 +285,15 @@ class WhatCms:
         :return:
         """
         
-        new_loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(new_loop)
-        semaphore = asyncio.Semaphore(int('500'))
+        semaphore = asyncio.Semaphore(int('1000'))
         tasks = []
-        loop = asyncio.get_event_loop()
-        # loop = asyncio.get_running_loop()
-        for eachline in self. cms:
-            finger_id, cms_name, path, match_pattern, options, finger_type = eachline['id'], eachline['cms_type'], eachline['path'], eachline['match_pattern'], eachline['options'], eachline['finger_type']
+        for eachline in self.cms:
+            cms_name, path, match_pattern, options = eachline['cms_type'], eachline['path'], eachline['match_pattern'], eachline['options']
             url = self.target + path
-            future = asyncio.ensure_future(self.coroutine_execution(self.request_url, loop, semaphore, url, cms_name, match_pattern, options))
-            tasks.append(future)
+            task = asyncio.create_task(self.coroutine_execution(semaphore, url, cms_name, match_pattern, options))
+            tasks.append(task)
 
-        if tasks:
-            loop.run_until_complete(asyncio.wait(tasks))
+        await asyncio.wait(tasks)
 
     def run(self):
 
@@ -312,10 +305,9 @@ class WhatCms:
         :return:
         """
 
-        self.find_cms_with_file()
-        # 如果通过指纹没有找到cms类型,尝试使用powered by关键字获取cms类型
-        self.find_powered_by()
-
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(self.find_cms_with_file())
+        loop.run_until_complete(self.find_powered_by())
         return self.info
 
 if __name__ == "__main__":
