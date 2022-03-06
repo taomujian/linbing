@@ -103,15 +103,15 @@
 
 ## 界面
 
-![登录.png](https://github.com/taomujian/linbing/images/登录.png)
+![登录.png](https://github.com/taomujian/linbing/images/登录.jpg)
 
-![首页.png](https://github.com/taomujian/linbing/images/首页.png)
+![首页.png](https://github.com/taomujian/linbing/images/首页.jpg)
 
-![目标.png](https://github.com/taomujian/linbing/images/目标.png)
+![目标.png](https://github.com/taomujian/linbing/images/目标.jpg)
 
-![扫描.png](https://github.com/taomujian/linbing/images/扫描.png)
+![扫描.png](https://github.com/taomujian/linbing/images/扫描.jpg)
 
-![POC.png](https://github.com/taomujian/linbing/images/POC.png)
+![POC.png](https://github.com/taomujian/linbing/images/POC.jpg)
 
 ## CHANGELOG
 
