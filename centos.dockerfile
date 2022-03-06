@@ -37,4 +37,4 @@ ADD centos_run.sh /centos_run.sh
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &&  pip3 install --upgrade pip&& pip3 install -r /root/python/requirements.txt \
 && chmod 775 /centos_run.sh
 
-CMD ["/centos_run.sh"]
+CMD ["/centos_docker_run.sh"]

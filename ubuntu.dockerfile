@@ -34,4 +34,4 @@ RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &&
 && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 && update-alternatives --config python3 \
 && pip3 install --upgrade pip && pip3 install -r /root/python/requirements.txt && chmod +x /ubuntu_run.sh 
 
-CMD ["/ubuntu_run.sh"]
+CMD ["/ubuntu_docker_run.sh"]

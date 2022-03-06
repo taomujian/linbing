@@ -3,48 +3,15 @@
     - [修改aes key](#修改aes-key)
     - [修改rsa key](#修改rsa-key)
   - [打包vue源代码(进入到vue_src目录下)](#打包vue源代码进入到vue_src目录下)
-  - [ubuntu部署(强烈建议)](#ubuntu部署强烈建议)
-    - [设置国内源](#设置国内源)
-    - [安装依赖](#安装依赖)
-    - [设置python3.8为python3](#设置python38为python3)
-    - [安装python3依赖库](#安装python3依赖库)
-    - [nginx](#nginx)
-      - [启动nginx](#启动nginx)
-      - [添加nginx用户](#添加nginx用户)
-      - [配置](#配置)
-    - [mariadb](#mariadb)
-      - [启动mariadb](#启动mariadb)
-      - [设置mariadb密码(password为你要设置的密码)](#设置mariadb密码password为你要设置的密码)
-    - [redis](#redis)
-      - [配置redis](#配置redis)
-      - [启动redis](#启动redis)
-    - [gunicorn](#gunicorn)
-      - [配置gunicorn](#配置gunicorn)
-      - [启动gunicorn](#启动gunicorn)
+  - [ubuntu部署](#ubuntu部署)
   - [centos部署](#centos部署)
-    - [设置源](#设置源)
-    - [安装依赖](#安装依赖-1)
-    - [安装python3.8](#安装python38)
-    - [安装python3依赖库](#安装python3依赖库-1)
-    - [nginx](#nginx-1)
-      - [启动nginx](#启动nginx-1)
-      - [添加nginx用户](#添加nginx用户-1)
-      - [配置](#配置-1)
-    - [mariadb](#mariadb-1)
-      - [启动mariadb](#启动mariadb-1)
-      - [进行数据库配置(如设置密码等)](#进行数据库配置如设置密码等)
-    - [redis](#redis-1)
-      - [配置redis](#配置redis-1)
-      - [启动redis](#启动redis-1)
-    - [gunicorn](#gunicorn-1)
-      - [配置gunicorn](#配置gunicorn-1)
-      - [启动gunicorn](#启动gunicorn-1)
   - [自编译docker文件进行部署](#自编译docker文件进行部署)
-    - [配置](#配置-2)
+    - [配置](#配置)
     - [编译镜像(进入项目根目录)](#编译镜像进入项目根目录)
     - [启动容器(进入项目根目录)](#启动容器进入项目根目录)
   - [从dockerhub中获取镜像](#从dockerhub中获取镜像)
   - [访问](#访问)
+  - [界面](#界面)
   - [CHANGELOG](#changelog)
     - [[v1.0] 2020.2.28](#v10-2020228)
     - [[v1.1] 2020.7.28](#v11-2020728)
@@ -72,7 +39,7 @@
 
 # 临兵漏洞扫描系统
 
-> 本系统是对目标进行漏洞扫描的一个系统,前端采用vue技术,后端采用python.poc有110多个,包含绝大部分的中间件漏洞,本系统的poc皆来源于网络或在此基础上进行修改
+> 本系统是对Web中间件和Web框架进行漏洞扫描的一个系统,前端采用vue技术,后端采用python.poc有110多个,包含绝大部分的中间件漏洞,本系统的poc皆来源于网络或在此基础上进行修改
 
 ## 修改加密key
 
@@ -102,182 +69,13 @@
 
 [从dockerhub中获取镜像](##从dockerhub中获取镜像)
 
-## ubuntu部署(强烈建议)
+## ubuntu部署
 
-### 设置国内源
-
-> sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && apt-get clean && apt update
-
-### 安装依赖
-
-> DEBIAN_FRONTEND noninteractive apt install -y postfix
-
-> apt install -y mariadb-server python3.8 python3.8-dev python3-pip nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
-
-> mkdir /root/python
-
-### 设置python3.8为python3
-
-> update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 && update-alternatives --config python3
-
-### 安装python3依赖库
-
-> pip3 install -r /root/python/requirements.txt
-
-> 如果你使用的是低于python3.8版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
-
-### nginx
-
-#### 启动nginx
-
-> nginx
-
-#### 添加nginx用户
-
-> useradd -s /sbin/nologin -M nginx
-
-#### 配置
-
-> gunicorn配置文件已配置好,可以直接使用,可以根据自己的需求修改文件路径及端口.conf.ini文件中配置数据库信息
-
-> 在/etc/nginx/conf.d目录下放入vue.conf文件
-
-> 在/etc/nginx目录下放入nginx.conf文件
-
-> conf配置文件中有注释
-
-> 把vue目录移到/usr/share/nginx/html中
-
-### mariadb
-
-#### 启动mariadb
-
-> service mysql start
-
-#### 设置mariadb密码(password为你要设置的密码)
-
-> mysql -e "SET PASSWORD FOR root@localhost = PASSWORD('password');FLUSH PRIVILEGES;"
-
-> mysql -e "update mysql.user set plugin='mysql_native_password' where User='password';FLUSH PRIVILEGES;"
-
-> 配置数据库密码后需要在python/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
-
-### redis
-
-#### 配置redis
-
-> sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf
-
-> sed -i "s|# requirepass foobared|requirepass '你的redis密码'|" /etc/redis/redis.conf
-
-> 配置数据库密码后需要在python/conf.ini文件中配置连接redis数据库的密码信息
-
-#### 启动redis
-
-> service redis-server start
-
-> redis-server /etc/redis/redis.conf
-
-### gunicorn
-
-#### 配置gunicorn
-
-> 把gunicorn.conf文件放到python文件夹的根目录下
-
-#### 启动gunicorn
-
-> 进入到/root/python/目录下,nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
+> 参考<https://github.com/taomujian/linbing/ubuntu部署.md>)
 
 ## centos部署
 
-### 设置源
-
-> mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup && curl -o /etc/yum.repos.d/epel.repo <http://mirrors.aliyun.com/repo/epel-7.repo> && curl -o /etc/yum.repos.d/CentOS-Base.repo <https://mirrors.aliyun.com/repo/Centos-7.repo> && sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo yum clean all && yum makecache && yum update -y
-
-### 安装依赖
-
-> yum install -y -q postfix
-
-> yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel redis
-
-> mkdir /root/python
-
-### 安装python3.8
-
-> wget <https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz>
-
-> tar -zxvf Python-3.8.1.tgz
-
-> cd Python-3.8.1 && ./configure prefix=/usr/local/python3.8 --enable-shared --enable-optimizations LDFLAGS="-Wl,--rpath=/usr/local/python3.8/lib" make && make install
-
-> rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3
-
-> ln -s /usr/local/python3.8/bin/python3.8 /usr/bin/python3 && ln -s /usr/local/python3.8/bin/pip3.8 /usr/bin/pip3
-
-### 安装python3依赖库
-
-> pip3 install -r /root/python/requirements.txt
-
-> 如果你使用的是低于python3.8版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
-
-### nginx
-
-#### 启动nginx
-
-> systemctl start nginx
-
-#### 添加nginx用户
-
-> useradd -s /sbin/nologin -M nginx
-
-#### 配置
-
-> gunicorn配置文件已配置好,可以直接使用,可以根据自己的需求修改文件路径及端口.conf.ini配置数据库
-
-> 在/etc/nginx/conf.d目录下放入vue.conf文件
-
-> 在/etc/nginx目录下放入nginx.conf文件
-
-> conf配置文件中有注释
-
-> 把vue目录移到/usr/share/nginx/html中
-
-### mariadb
-
-#### 启动mariadb
-
-> systemctl start mariadb
-
-#### 进行数据库配置(如设置密码等)
-
-> mysql_secure_installation(具体步骤略去,可参考<https://www.cnblogs.com/yhongji/p/9783065.html>)
-> 配置数据库密码后需要在python/conf.ini文件中配置连接maridab数据库的用户名,密码等信息
-
-### redis
-
-#### 配置redis
-
-> sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf
-
-> sed -i "s|# requirepass foobared|requirepass '你的redis密码'|" /etc/redis/redis.conf
-
-> 配置数据库密码后需要在python/conf.ini文件中配置连接redis数据库的密码信息
-
-#### 启动redis
-
-> systemctl start redis
-
-> redis-server /etc/redis.conf
-
-### gunicorn
-
-#### 配置gunicorn
-
-> 把gunicorn.conf文件放到python文件夹的根目录下
-
-#### 启动gunicorn
-
-> 进入到/root/python/目录下,nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
+> 参考<https://github.com/taomujian/linbing/centos部署.md>)
 
 ## 自编译docker文件进行部署
 
@@ -302,6 +100,18 @@
 ## 访问
 
 > 访问<http://yourip:11000/login>即可,默认账号密码为admin/X!ru0#M&%V
+
+## 界面
+
+![登录.png](https://github.com/taomujian/linbing/images/登录.png)
+
+![首页.png](https://github.com/taomujian/linbing/images/首页.png)
+
+![目标.png](https://github.com/taomujian/linbing/images/目标.png)
+
+![扫描.png](https://github.com/taomujian/linbing/images/扫描.png)
+
+![POC.png](https://github.com/taomujian/linbing/images/POC.png)
 
 ## CHANGELOG
 
