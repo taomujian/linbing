@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import urllib3
 from app.lib.utils.request import request
 from app.lib.utils.common import get_capta, get_useragent
 

@@ -2,7 +2,7 @@
 
 import socket
 from urllib.parse import urlparse
-from app.plugins.http.Tomcat.ajpy import AjpBodyRequest, AjpForwardRequest, AjpResponse, NotFoundException
+from app.plugins.http.Tomcat.ajpy import AjpForwardRequest
 
 class CVE_2020_1938_BaseVerify(object):
     def __init__(self, url):

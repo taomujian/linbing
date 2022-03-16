@@ -1,9 +1,6 @@
 #! /usr/bin/env python3
 
-import os
 import redis
-import paramiko
-from io import StringIO
 from urllib.parse import urlparse
 
 class Redis_Unauthorized_BaseVerify:

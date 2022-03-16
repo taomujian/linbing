@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-from socket import timeout
 import sys
 import time
 import asyncio

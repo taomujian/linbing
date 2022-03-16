@@ -71,11 +71,11 @@
 
 ## ubuntu部署
 
-> 参考<https://github.com/taomujian/linbing/ubuntu部署.md>)
+> 参考<https://github.com/taomujian/linbing/blob/master/ubuntu部署.md>)
 
 ## centos部署
 
-> 参考<https://github.com/taomujian/linbing/centos部署.md>)
+> 参考<https://github.com/taomujian/linbing/blob/master/centos部署.md>)
 
 ## 自编译docker文件进行部署
 

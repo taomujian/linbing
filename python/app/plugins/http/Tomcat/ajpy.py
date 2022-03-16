@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import socket
 import struct
 
 def pack_string(s):

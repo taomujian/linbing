@@ -22,33 +22,6 @@ class Scan:
             raise EnvironmentError
         self.finger_list = ['memcached', 'mysql', 'mongod', 'mongodb', 'redis', 'oracle-tns', 'zookeeper', 'ms-sql-s', 'postgresql', 'java-rmi' ]
 
-    async def coroutine_execution(self, thread_executor, function, loop, semaphore, username, target, ip_port, scan_id):
-
-        """
-        多协程执行方法
-        
-        :param: str thread_executor: 线程池对象
-        :param: str function: 待执行方法
-        :param: str loop: loop 对象
-        :param: str semaphore: 协程并发数量
-        :param dict kwargs: kwargs参数,方便与数据库联动,保存到数据库
-        :param: str ip_port: 目标的ip和端口,方便与数据库联动,保存到数据库
-        :param: str plugin_name: 插件的名字,方便与数据库联动,保存到数据库
-        :return:
-        """
-
-        async with semaphore:
-            try:
-                result = await loop.run_in_executor(thread_executor, functools.partial(function.check))
-                if result:
-                    self.mysqldb.save_target_vulner(username, target, scan_id, ip_port, function.info['name'], function.info['description'])
-                    self.mysqldb.save_vulner(username, target, ip_port, function.info['name'], function.info['description'])
-                else:
-                    pass
-            except Exception as e:
-                print(e)
-                pass
-            
     def sub_domain(self, username, target, domain, scan_id):
 
         """
@@ -93,7 +66,34 @@ class Scan:
                 path = path.replace(url_header, '')
             self.mysqldb.save_target_path(username, target, scan_id, path, str(status))
     
-    async def poc_scan(self, username, target, scan_id, scan_list, concurren_number, loop, scan_option):
+    async def coroutine_execution(self, thread_executor, function, semaphore, username, target, ip_port, scan_id):
+
+        """
+        多协程执行方法
+        
+        :param: str thread_executor: 线程池对象
+        :param: str function: 待执行方法
+        :param: str semaphore: 协程并发数量
+        :param dict kwargs: kwargs参数,方便与数据库联动,保存到数据库
+        :param: str ip_port: 目标的ip和端口,方便与数据库联动,保存到数据库
+        :param: str plugin_name: 插件的名字,方便与数据库联动,保存到数据库
+        :return:
+        """
+
+        async with semaphore:
+            try:
+                loop = asyncio.get_event_loop()
+                result = await loop.run_in_executor(thread_executor, functools.partial(function.check))
+                if result:
+                    self.mysqldb.save_target_vulner(username, target, scan_id, ip_port, function.info['name'], function.info['description'])
+                    self.mysqldb.save_vulner(username, target, ip_port, function.info['name'], function.info['description'])
+                else:
+                    pass
+            except Exception as e:
+                print(e)
+                pass
+            
+    async def poc_scan(self, username, target, scan_id, scan_list, concurren_number, scan_option):
         
         """
         加载POC插件去扫描
@@ -174,7 +174,7 @@ class Scan:
                 for item in items:
                     poc_path = os.path.join(path + item)
                     poc_path_list.append(poc_path)
-            
+
             for poc_path in poc_path_list:
                 if '.py' not in poc_path:
                     poc_items = os.listdir(poc_path)
@@ -193,7 +193,7 @@ class Scan:
                                     else:
                                         url = ip_port
                                     get_class = getattr(module, class_name)(url)
-                                    task = asyncio.create_task(self.coroutine_execution(thread_executor, get_class, loop, semaphore, username, target, ip_port, scan_id))
+                                    task = asyncio.create_task(self.coroutine_execution(thread_executor, get_class, semaphore, username, target, ip_port, scan_id))
                                     tasks.append(task)
                                 except Exception as e:
                                     print(e)
@@ -201,18 +201,21 @@ class Scan:
                         else:
                             continue
 
+        await asyncio.gather(*tasks)
 
     def run(self, kwargs):
         scan_set = self.mysqldb.get_scan(kwargs['username'], kwargs['target'])
         ip_result = re.findall(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b", kwargs['target'])
         domain_regex = re.compile(r'(?:[A-Z0-9_](?:[A-Z0-9-_]{0,247}[A-Z0-9])?\.)+(?:[A-Z]{2,6}|[A-Z0-9-]{2,}(?<!-))\Z', re.IGNORECASE)
-        domain_result = domain_regex.findall(kwargs['target'])
+        # domain_result = domain_regex.findall(kwargs['target'])
         scan_option = self.mysqldb.get_scan_option(kwargs['username'], kwargs['scan_id'])
         if scan_option:
             scan_option = scan_option.split(',')
         else:
             scan_option = kwargs['scan_option']
         # 目标为ip类型时,不再探测指纹、扫描子域名和目录
+        
+        scan_list = []
        
         target = get_live(kwargs['target'], 3)
         if target and '1' in scan_option and ('http://' in target or 'https://' in target):
@@ -246,14 +249,14 @@ class Scan:
                 self.sub_domain(kwargs['username'], kwargs['target'], kwargs['main_domain'], kwargs['scan_id'])
                 scan_option.remove('2')
                 self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
-        
-        if kwargs['scan_ip'] and '3' in scan_option or '5' in scan_option:
+       
+        if kwargs['scan_ip'] and ('3' in scan_option or '5' in scan_option):
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], '端口扫描中')
             self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], '端口扫描中')
             if scan_set['scanner'] == 'nmap':
-                scan_list = self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['domain'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'])
+                scan_list = scan_list + self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['domain'], kwargs['scan_ip'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'])
             else:
-                scan_list = self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['domain'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
+                scan_list = scan_list + self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['domain'], kwargs['scan_id'], scan_set['min_port'], scan_set['max_port'], scan_set['rate'])
             if '3' in scan_option:
                 scan_option.remove('3')
                 self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
@@ -266,12 +269,12 @@ class Scan:
                 scan_option.remove('4')
                 self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 
+        scan_list = list(set(scan_list))
         if '5' in scan_option and scan_list != '不进行POC检测':
             self.mysqldb.update_scan_schedule(kwargs['username'], kwargs['scan_id'], 'POC扫描中')
             self.mysqldb.update_target_scan_schedule(kwargs['username'], kwargs['target'], 'POC扫描中')
             concurren_number = int(scan_set['concurren_number'])
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.poc_scan(kwargs['username'], kwargs['target'], kwargs['scan_id'], scan_list, concurren_number, loop, scan_option))
+            asyncio.run(self.poc_scan(kwargs['username'], kwargs['target'], kwargs['scan_id'], scan_list, concurren_number, scan_option))
             scan_option.remove('5')
             self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
 

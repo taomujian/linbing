@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode, base64encode
 from app.lib.utils.common import get_capta, get_useragent
 
 class CVE_2019_16759_BaseVerify:

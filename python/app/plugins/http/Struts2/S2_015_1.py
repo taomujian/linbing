@@ -2,8 +2,8 @@
 
 import re
 from app.lib.utils.request import request
+from app.lib.utils.encode import urlencode
 from app.lib.utils.common import get_capta, get_useragent
-from app.lib.utils.encode import urlencode, base64encode
 
 class S2_015_1_BaseVerify:
     def __init__(self, url):

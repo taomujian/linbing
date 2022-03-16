@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import json
 import uuid
 from app.lib.utils.request import request
 from app.lib.utils.common import get_useragent

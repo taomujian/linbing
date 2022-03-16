@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import time
 import datetime
 import dateutil.relativedelta
 from bs4 import BeautifulSoup
 from app.lib.utils.request import request
 from app.lib.utils.common import get_capta, get_useragent
-from app.lib.utils.encode import urlencode, base64encode
 
 class Thinkphp_Rce_Collection_BaseVerify:
     def __init__(self, url):

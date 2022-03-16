@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
-import time
 from app.lib.utils.common import get_capta
 from app.lib.utils.request import request
 

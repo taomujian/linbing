@@ -2,7 +2,6 @@
 
 import re
 import requests
-from app.lib.utils.request import request
 from app.lib.utils.common import get_capta
 
 class CVE_2015_8562_BaseVerify:

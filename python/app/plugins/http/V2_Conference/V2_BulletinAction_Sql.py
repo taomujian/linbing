@@ -2,7 +2,6 @@
 
 import time
 import requests
-from app.lib.utils.request import request
 from app.lib.utils.common import get_useragent
 
 class V2_BulletinAction_Sql_BaseVerify:

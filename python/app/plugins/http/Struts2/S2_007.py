@@ -2,7 +2,6 @@
 
 import re
 from app.lib.utils.request import request
-from app.lib.utils.encode import base64encode
 from app.lib.utils.common import get_capta, get_useragent
 
 class S2_007_BaseVerify:

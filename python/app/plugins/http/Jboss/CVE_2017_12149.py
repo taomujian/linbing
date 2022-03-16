@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import re
 import binascii
 from app.lib.utils.request import request
-from app.lib.utils.encode import base64encode
 
 class CVE_2017_12149_BaseVerify:
     def __init__(self, url):

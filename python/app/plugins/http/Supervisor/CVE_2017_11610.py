@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import json
 import xmlrpc.client
 from app.lib.utils.common import get_capta
 

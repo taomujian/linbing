@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode, base64encode
-from app.lib.utils.common import get_capta, parser_url, get_useragent
+from app.lib.utils.common import get_capta, get_useragent
 
 class S2_046_BaseVerify:
     def __init__(self, url):

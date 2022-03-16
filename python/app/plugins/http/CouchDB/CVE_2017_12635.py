@@ -3,7 +3,7 @@
 import re
 import json
 from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.utils.common import get_capta
 
 class CVE_2017_12635_BaseVerify:
     def __init__(self, url):

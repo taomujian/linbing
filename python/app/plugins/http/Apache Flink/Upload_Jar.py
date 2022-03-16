@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import time
 import json
 import base64
 from app.lib.utils.request import request

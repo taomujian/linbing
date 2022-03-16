@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import ssl
-import random
 import requests
 import configparser
 

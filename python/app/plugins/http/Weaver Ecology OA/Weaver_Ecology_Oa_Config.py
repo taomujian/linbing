@@ -1,8 +1,6 @@
 #/usr/bin/python3
 
-import json
 import pyDes
-import urllib3
 from app.lib.utils.request import request
 from app.lib.utils.common import get_useragent
 

@@ -2,7 +2,7 @@
 
 import json
 from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.utils.common import get_useragent
 
 class Weaver_Ecology_Oa_Sql_BaseVerify:
     def __init__(self, url):
