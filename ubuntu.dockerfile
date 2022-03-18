@@ -26,12 +26,12 @@ ADD nginx/nginx.conf /etc/nginx/nginx.conf
 ADD vue /usr/share/nginx/html/vue
 ADD python /root/python
 ADD python/gunicorn.conf /root/python/gunicorn.conf
-ADD ubuntu_run.sh /ubuntu_run.sh
+ADD ubuntu_docker_run.sh /ubuntu_docker_run.sh
 
 RUN ln -sf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && apt install -y tzdata && service mysql start \
 && mysql -e "SET PASSWORD FOR ${MARIADB_USER}@localhost = PASSWORD('${MARIADB_PASS}');FLUSH PRIVILEGES;" \
 && mysql -e "update mysql.user set plugin='mysql_native_password' where User='${MARIADB_USER}';FLUSH PRIVILEGES;" \
 && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 && update-alternatives --config python3 \
-&& pip3 install --upgrade pip && pip3 install -r /root/python/requirements.txt && chmod +x /ubuntu_run.sh 
+&& pip3 install --upgrade pip && pip3 install -r /root/python/requirements.txt && chmod +x /ubuntu_docker_run.sh 
 
 CMD ["/ubuntu_docker_run.sh"]
