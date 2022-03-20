@@ -95,6 +95,6 @@ class CVE_2019_17558_BaseVerify:
 
 if __name__ == '__main__':
     CVE_2019_17558 = CVE_2019_17558_BaseVerify('http://127.0.0.1:8983')
-    print(CVE_2019_17558.webshell('shell'))
+    print(CVE_2019_17558.check())
 
 

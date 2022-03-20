@@ -33,16 +33,22 @@ class Scan:
         :param: str scan_id: 扫描id
         :return:
         """
+        
+        try:
+            oneforall = OneForAll(domain)
+            datas = oneforall.run()
+            data_set = set()
+            if datas:
+                for domain in datas:
+                    data_set.add((domain['subdomain'], domain['ip']))
+                for data in data_set:
+                    self.mysqldb.save_target_domain(username, target, scan_id, data[0], data[1])
+        except Exception as e:
+            # print(e)
+            pass
+        finally:
+            pass
 
-        oneforall = OneForAll(domain)
-        datas = oneforall.run()
-        data_set = set()
-        if datas:
-            for domain in datas:
-                data_set.add((domain['subdomain'], domain['ip']))
-            for data in data_set:
-                self.mysqldb.save_target_domain(username, target, scan_id, data[0], data[1])
-    
     def dir_scan(self, username, target, url, scan_id):
 
         """
@@ -55,16 +61,22 @@ class Scan:
 
         :return:
         """
-
-        path_scan = Program(url)
-        for item in path_scan.result:
-            path = item[0]
-            status = item[1]
-            if 'http' in path:
-                url_parse = urlparse(path)
-                url_header = url_parse.scheme + '://' + url_parse.netloc
-                path = path.replace(url_header, '')
-            self.mysqldb.save_target_path(username, target, scan_id, path, str(status))
+        
+        try:
+            path_scan = Program(url)
+            for item in path_scan.result:
+                path = item[0]
+                status = item[1]
+                if 'http' in path:
+                    url_parse = urlparse(path)
+                    url_header = url_parse.scheme + '://' + url_parse.netloc
+                    path = path.replace(url_header, '')
+                self.mysqldb.save_target_path(username, target, scan_id, path, str(status))
+        except Exception as e:
+            # print(e)
+            pass
+        finally:
+            pass
     
     async def coroutine_execution(self, thread_executor, function, semaphore, username, target, ip_port, scan_id):
 

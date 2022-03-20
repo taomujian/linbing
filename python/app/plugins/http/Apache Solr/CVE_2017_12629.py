@@ -49,5 +49,5 @@ class CVE_2017_12629_BaseVerify:
             pass
 
 if  __name__ == "__main__":
-    CVE_2017_12629 = CVE_2017_12629__BaseVerify('http://127.0.0.1:8983')
+    CVE_2017_12629 = CVE_2017_12629_BaseVerify('http://127.0.0.1:8983')
     CVE_2017_12629.check()
