@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Druid_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class Druid_Unauthorized_BaseVerify:
             'User-Agent': get_useragent()
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -31,19 +31,12 @@ class Druid_Unauthorized_BaseVerify:
         """
         
         try:
-            req = request.get(self.url, headers = self.headers) #禁止重定向
-            title =re.findall(r"<title>(.*)</title>", req.text)[0]
+            req = await request.get(self.url, headers = self.headers) #禁止重定向
+            title =re.findall(r"<title>(.*)</title>", await req.text())[0]
             if  "Druid Console" in title :
-                print("存在Druid未授权访问漏洞")
                 return True
-            else:
-                print("不存在Druid未授权访问漏洞")
-                return False
         except Exception as e:
-            print(e)
-            print("不存在Druid未授权访问漏洞")
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == "__main__":

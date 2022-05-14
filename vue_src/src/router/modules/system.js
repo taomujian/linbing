@@ -7,7 +7,7 @@ const systemRouter = {
   name: 'system',
   redirect: '/system/index',
   component: Layout,
-  meta: { icon: 'el-icon-s-tools', noCache: true },
+  meta: { icon: 'el-icon-s-tools', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

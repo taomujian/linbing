@@ -1,0 +1,10 @@
+root
+admin
+guest
+anonymous
+test
+www
+web
+rsync
+db
+ftp

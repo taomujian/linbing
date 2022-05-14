@@ -7,7 +7,7 @@ const portRouter = {
   name: 'port',
   redirect: '/port/index',
   component: Layout,
-  meta: { icon: 'el-icon-info', noCache: true },
+  meta: { icon: 'el-icon-info', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

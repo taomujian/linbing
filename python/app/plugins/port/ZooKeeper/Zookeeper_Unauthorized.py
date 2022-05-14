@@ -17,7 +17,7 @@ class Zookeeper_Unauthorized_BaseVerify:
         if not self.port:
             self.port = '2181'
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -28,17 +28,20 @@ class Zookeeper_Unauthorized_BaseVerify:
         """
         
         try:
-            zk = KazooClient(hosts='{}:{}'.format(self.ip, self.port))
-            zk.start()
+            zk = KazooClient(hosts='{}:{}'.format(self.ip, self.port), timeout = 3, connection_retry = None )
+            zk.start_async
             chidlrens = zk.get_children('/')
             if len(chidlrens) > 0:
-                print('存在Zookeeper 未授权访问漏洞')
-            return True
+                zk.stop()
+                return True
         except Exception as e:
-            print(e)
-            return False
+            # print(e)
+            pass
         finally:
-            zk.stop()
+            try:
+                zk.stop()
+            except:
+                pass
 
 if __name__ == '__main__':
     Zookeeper_Unauthorized = Zookeeper_Unauthorized_BaseVerify('https://baidu.com')

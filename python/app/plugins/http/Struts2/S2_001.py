@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class S2_001_BaseVerify:
     def __init__(self, url):
@@ -39,7 +39,7 @@ class S2_001_BaseVerify:
         temp = pattern.findall(check_str)
         return temp
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -50,16 +50,15 @@ class S2_001_BaseVerify:
         """
 
         try:
-            check_req = request.post(self.url, headers = self.headers, data = self.check_data)
-            check_result = self.filter_str(check_req.text)
-            if check_result[0] == '80147':
-                return True
-            else:
-                return False
+            check_req = await request.post(self.url, headers = self.headers, data = self.check_data)
+            result = await check_req.text()
+            if result:
+                check_result = self.filter_str(result)
+                if check_result:
+                    if check_result[0] == '80147':
+                        return True
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
     
 if  __name__ == "__main__":

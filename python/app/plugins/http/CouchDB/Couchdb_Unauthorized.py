@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Couchdb_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class Couchdb_Unauthorized_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -31,18 +31,12 @@ class Couchdb_Unauthorized_BaseVerify:
 
         check_url = self.url + '/_config/'
         try:
-            req = request.get(check_url, headers = self.headers, allow_redirects = True)
-            if req.status_code == 200 and 'httpd_design_handlers' in req.text and 'external_manager' in req.text and 'replicator_manager' in req.text:
-                print('存在CouchDB未授权访问漏洞')
+            req = await request.get(check_url, headers = self.headers, allow_redirects = True)
+            if req.status == 200 and 'httpd_design_handlers' in await req.text() and 'external_manager' in await req.text() and 'replicator_manager' in await req.text():
+                # print('存在CouchDB未授权访问漏洞')
                 return True
-            else:
-                print('不存在CouchDB未授权访问漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CouchDB未授权访问漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

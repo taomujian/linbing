@@ -1,8 +1,8 @@
 #/usr/bin/python3
 
 import json
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Weaver_Ecology_Oa_Sql_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class Weaver_Ecology_Oa_Sql_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -34,19 +34,13 @@ class Weaver_Ecology_Oa_Sql_BaseVerify:
         
         try:
             url = self.url + "/mobile/browser/WorkflowCenterTreeData.jsp?node=wftype_1&scope=2333"
-            check_req = request.post(url, headers = self.headers, data = self.data)
-            if check_req.status_code == 200:
-                json_info = json.loads(check_req.text)
-                if json_info == []:
-                    return False
-                else:
+            check_req = await request.post(url, headers = self.headers, data = self.data)
+            if check_req.status == 200:
+                json_info = json.loads(await check_req.text())
+                if json_info:
                     return True
-            else:
-                return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

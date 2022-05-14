@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2019_8449_BaseVerify:
     def __init__(self, url):
@@ -38,7 +38,7 @@ class CVE_2019_8449_BaseVerify:
             'excludeConnectAddons': self.excludeConnectAddons
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -52,13 +52,11 @@ class CVE_2019_8449_BaseVerify:
             self.url = "http://" + self.url
         check_url = self.url + '/rest/api/latest/groupuserpicker'
         try:
-            check_quest = request.get(url = check_url, headers = self.headers, params = self.params)
-            check_json = check_quest.json()
+            check_quest = await request.get(url = check_url, headers = self.headers, params = self.params)
+            check_json = await check_quest.json()
             return True
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

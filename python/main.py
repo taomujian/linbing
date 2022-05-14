@@ -15,15 +15,15 @@ from redis import Redis
 from pydantic import BaseModel
 from typing import List
 from dnslog import Dnslog
-from app.lib.utils.encode import md5
+from app.lib.encode import md5
 from passlib.context import CryptContext
-from app.lib.utils.mysql import Mysql_db
-from app.lib.crypto.rsa import Rsa_Crypto
-from app.lib.crypto.aes import Aes_Crypto
-from app.lib.utils.common import get_capta
+from app.utils.mysql import Mysql_db
+from app.lib.rsa import Rsa_Crypto
+from app.lib.aes import Aes_Crypto
+from app.lib.common import get_capta
 from fastapi.responses import FileResponse
 from rq.command import send_stop_job_command
-from app.lib.utils.queue import queue_target_list, queue_scan_list
+from app.utils.queue import queue_target_list, queue_scan_list
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect
 
 UPLOAD_FOLDER = 'images'  #文件存放路径
@@ -674,7 +674,7 @@ async def scan_set(request : VueRequest):
             response['message'] = '认证失败'
             return response
         else:
-            result = mysqldb.scan_set(username_result['username'], target, scan_data['scanner'], scan_data['min_port'], scan_data['max_port'], scan_data['rate'], scan_data['concurren_number'])
+            result = mysqldb.scan_set(username_result['username'], target, scan_data['scanner'], scan_data['port'], scan_data['rate'], scan_data['concurren_number'])
             if result == 'L1000':
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'
@@ -1056,6 +1056,57 @@ async def port_list(request : VueRequest):
             return response
         else:
             sql_result = mysqldb.port_list(username_result['username'], pagenum, pagesize, list_query)
+            port_list = sql_result['result']
+            total = sql_result['total']
+            if port_list == 'L1001':
+                response['code'] = 'L1001'
+                response['message'] = '系统异常'
+            else:
+                response['code'] = 'L1000'
+                response['message'] = '请求成功'
+                response['total'] = total
+                if total == 0:
+                    response['data'] = ''
+                else:
+                    response['data'] = sql_result
+                return response
+    except Exception as e:
+        print(e)
+        response['code'] = 'L1001'
+        response['message'] = '系统异常'
+        return response
+
+@app.post('/api/port/download')
+async def port_list(request : VueRequest):
+    
+    """
+    下载所有端口信息的接口
+
+    :param:
+    :return: str response: 需要返回的数据
+    """
+
+    try:
+        response = {'code': '', 'message': '', 'data': ''}
+        request = rsa_crypto.decrypt(request.data)
+        request = json.loads(request)
+        token  = request['token']
+        query_str = {
+            'type': 'token',
+            'data': token
+        }
+        list_query = json.loads(request['listQuery'])
+        username_result = mysqldb.username(query_str)
+        if username_result == 'L1001':
+            response['code'] = 'L1001'
+            response['message'] = '系统异常'
+            return response
+        elif username_result == None:
+            response['code'] = 'L1003'
+            response['message'] = '认证失败'
+            return response
+        else:
+            sql_result = mysqldb.port_download(username_result['username'], list_query)
             port_list = sql_result['result']
             total = sql_result['total']
             if port_list == 'L1001':

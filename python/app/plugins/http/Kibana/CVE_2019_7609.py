@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2019_7609_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class CVE_2019_7609_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
 
-    def get_kibana_version(self):
+    async def get_kibana_version(self):
         
         """
         获取kibana版本号
@@ -33,10 +33,10 @@ class CVE_2019_7609_BaseVerify:
             'Referer': self.url,
             'User-Agent': get_useragent()
         }
-        r = request.get(self.url+"/app/kibana", headers = headers)
+        r = await request.get(self.url+"/app/kibana", headers = headers)
         patterns = ['&quot;version&quot;:&quot;(.*?)&quot;,', '"version":"(.*?)",']
         for pattern in patterns:
-            match = re.findall(pattern, r.text)
+            match = re.findall(pattern, await r.text())
             if match:
                 self.version = match[0]
 
@@ -59,9 +59,8 @@ class CVE_2019_7609_BaseVerify:
                 cc_value = 100 * int(cc[0]) + 10 * int(cc[1]) + int(cc[2])
                 if sc_value > cc_value:
                     return True
-        return False
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -71,29 +70,23 @@ class CVE_2019_7609_BaseVerify:
         :return bool True or False: 是否存在漏洞
         """
         
-        self.get_kibana_version()
-        if self.version == '9.9.9' or not self.version_compare("6.6.1", self.version):
-            return False
-        headers = {
-            'Content-Type': 'application/json;charset=utf-8',
-            'Referer': self.url,
-            'kbn-version': self.version,
-            'User-Agent': get_useragent()
-        }
-        data = '{"sheet":[".es(*)"],"time":{"from":"now-1m","to":"now","mode":"quick","interval":"auto","timezone":"Asia/Shanghai"}}'
-        try:
-            r = request.post(self.url + "/api/timelion/run", data = data, headers = headers)
-            if r.status_code == 200 and 'application/json' in r.headers.get('content-type', '') and '"seriesList"' in r.text:
-                print("存在CVE-2019-7609漏洞")
-                return True
-            else:
-                print("不存在CVE-2019-7609漏洞")
-                return False
-        except Exception as e:
-            print(e)
-            return False
-        finally:
-            pass
+        await self.get_kibana_version()
+        if self.version != '9.9.9' and self.version_compare("6.6.1", self.version):
+            headers = {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Referer': self.url,
+                'kbn-version': self.version,
+                'User-Agent': get_useragent()
+            }
+            data = '{"sheet":[".es(*)"],"time":{"from":"now-1m","to":"now","mode":"quick","interval":"auto","timezone":"Asia/Shanghai"}}'
+            try:
+                r = await request.post(self.url + "/api/timelion/run", data = data, headers = headers)
+                if r.status == 200 and 'application/json' in r.headers.get('content-type', '') and '"seriesList"' in await r.text():
+                    # print("存在CVE-2019-7609漏洞")
+                    return True
+            except Exception as e:
+                print(e)
+                pass
     
 if __name__ == "__main__":
     CVE_2019_7609 = CVE_2019_7609_BaseVerify('http://192.168.30.242:5601')

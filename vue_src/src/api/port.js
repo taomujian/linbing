@@ -8,6 +8,14 @@ export function portList(data) {
   })
 }
 
+export function portDownload(data) {
+  return request({
+    url: '/api/port/download',
+    method: 'post',
+    data
+  })
+}
+
 export function deletePort(data) {
   return request({
     url: '/api/delete/port',

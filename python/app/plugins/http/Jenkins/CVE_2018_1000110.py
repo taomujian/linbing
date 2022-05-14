@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2018_1000110_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class CVE_2018_1000110_BaseVerify:
         }
         self.capta = get_capta()
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -33,17 +33,11 @@ class CVE_2018_1000110_BaseVerify:
         result = ""
         url = self.url + "/securityRealm/user/admin/search/index?q="
         try:
-            check_req = request.get(url + self.capta, headers = self.headers)
-            if "Search for '%s'" % (self.capta) in check_req.text:
+            check_req = await request.get(url + self.capta, headers = self.headers)
+            if "Search for '%s'" % (self.capta) in await check_req.text():
                 return True
-            else:
-                print('不存在CVE-2018-1000110用户枚举漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CVE-2018-1000110用户枚举漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

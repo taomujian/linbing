@@ -6,12 +6,9 @@ deployment
 test
 www
 web
-rsync
-db
 wwwroot
 data
 tomcat
-ftp
 Admin
 Administrator
 administrator

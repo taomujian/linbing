@@ -14,15 +14,14 @@ class MS17_010_BaseVerify:
             'type': 'RCE'
         }
         self.url = url
-        self.timeout = 20
+        self.timeout = 3
         url_parse = urlparse(self.url)
         self.host = url_parse.hostname
         self.port = str(url_parse.port)
         if not self.port:
             self.port = ['139', '445']
-        self.flag = 0
-        
-    def check(self):
+
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -53,19 +52,16 @@ class MS17_010_BaseVerify:
                 payload = "0000004aff534d422500000000180128000000000000000000000000%s1000000000ffffffff0000000000000000000000004a0000004a0002002300000007005c504950455c00" % allid.hex()
                 s.send(binascii.unhexlify(payload))
                 data = s.recv(1024)
-                s.close()
                 if b"\x05\x02\x00\xc0" in data:
-                    self.flag = 1
+                    return True
             except Exception as e:
-                print(e)
-            finally:
+                # print(e)
                 pass
-        if self.flag == 1:
-            print("存在MS17-010 SMB远程溢出漏洞")
-            return True
-        else:
-            print("不存在MS17-010 SMB远程溢出漏洞")
-            return False
+            finally:
+                try:
+                    s.close()
+                except:
+                    pass
 
 if  __name__ == "__main__":
     MS17_010 = MS17_010_BaseVerify('http://baidu.com')

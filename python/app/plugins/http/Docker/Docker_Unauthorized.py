@@ -2,8 +2,8 @@
 
 import socket
 from urllib.parse import urlparse
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Docker_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -25,7 +25,7 @@ class Docker_Unauthorized_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -43,22 +43,18 @@ class Docker_Unauthorized_BaseVerify:
             s.send(send_str.encode('utf-8'))
             recv = s.recv(1024)
             if b"HTTP/1.1 200 OK" in recv and b'Docker' in recv and b'Api-Version' in recv:
-                result = "Docker unauthorized access"
-                print('存在Docker未授权访问漏洞')
                 return True
-            req = request.get(self.url + '/info', headers = self.headers)
-            if req and 'docker' in req.text:
-                print('存在Docker未授权访问漏洞')
+            req = await request.get(self.url + '/info', headers = self.headers)
+            if req and 'docker' in await req.text():
                 return True
-            else:
-                print('不存在Docker未授权访问漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在Docker 未授权访问漏洞')
-            return False
-        finally:
+            # print(e)
             pass
+        finally:
+            try:
+                s.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     Docker_Unauthorized = Docker_Unauthorized_BaseVerify('http://10.4.33.33:9100')

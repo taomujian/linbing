@@ -7,7 +7,7 @@ const targetRouter = {
   component: Layout,
   redirect: '/target/index',
   name: 'target',
-  meta: { title: 'TargetManager', icon: 'el-icon-link', noCache: true },
+  meta: { title: 'TargetManager', icon: 'el-icon-link', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

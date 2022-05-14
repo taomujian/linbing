@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Hadoop_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class Hadoop_Unauthorized_BaseVerify:
             'User-Agent': get_useragent()
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -30,15 +30,12 @@ class Hadoop_Unauthorized_BaseVerify:
         """
         
         try:
-            req = request.get(self.url + '/cluster/cluster', headers = self.headers)
-            if "hbase" in req.text or "url=/rs-status" in req.text or "hadoop" in req.text:
+            req = await request.get(self.url + '/cluster/cluster', headers = self.headers)
+            if "hbase" in await req.text() or "url=/rs-status" in await req.text() or "hadoop" in await req.text():
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

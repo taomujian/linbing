@@ -19,7 +19,7 @@ class Mongodb_Unauthorized_BaseVerify:
         if not self.port:
             self.port = '27017'
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -30,16 +30,17 @@ class Mongodb_Unauthorized_BaseVerify:
         """
         
         try:
-            conn = MongoClient(self.host, int(self.port), socketTimeoutMS = 5000)
+            conn = MongoClient(self.host, int(self.port), socketTimeoutMS = 3000)
             dbname = conn.database_names()
-            print('存在MongoDB存在未授权访问')
             return True
         except Exception as e:
-            print('不存在MongoDB存在未授权访问')
-            return False
-        finally:
-            conn.close()
+            # print(e)
             pass
+        finally:
+            try:
+                conn.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     Mongodb_Unauthorized = Mongodb_Unauthorized_BaseVerify('http://10.4.33.52:50000')

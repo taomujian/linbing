@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class S2_059_BaseVerify:
     def __init__(self, url):
@@ -28,7 +28,7 @@ class S2_059_BaseVerify:
             'url': '/s2_059_war_exploded/index.action'
         }
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -39,17 +39,14 @@ class S2_059_BaseVerify:
         """
         
         try:
-            check_req = request.post(self.url, data = self.payload, headers = self.headers)
-            check_str = re.sub('\n', '', check_req.text)
+            check_req = await request.post(self.url, data = self.payload, headers = self.headers)
+            check_str = re.sub('\n', '', await check_req.text())
             result = re.findall('label id="(.*?)">', check_str)
             if '121' in result[0]:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

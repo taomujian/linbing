@@ -313,7 +313,7 @@ class Mysql_db:
         
         """
 
-        sql = "create table if not exists port (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port varchar(255) unique key, scan_time varchar(255), scan_ip varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255)) engine = innodb default charset = utf8;"
+        sql = "create table if not exists port (id integer auto_increment primary key, username varchar(255), target varchar(255), ip_port varchar(255), scan_time varchar(255), scan_ip varchar(255), port varchar(255), finger varchar(255), product varchar(255), protocol varchar(255), version varchar(255), title varchar(255), banner varchar(255), unique key thekey (username, target, ip_port)) engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -356,7 +356,7 @@ class Mysql_db:
         :return:
         
         """
-        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', scanner varchar(255) default 'nmap', min_port varchar(255) default '1', max_port varchar(255) default '65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', scanner varchar(255) default 'nmap', port varchar(255) default '1-65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -934,12 +934,12 @@ class Mysql_db:
 
         :return: str 'LXXXXX': 状态码
         """
-        
+
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         sql =  "insert port (username, target, ip_port, scan_time, scan_ip, port, finger, protocol, product, version, title, banner) \
-            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update scan_time = %s, scan_ip = %s, \
-                port = %s, finger = %s, protocol = %s, product = %s, version = %s, title = %s, banner = %s"
-        values = [username, target, ip_port, datetime, scan_ip, port, finger, protocol, product, version, title, banner, datetime, scan_ip, port, finger, protocol, product, version, title, banner]
+            values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update scan_time = %s, \
+                finger = %s, protocol = %s, product = %s, version = %s, title = %s, banner = %s"
+        values = [username, target, ip_port, datetime, scan_ip, port, finger, protocol, product, version, title, banner, datetime, finger, protocol, product, version, title, banner]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1715,7 +1715,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
 
-    def scan_set(self, username, target, scanner, min_port, max_port, rate, concurren_number):
+    def scan_set(self, username, target, scanner, port, rate, concurren_number):
         
         """
         设置扫描选项
@@ -1723,14 +1723,13 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str target: 目标
         :param: str scanner: 选择的端口扫描器
-        :param: str min_port: 扫描范围的最小端口
-        :param: str max_port: 扫描范围的最大端口
+        :param: str port: 扫描范围的最大端口
         
         :return: str 'LXXXXX': 状态码
         """
 
-        sql =  "update target set scanner = %s, min_port = %s, max_port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
-        values = [scanner, min_port, max_port, rate, concurren_number, username, target]
+        sql =  "update target set scanner = %s, port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
+        values = [scanner, port, rate, concurren_number, username, target]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1752,7 +1751,7 @@ class Mysql_db:
         :param: str target: 目标
         :return: str 'LXXXXX': 状态码
         """
-        sql = "select scanner, min_port, max_port, rate, concurren_number from target where username = %s and target = %s"
+        sql = "select scanner, port, rate, concurren_number from target where username = %s and target = %s"
         values = [username, target]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
@@ -2218,6 +2217,42 @@ class Mysql_db:
             where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
                 and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s) order by id desc limit %s, %s"
         values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%', start, pagesize]
+        total_sql = "select count(0) from port where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
+                and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s)"
+        total_values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']
+        conn = self.get_conn()
+        cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
+        try:
+            cursor.execute(total_sql, total_values)
+            total_result = cursor.fetchone()['count(0)']
+            cursor.execute(sql, values)
+            result = cursor.fetchall()
+            data = {}
+            data['total'] = total_result
+            data ['result'] = result
+            return data
+        except Exception as e:
+            print(e)
+            return 'L1001'
+        finally:
+            cursor.close()
+            self.close_conn
+
+    def port_download(self, username, list_query):
+        
+        """
+        下载所有端口的信息
+
+        :param: str username: 用户名
+        :param: dict list_query: 筛选扫描任务的条件
+
+        :return: str 'LXXXXX': 状态码
+        """
+
+        sql = "select id, target, scan_time, scan_ip, port, ip_port, finger, protocol, product, version, title, banner from port \
+            where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
+                and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s) order by id asc"
+        values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']
         total_sql = "select count(0) from port where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, scan_ip like %s) \
                 and if (%s = '', 0 = 0, port like %s) and if (%s = '', 0 = 0, finger like %s) and if (%s = '', 0 = 0, product like %s) and if (%s = '', 0 = 0, title like %s)"
         total_values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['scan_ip'], '%' + list_query['scan_ip'] + '%', list_query['port'], '%' + list_query['port'] + '%', list_query['finger'], '%' + list_query['finger'] + '%', list_query['product'], '%' + list_query['product'] + '%', list_query['title'], '%' + list_query['title'] + '%']

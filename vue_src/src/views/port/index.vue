@@ -14,6 +14,7 @@
       <el-button v-waves class="button" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
+      <el-button :loading="downloadLoading" class="button" type="primary" icon="el-icon-document" @click="handleDownload">下载</el-button>
     </div>
 
     <el-table
@@ -106,7 +107,7 @@
 </template>
 
 <script>
-import { portList, deletePort } from '@/api/port'
+import { portList, portDownload, deletePort } from '@/api/port'
 import { Encrypt } from '@/utils/rsa'
 import { getToken } from '@/utils/auth'
 import waves from '@/directive/waves' // waves directive
@@ -120,6 +121,7 @@ export default {
     return {
       tableKey: 0,
       list: null,
+      allList: null,
       total: 0,
       listLoading: true,
       page: {
@@ -127,6 +129,7 @@ export default {
         pageSize: 10,
         total: 10
       },
+      downloadLoading: false,
       listQuery: {
         target: '',
         scan_ip: '',
@@ -175,6 +178,75 @@ export default {
     handleFilter() {
       this.page.pageNum = 1
       this.getList()
+    },
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        return v[j]
+      }))
+    },
+    dateFormat(fmt, date) {
+      let ret
+      const opt = {
+        'Y+': date.getFullYear().toString(), // 年
+        'm+': (date.getMonth() + 1).toString(), // 月
+        'd+': date.getDate().toString(), // 日
+        'H+': date.getHours().toString(), // 时
+        'M+': date.getMinutes().toString(), // 分
+        'S+': date.getSeconds().toString() // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      }
+      for (const k in opt) {
+        ret = new RegExp('(' + k + ')').exec(fmt)
+        if (ret) {
+          fmt = fmt.replace(
+            ret[1],
+            ret[1].length === 1 ? opt[k] : opt[k].padStart(ret[1].length, '0')
+          )
+        }
+      }
+      return fmt
+    },
+    handleDownload() {
+      let data = {
+        'token': getToken(),
+        'listQuery': JSON.stringify(this.listQuery)
+      }
+      data = JSON.stringify(data)
+      const params = { 'data': Encrypt(data) }
+      portDownload(params).then(response => {
+        if (response.data === '') {
+          this.allList = []
+          this.$notify({
+            message: '数据为空,无法下载!',
+            type: 'warning',
+            center: true,
+            duration: 2 * 1000
+          })
+        } else {
+          this.allList = response.data.result
+          this.downloadLoading = true
+          import('@/vendor/Export2Excel').then(excel => {
+            const tHeader = ['ID', '目标', 'IP', '端口', 'IP_PORT', 'Web框架', '协议', '产品', '版本', '标题', '横幅']
+            const filterVal = ['id', 'target', 'scan_ip', 'port', 'ip_port', 'finger', 'protocol', 'product', 'version', 'title', 'banner']
+            const data = this.formatJson(filterVal, this.allList)
+            const fileName = this.dateFormat('YYYYmmddHHMMSS', new Date())
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: fileName,
+              autoWidth: this.autoWidth,
+              bookType: this.bookType
+            })
+            this.downloadLoading = false
+          })
+          this.$notify({
+            message: '下载成功!',
+            type: 'success',
+            center: true,
+            duration: 3 * 1000
+          })
+        }
+      })
     },
     handleDelete(row) {
       let data = {

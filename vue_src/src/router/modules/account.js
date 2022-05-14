@@ -7,7 +7,7 @@ const accountRouter = {
   component: Layout,
   redirect: '/account/index',
   name: 'account',
-  meta: { icon: 'el-icon-user-solid', roles: ['admin'], noCache: true },
+  meta: { icon: 'el-icon-user-solid', roles: ['admin'], noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

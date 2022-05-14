@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import xmlrpc.client
-from app.lib.utils.common import get_capta
+from app.lib.common import get_capta
 
 class CVE_2017_11610_BaseVerify:
     def __init__(self, url):
@@ -15,7 +15,7 @@ class CVE_2017_11610_BaseVerify:
         self.url = url
         self.capta = get_capta()
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -33,13 +33,8 @@ class CVE_2017_11610_BaseVerify:
                 result = getattr(proxy, 'supervisor.readLog')(0,0)
                 if self.capta in result[len(old):]:
                     return True
-                else:
-                    print("不存在CVE-2017-11610任意代码执行漏洞")
-                    return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == "__main__":

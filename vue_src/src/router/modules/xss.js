@@ -7,7 +7,7 @@ const xssRouter = {
   name: 'xss',
   redirect: '/xss/index',
   component: Layout,
-  meta: { title: 'XssManager', icon: 'el-icon-monitor', noCache: true },
+  meta: { title: 'XssManager', icon: 'el-icon-monitor', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'log',

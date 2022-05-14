@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Nginx_Httproxy_BaseVerify:
     def __init__(self, url):
@@ -18,7 +18,7 @@ class Nginx_Httproxy_BaseVerify:
             "User-Agent": get_useragent()
        }
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -30,23 +30,19 @@ class Nginx_Httproxy_BaseVerify:
 
         url = "http://www.net.cn/static/customercare/yourip.asp"
         try:
-            local_req = request.get(url)
+            local_req = await request.get(url)
             pattern = re.compile('<h2>(.*?)</h2')
-            local_ip = re.findall(pattern, local_req.text)[0]
+            local_ip = re.findall(pattern, await local_req.text())[0]
             proxies = {
                 'http': self.url
             }
-            proxy_req = request.get(url, proxies = proxies)
-            proxy_ip = re.findall(pattern, proxy_req.text)[0]
+            proxy_req = await request.get(url, proxies = proxies)
+            proxy_ip = re.findall(pattern, await proxy_req.text())[0]
             if local_ip != proxy_ip:
-                print('存在Nginx反向代理可访问内网漏洞')
-            else:
-                print('不存在Nginx反向代理可访问内网漏洞')
+                # print('存在Nginx反向代理可访问内网漏洞')
+                return True
         except Exception as e:
-            print('不存在Nginx反向代理可访问内网漏洞')
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

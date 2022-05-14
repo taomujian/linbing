@@ -13,14 +13,14 @@ class CVE_2017_7269_BaseVerify:
             'type': 'RCE'
         }
         self.url = url
-        self.timeout = 20
+        self.timeout = 3
         url_parse = urlparse(self.url)
         self.host = url_parse.hostname
         self.port = url_parse.port
         if not self.port:
             self.port = '80'
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -37,19 +37,17 @@ class CVE_2017_7269_BaseVerify:
             pay = b"OPTIONS / HTTP/1.0\r\n\r\n"
             s.send(pay)
             data = s.recv(2048)
-            s.close()
             if b"PROPFIND" in data and b"Microsoft-IIS/6.0" in data :
-                print('存在CVE-2017-7269 远程代码执行漏洞')
+                # print('存在CVE-2017-7269 远程代码执行漏洞')
                 return True
-            else:
-                print('不存在CVE-2017-7269 远程代码执行漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CVE-2017-7269 远程代码执行漏洞')
-            return False
-        finally:
+            # print(e)
             pass
+        finally:
+            try:
+                s.close()
+            except:
+                pass
 
 if __name__ == "__main__":
    CVE_2017_7269 = CVE_2017_7269_BaseVerify('https://baidu.com')

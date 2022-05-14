@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Everything_List_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class Everything_List_BaseVerify:
             'User-Agent': get_useragent()
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -31,17 +31,13 @@ class Everything_List_BaseVerify:
         """
         
         try:
-            req = request.get(self.url, headers = self.headers)
-            title =re.findall(r"<title>(.*)</title>",req.text)[0]
-            #print title
+            req = await request.get(self.url, headers = self.headers)
+            title =re.findall(r"<title>(.*)</title>", await req.text())[0]
             if "Everything" in title:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

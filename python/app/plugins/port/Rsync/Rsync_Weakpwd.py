@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-import time
 import socket
+import asyncio
 import hashlib
 from base64 import b64encode
 from urllib.parse import urlparse
@@ -17,7 +17,7 @@ class Rsync_Weakpwd_BaseVerify:
             'type': 'Weakpwd'
         }
         self.url = url
-        self.timeout = 10
+        self.timeout = 3
         url_parse = urlparse(self.url)
         self.host = url_parse.hostname
         self.port = url_parse.port
@@ -50,11 +50,11 @@ class Rsync_Weakpwd_BaseVerify:
         else:
             return -1
 
-    def get_all_pathname(self):
+    async def get_all_pathname(self):
         path_name_list = []
         self._rsync_init()
         self.sock.send(b'\n')
-        time.sleep(0.5)
+        await asyncio.sleep(0.5)
         result = self.sock.recv(1024).decode('utf-8')
         if result:
             for path_name in re.split('\n', result):
@@ -66,7 +66,8 @@ class Rsync_Weakpwd_BaseVerify:
     def weak_passwd_check(self, path_name='', username='', passwd=''):
         ver_string = self._rsync_init()
         if self._get_ver_num(ver_string=ver_string) < 30:
-            print('Error info:', ver_string)
+            pass
+            # print('Error info:', ver_string)
         
         payload = path_name + '\n'
         self.sock.send(payload.encode())
@@ -84,8 +85,6 @@ class Rsync_Weakpwd_BaseVerify:
             res = self.sock.recv(1024).decode()
             if res.startswith('@RSYNCD: OK'):
                 return (True, username, passwd)
-            else:
-                return False
 
     def _get_ver_num(self, ver_string=''):
         ver_num_com = re.compile('@RSYNCD: (\d+)')
@@ -96,8 +95,30 @@ class Rsync_Weakpwd_BaseVerify:
             else: return 0
         else:
             return 0
+    
+    def handle(self, path_name, user, pwd):
 
-    def check(self):
+        """
+        发送请求,判断内容
+
+        :param str path_name: 目录
+        :param str user: 用户名
+        :param str pwd: 密码
+
+        :return bool True or False: 是否存在漏洞
+        """
+
+        try:
+            res = self.weak_passwd_check(path_name, user, pwd)
+            if res:
+                result = "user: %s pwd: %s" %(user, pwd)
+                return True, '%s目录存在FTP弱口令,账号密码为: %s' %(path_name, result)
+            
+        except Exception as e:
+            # print(e)
+            pass
+
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -107,43 +128,26 @@ class Rsync_Weakpwd_BaseVerify:
         :return bool True or False: 是否存在漏洞
         """
 
-        flag = 0
-        info = ''
-        weak_auth_list = []
         try:
-            for path_name in self.get_all_pathname():
+            tasks = []
+            for path_name in await self.get_all_pathname():
                 ret = self.is_path_not_auth(path_name)
                 if ret == 1:
-                    try:
-                        for user in open('app/username.txt', 'r', encoding = 'utf-8').readlines():
-                            user = user.strip()
-                            for pwd in open('app/password.txt', 'r', encoding = 'utf-8').readlines():
-                                if pwd != '':
-                                    pwd = pwd.strip()
-                                res = self.weak_passwd_check(path_name, user, pwd)
-                                if res:
-                                    flag = 1
-                                    weak_auth_list.append((path_name, user, pwd))
-                    except Exception as e:
-                        print(e)
-                        print(e.__traceback__.tb_frame.f_globals["__file__"])  # 发生异常所在的文件
-                        print(e.__traceback__.tb_lineno)            # 发生异常所在的行数
-                        pass
-        except Exception as e:
-            print(e)
-            print('不存在Rsync目录弱口令漏洞')
-            return False
-        finally:
-            pass
+                    for user in open('app/data/db/username.txt', 'r', encoding = 'utf-8').readlines():
+                        user = user.strip()
+                        for pwd in open('app/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
+                            if pwd != '':
+                                pwd = pwd.strip()
+                            task = asyncio.create_task(asyncio.to_thread(self.handle, path_name, user, pwd))
+                            tasks.append(task)
 
-        if flag == 1:
-            print('存在Rsync目录弱口令漏洞')
-            for weak_auth in weak_auth_list:
-                info += u'目录%s存在弱验证:%s:%s;' %weak_auth
-            return True
-        else:
-            print('不存在Rsync目录弱口令漏洞')
-            return False
+                    results = await asyncio.gather(*tasks)
+                    for result in results:
+                        if result:
+                            return True, result[1]
+        except Exception as e:
+            # print(e)
+            pass
 
 if __name__ == '__main__':
     Rsync_Weakpwd = Rsync_Weakpwd_BaseVerify('http://127.0.0.1:873')

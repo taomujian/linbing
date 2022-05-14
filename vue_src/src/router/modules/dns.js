@@ -7,7 +7,7 @@ const dnsRouter = {
   name: 'dns',
   redirect: '/dns/index',
   component: Layout,
-  meta: { title: 'DNS日志', icon: 'el-icon-monitor', noCache: true },
+  meta: { title: 'DNS日志', icon: 'el-icon-monitor', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'log',

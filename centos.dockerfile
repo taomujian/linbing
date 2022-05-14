@@ -23,8 +23,8 @@ RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backu
 && mkdir /root/python && cd gcc-9.2.0 && ./contrib/download_prerequisites && mkdir build && cd build && ../configure --prefix=/usr/local --disable-multilib --enable-languages=c,c++ && make && make install \
 && ln -sf /usr/local/bin/gcc cc && yum remove -y gcc && sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf && sed -i "s|# requirepass foobared|requirepass '${REDIS_PASS}'|" /etc/redis/redis.conf
 
-RUN wget https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz && tar -zxvf Python-3.8.1.tgz && cd Python-3.8.1 && ./configure prefix=/usr/local/python3.8 --enable-shared --enable-optimizations LDFLAGS="-Wl,--rpath=/usr/local/python3.8/lib" \
-&& make && make install && rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3 && ln -s /usr/local/python3.8/bin/python3.8 /usr/bin/python3 && ln -s /usr/local/python3.8/bin/pip3.8 /usr/bin/pip3
+RUN wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && tar -zxvf Python-3.10.4.tgz && cd Python-3.10.4 && ./configure prefix=/usr/local/python3.10 --enable-shared LDFLAGS="-Wl,--rpath=/usr/local/python3.10/lib" \
+&& make && make install && rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3 && ln -s /usr/local/python3.10/bin/python3.10 /usr/bin/python3 && ln -s /usr/local/python3.10/bin/pip3.10 /usr/bin/pip3
 
 # 复制本地文件到docker 中
 ADD nginx/vue.conf /etc/nginx/conf.d/vue.conf

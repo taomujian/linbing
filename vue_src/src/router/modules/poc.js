@@ -7,7 +7,7 @@ const pocRouter = {
   name: 'poc',
   redirect: '/poc/index',
   component: Layout,
-  meta: { title: 'PocManager', icon: 'el-icon-scissors', noCache: true },
+  meta: { title: 'PocManager', icon: 'el-icon-scissors', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

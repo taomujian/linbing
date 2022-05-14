@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class Iis_Webdav_Put_BaseVerify:
     def __init__(self, url):
@@ -18,7 +18,7 @@ class Iis_Webdav_Put_BaseVerify:
         }
         self.capta = get_capta()
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -28,25 +28,18 @@ class Iis_Webdav_Put_BaseVerify:
         :return bool True or False: 是否存在漏洞
         """
         
-        file_name = self.capta
         file_content = self.capta
         url = self.url + "/" + self.capta + ".txt"
         try:
-            req = request.put(url, data = {'test': self.capta}, headers = self.headers)
-            req_get = request.get(url, headers = self.headers)
-            if req_get.status_code == 200 and file_content in req_get.text:
-                print('存在iis webdav put漏洞')
+            req = await request.put(url, data = {'test': self.capta}, headers = self.headers)
+            req_get = await request.get(url, headers = self.headers)
+            if req_get.status == 200 and file_content in req_get.text:
+                # print('存在iis webdav put漏洞')
                 return True
-            else:
-                print('不存在iis webdav put漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在iis webdav put漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":
-    IIS_Webdav_Put = IIS_Webdav_Put_BaseVerify('https://blog.csdn.net')
+    IIS_Webdav_Put = Iis_Webdav_Put_BaseVerify('https://blog.csdn.net')
     IIS_Webdav_Put.check()

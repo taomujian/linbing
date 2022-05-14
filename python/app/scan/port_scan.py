@@ -4,14 +4,15 @@ import re
 import nmap
 import masscan
 import chardet
-from app.lib.utils.request import request
-from app.lib.utils.finger import WhatCms, Fofa_Scanner
+import asyncio
+from app.lib.request import request
+from app.utils.finger import WhatCms, Fofa_Scanner
 
-class Port_Scan():
+class Port_Scan:
     def __init__(self, mysqldb):
         self.mysqldb = mysqldb
 
-    def get_title(self, url):
+    async def get_title(self, url):
 
         """
         获取网站的title与banner
@@ -25,10 +26,11 @@ class Port_Scan():
         banner = ''
         try:
             req = request.get(url)
+            content = await req.read()
             #获取网站的页面编码
-            r_detectencode = chardet.detect(req.content)
+            r_detectencode = chardet.detect(content)
             actual_encode = r_detectencode['encoding']
-            pagecode = req.content.decode(actual_encode)
+            pagecode = content.decode(actual_encode)
             response = re.findall('<title>(.*?)</title>', pagecode, re.S)
             if pagecode:
                 #将页面解码为utf-8，获取中文标题
@@ -37,11 +39,12 @@ class Port_Scan():
             if 'server' in req.headers.keys():
                 banner = req.headers['server']
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         finally:
             return title, banner
 
-    def nmap_scan(self, username, target, domain, target_ip, scan_id, min_port, max_port):
+    def nmap_scan(self, username, target, domain, target_ip, scan_id,port):
 
         """
         用nmap进行扫描
@@ -50,63 +53,71 @@ class Port_Scan():
         :param str target: 待扫描的目标
         :param str target_ip: 待扫描的目标ip
         :param str scan_id: 扫描任务id
-        :param str min_port: 扫描端口的最小值
-        :param str max_port: 扫描端口的最大值
+        :param str port: 扫描端口
 
         :return list scan_list: 扫描的结果
         """
+        
         scan_list = []
-        nm = nmap.PortScanner()
-        arguments = '-sS -sV -Pn -T4 --open -p %s-%s' %(min_port, max_port)
-        nm.scan(hosts = target_ip, arguments = arguments)
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         try:
+            nm = nmap.PortScanner()
+            arguments = '-sS -sV -Pn -T4 --open -p %s' %(port)
+            nm.scan(hosts = target_ip, arguments = arguments)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             for host in nm.all_hosts():
                 for nmap_proto in nm[host].all_protocols():
                     lport = nm[host][nmap_proto].keys()
                     lport = sorted(lport)
-                    for nmap_port in lport:
-                        protocol = nm[host][nmap_proto][int(nmap_port)]['name']
-                        product = nm[host][nmap_proto][int(nmap_port)]['product']
-                        version = nm[host][nmap_proto][int(nmap_port)]['version']
-                        if 'tcpwrapped' not in protocol:
-                            if 'http' in protocol or protocol == 'sun-answerbook':
-                                if protocol == 'https' or protocol == 'https-alt' or nmap_port == 443:
-                                    scan_url_port = 'https://' + str(domain if domain else host) + ':' + str(nmap_port)
-                                else:
-                                    scan_url_port = 'http://' + str(domain if domain else host) + ':' + str(nmap_port)
-
-                                finger_data = self.mysqldb.all_finger(username)
-                                cms = Fofa_Scanner(target, finger_data['fofa_cms'])
-                                fofa_finger = cms.run()
-                                cms_name = ''
-                                for fofa_finger_tmp in fofa_finger:
-                                    if fofa_finger_tmp.lower() in cms.cms_finger_list:
-                                        cms_name = fofa_finger_tmp
+                    try:
+                        if len(lport) < 50:
+                            for nmap_port in lport:
+                                protocol = nm[host][nmap_proto][int(nmap_port)]['name']
+                                product = nm[host][nmap_proto][int(nmap_port)]['product']
+                                version = nm[host][nmap_proto][int(nmap_port)]['version']
+                                if 'tcpwrapped' not in protocol:
+                                    if 'http' in protocol or protocol == 'sun-answerbook':
+                                        if protocol == 'https' or protocol == 'https-alt' or nmap_port == 443:
+                                            scan_url_port = 'https://' + host + ':' + str(nmap_port)
+                                        else:
+                                            scan_url_port = 'http://' + host + ':' + str(nmap_port)
+                                        finger_data = self.mysqldb.all_finger(username)
+                                        cms = Fofa_Scanner(scan_url_port, finger_data['fofa_cms'])
+                                        fofa_finger = asyncio.run(cms.run())
+                                        cms_name = ''
+                                        for fofa_finger_tmp in fofa_finger:
+                                            if fofa_finger_tmp.lower() in cms.cms_finger_list:
+                                                cms_name = fofa_finger_tmp
                                         
-                                if not cms_name:
-                                    whatcms = WhatCms(target, finger_data['cms'])
-                                    cms_result = whatcms.run()
-                                    cms_result = list(set(cms_result))
-                                    if cms_result:
-                                        cms_name = cms_name + '\n' + ''.join(cms_result)
+                                        '''
+                                        if not cms_name:
+                                            whatcms = WhatCms(scan_url_port, finger_data['cms'])
+                                            cms_result = asyncio.run(whatcms.run())
+                                            cms_result = list(set(cms_result))
+                                            if cms_result:
+                                                cms_name = cms_name + '\n' + ''.join(cms_result)
+                                        '''
 
-                                result = self.get_title(scan_url_port)
-                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), cms_name, protocol, product, version, result[0], result[1])
-                                self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(nmap_port), cms_name, protocol, product, version, result[0], result[1])
-                            else:
-                                scan_url_port = str(host) + ':' + str(nmap_port)
-                                self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), '', protocol, product, version, '', '')
-                                self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(nmap_port), '', protocol, product, version, '', '')
-                            
-                            scan_list.append(scan_url_port)
+                                        result = asyncio.run(self.get_title(scan_url_port))
+                                        self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), cms_name, protocol, product, version, result[0], result[1])
+                                        self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(nmap_port), cms_name, protocol, product, version, result[0], result[1])
+                                    else:
+                                        scan_url_port = str(host) + ':' + str(nmap_port)
+                                        self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(nmap_port), '', protocol, product, version, '', '')
+                                        self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(nmap_port), '', protocol, product, version, '', '')
+                                    scan_list.append(scan_url_port)
+                    except Exception as e:
+                        # print(e)
+                        pass
         except Exception as e:
-            print(e)
+            # print(e)
             pass
-        finally:
-            pass
+
         return scan_list
 
-    def masscan_scan(self, username, target, domain, target_ip, scan_id, min_port, max_port, rate):
+    def masscan_scan(self, username, target, domain, target_ip, scan_id, port, rate):
         
         """
         用masscan进行扫描
@@ -115,8 +126,7 @@ class Port_Scan():
         :param str target: 待扫描的目标
         :param str target_ip: 待扫描的目标
         :param str scan_id: 扫描id
-        :param str min_port: 扫描端口的最小值
-        :param str max_port: 扫描端口的最大值
+        :param str port: 扫描端口的最大值
         :param str rate: 扫描速率
 
         :return list scan_list: 扫描的结果
@@ -124,57 +134,65 @@ class Port_Scan():
 
         scan_list = []
         print('Masscan starting.....\n')
-        masscan_scan = masscan.PortScanner()
-        masscan_scan.scan(hosts = target_ip, ports='%s-%s'%(min_port, max_port), arguments = '-sS -Pn -n --randomize-hosts -v --send-eth --open --rate %s' % (rate))
         try:
+            masscan_scan = masscan.PortScanner()
+            masscan_scan.scan(hosts = target_ip, ports='%s'%(port), arguments = '-sS -Pn -n --randomize-hosts -v --send-eth --open --rate %s' % (rate))
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             for host in masscan_scan.all_hosts:
                 for masscan_proto in masscan_scan[host].keys():
-                    for masscan_port in masscan_scan[host][masscan_proto].keys():
-                        nm = nmap.PortScanner()
-                        arguments = '-p %s -sS -sV -Pn -T4 --open' % (masscan_port)
-                        nm.scan(hosts = host, arguments = arguments)
-                        for nmap_proto in nm[host].all_protocols():
-                            protocol = nm[host][nmap_proto][int(masscan_port)]['name']
-                            product = nm[host][nmap_proto][int(masscan_port)]['product']
-                            version = nm[host][nmap_proto][int(masscan_port)]['version']
-                            if 'tcpwrapped' not in protocol:
-                                if 'http' in protocol or protocol == 'sun-answerbook':
-                                    if protocol == 'https' or protocol == 'https-alt' or masscan_port == 443:
-                                        scan_url_port = 'https://' + str(domain if domain else host) + ':' + str(masscan_port)
-                                    else:
-                                        scan_url_port = 'http://' + str(domain if domain else host) + ':' + str(masscan_port)
-                                    
-                                    finger_data = self.mysqldb.all_finger(username)
-                                    cms = Fofa_Scanner(target, finger_data['fofa_cms'])
-                                    fofa_finger = cms.run()
-                                    cms_name = ''
-                                    for fofa_finger_tmp in fofa_finger:
-                                        if fofa_finger_tmp.lower() in cms.cms_finger_list:
-                                            cms_name = fofa_finger_tmp
+                    if len(masscan_scan[host][masscan_proto].keys()) < 50:
+                        for masscan_port in masscan_scan[host][masscan_proto].keys():
+                            try:
+                                nm = nmap.PortScanner()
+                                arguments = '-p %s -sS -sV -Pn -T4 --open' % (masscan_port)
+                                nm.scan(hosts = host, arguments = arguments)
+                                for nmap_proto in nm[host].all_protocols():
+                                    protocol = nm[host][nmap_proto][int(masscan_port)]['name']
+                                    product = nm[host][nmap_proto][int(masscan_port)]['product']
+                                    version = nm[host][nmap_proto][int(masscan_port)]['version']
+                                    if 'tcpwrapped' not in protocol:
+                                        if 'http' in protocol or protocol == 'sun-answerbook':
+                                            if protocol == 'https' or protocol == 'https-alt' or masscan_port == 443:
+                                                scan_url_port = 'https://' + host + ':' + str(masscan_port)
+                                            else:
+                                                scan_url_port = 'http://' + host + ':' + str(masscan_port)
                                             
-                                    if not cms_name:
-                                        whatcms = WhatCms(target, finger_data['cms'])
-                                        cms_result = whatcms.run()
-                                        cms_result = list(set(cms_result))
-                                        if cms_result:
-                                            cms_name = cms_name + '\n' + ''.join(cms_result)
+                                            finger_data = self.mysqldb.all_finger(username)
+                                            cms = Fofa_Scanner(scan_url_port, finger_data['fofa_cms'])
+                                            fofa_finger = asyncio.run(cms.run())
+                                            cms_name = ''
+                                            for fofa_finger_tmp in fofa_finger:
+                                                if fofa_finger_tmp.lower() in cms.cms_finger_list:
+                                                    cms_name = fofa_finger_tmp
+                                            '''
+                                            if not cms_name:
+                                                whatcms = WhatCms(scan_url_port, finger_data['cms'])
+                                                cms_result = whatcms.run()
+                                                cms_result = list(set(cms_result))
+                                                if cms_result:
+                                                    cms_name = cms_name + '\n' + ''.join(cms_result)
+                                            '''
 
-                                    result = self.get_title(scan_url_port)
-                                    self.mysqldb.save_target_port(username, target, scan_id,  target_ip, str(masscan_port), cms_name, protocol, product, version, result[0], result[1])
-                                    self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(masscan_port), cms_name, protocol, product, version, result[0], result[1])
-                                else:
-                                    scan_url_port = str(host) + ':' + str(masscan_port)
-                                    self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(masscan_port), '', protocol, product, version, '', '')
-                                    self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(masscan_port), '', protocol, product, version, '', '')
-                                    scan_list.append(scan_url_port)
-
-            print('Masscan scanned.....\n')
+                                            result = asyncio.run(self.get_title(scan_url_port))
+                                            self.mysqldb.save_target_port(username, target, scan_id,  target_ip, str(masscan_port), cms_name, protocol, product, version, result[0], result[1])
+                                            self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(masscan_port), cms_name, protocol, product, version, result[0], result[1])
+                                        else:
+                                            scan_url_port = str(host) + ':' + str(masscan_port)
+                                            self.mysqldb.save_target_port(username, target, scan_id, target_ip, str(masscan_port), '', protocol, product, version, '', '')
+                                            self.mysqldb.save_port(username, target, scan_url_port, target_ip, str(masscan_port), '', protocol, product, version, '', '')
+                                            scan_list.append(scan_url_port)
+                            except Exception as e:
+                                # print(e)
+                                pass
+                            finally:
+                                pass
         except Exception as e:
-            print(e)
+            # print(e)
             pass
         finally:
-            pass
-        return scan_list
+            print('Masscan scanned.....\n')
+            return scan_list
 
 if __name__ == '__main__':
     port_scan = Port_Scan()

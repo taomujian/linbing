@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-import os
 import re
 import shlex
 import random
 import string
 import socket
-import signal
 import tldextract
 from IPy import IP
 from urllib.parse import urlparse
-from app.lib.utils.request import request
+from app.lib.request import request
 
 def get_useragent():
     
@@ -53,7 +51,7 @@ def get_capta():
         capta = capta + random.choice(words)
     return capta
 
-def get_live(url, num):
+async def get_live(url, num):
     
     """
     确认目标是否存活,尝试访问一定次数后确认目标是否存活
@@ -73,16 +71,14 @@ def get_live(url, num):
             # 判断没有http协议类型的网站是http还是https,并判断是否存活
             if not url.startswith("http") and not url.startswith("https"):
                 url = 'http://' + url
-                req = request.get(url, headers = headers, verify = False, allow_redirects = True)
-                return urlparse(req.url).scheme  + '://' + urlparse(req.url).netloc
-            # 并判断目标是否存活
+                req = await request.get(url, headers = headers, allow_redirects = True)
+                return req.real_url
             else:
-                req = request.get(url, headers = headers, verify = False, allow_redirects = True)
-                return urlparse(req.url).scheme  + '://' + urlparse(req.url).netloc
+                req = request.get(url, headers = headers, allow_redirects = True)
+                return req.real_url
         except Exception as e:
-            print(e)
+            # print(e)
             pass
-    return None
 
 def parse_target(target):
     
@@ -121,7 +117,8 @@ def parse_target(target):
             domain_result = domain_regex.findall(url_parse.netloc)
             scan_ip = socket.gethostbyname(url_parse.hostname)
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
     finally:
         pass
     
@@ -174,27 +171,3 @@ def parser_url(url):
     data = urlparse(url)
     parser_url = data.scheme + '://' + data.netloc
     return parser_url
-
-def check(parameter):
-    
-    """
-    等待指定时间后杀掉指定的进程
-
-    :param str parameter: 要查找的进程名字关键字
-    :return:
-    
-    """
-    
-    try:
-        out = os.popen("ps -ef |grep \'%s\' |grep -v grep | awk '{print $2}'" %(parameter)).read()
-        if out:
-            for line in out.splitlines():
-                try:
-                    os.kill(int(line), signal.SIGKILL)
-                except Exception as e:
-                    print(e)
-                    pass
-    except Exception as e:
-        print(e)
-    finally:
-        pass

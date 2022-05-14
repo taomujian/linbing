@@ -7,7 +7,7 @@ const vulnerRouter = {
   name: 'vulner',
   redirect: '/vulner/index',
   component: Layout,
-  meta: { title: 'VulnerManager', icon: 'el-icon-s-grid', noCache: true },
+  meta: { title: 'VulnerManager', icon: 'el-icon-s-grid', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

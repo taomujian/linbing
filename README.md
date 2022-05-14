@@ -1,4 +1,5 @@
 - [临兵漏洞扫描系统](#临兵漏洞扫描系统)
+  - [使用说明](#使用说明)
   - [修改加密key](#修改加密key)
     - [修改aes key](#修改aes-key)
     - [修改rsa key](#修改rsa-key)
@@ -33,13 +34,18 @@
     - [[v2.7] 2021.10.11](#v27-20211011)
     - [[v2.8] 2021.10.24](#v28-20211024)
     - [[v2.9] 2021.12.26](#v29-20211226)
+    - [[v3.0] 2022.5.14](#v30-2022514)
   - [致谢](#致谢)
   - [免责声明](#免责声明)
   - [License](#license)
 
 # 临兵漏洞扫描系统
 
-> 本系统是对Web中间件和Web框架进行漏洞扫描的一个系统,前端采用vue技术,后端采用python.poc有110多个,包含绝大部分的中间件漏洞,本系统的poc皆来源于网络或在此基础上进行修改
+> 本系统是对Web中间件和Web框架进行自动化渗透的一个系统,根据扫描选项去自动化收集资产,然后进行POC扫描,POC扫描时会根据指纹选择POC插件去扫描,POC插件扫描用异步方式扫描.前端采用vue技术,后端采用python fastapi.
+
+## 使用说明
+
+> 扫描分为指纹探测、子域名爆破、端口扫描、目录扫描、POC扫描.如果选择所有扫描选项,子域名扫出的IP会传给端口扫描,端口扫描中识别指纹,扫描出的资产传给目录扫描和POC扫描,POC扫描会根据资产指纹去加载插件扫描,如果识别不到指纹,则加载所有插件,POC插件分为2种类型,http和port,http类型指发送http请求,port指发送socket请求,扫描出的资产如果是url格式,则加载http类型插件,否则则加载port类型插件.
 
 ## 修改加密key
 
@@ -51,8 +57,7 @@
 
 ### 修改rsa key
 
-> 需要先生成rsa的公私钥(私钥1024位)[参考地址](https://www.jianshu.com/p/d614ba4720ec)
-
+> 需要生成rsa的公私钥(私钥1024位)[参考地址](https://www.jianshu.com/p/d614ba4720ec)
 > 修改python/rsa.py文件中的公钥和私钥信息,vue部分则需要修改vue_src/src/libs/crypto.js文件中第77行的公钥,要和python/rsa.py文件中的公钥保持一致
 
 修改vue部分后要重新打包,然后把打包后的文件夹dist中的内容复制到vue文件夹,vue原有的文件要删除.
@@ -94,7 +99,6 @@
 ## 从dockerhub中获取镜像
 
 > docker pull taomujian/linbing:latest
-
 > docker run -it -d -p 11000:11000 -p 8800:8800 taomujian/linbing
 
 ## 访问
@@ -216,16 +220,17 @@
 
 - 集成dnslog.cn的功能,提供dnslog功能
 
+### [v3.0] 2022.5.14
+
+- POC插件扫描换成异步扫描方式,加快扫描速度
+
 ## 致谢
 
 > 感谢vulhub项目提供的靶机环境:
-
 > <https://github.com/vulhub/vulhub>,
-
 > <https://hub.docker.com/r/2d8ru/struts2>
-
-> POC也参考了很多项目:
 >
+> POC也参考了很多项目:
 > <https://github.com/Xyntax/POC-T>、
 >
 > <https://github.com/ysrc/xunfeng>、
@@ -233,7 +238,7 @@
 > <https://github.com/se55i0n/DBScanner>、
 >
 > <https://github.com/vulscanteam/vulscan>
-
+> 
 > 感谢师傅pan带我入门安全,也感谢呆橘同学在vue上对我的指导
 
 ## 免责声明

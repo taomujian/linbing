@@ -76,13 +76,10 @@ class Python_Dns_Transfer_BaseVerify:
         """
         
         RCODE = struct.unpack('!H', response[2:4] )[0] & 0b00001111 # last 4 bits is RCODE
-        if RCODE != 0:
-            print('不存在域传送漏洞')
-            return False
-        else:
-            print('存在域传送漏洞')
+        if RCODE == 0:
+            # print('存在域传送漏洞')
             anwser_rrs = struct.unpack('!H', response[6:8])[0]
-            print ('总共%d records in total' % anwser_rrs)
+            # print ('总共%d records in total' % anwser_rrs)
             self.OFFSET = 12 + self.LEN_QUERY + 4    # header = 12, type + class = 4
             while self.OFFSET < len(response):
                 name_offset = response[self.OFFSET: self.OFFSET + 2]    # 2 bytes
@@ -104,7 +101,7 @@ class Python_Dns_Transfer_BaseVerify:
                     ip = [str(num) for num in struct.unpack('!BBBB', response[self.OFFSET+2: self.OFFSET+6] ) ]
                     print(name.ljust(20), type.ljust(10), '.'.join(ip))
                 self.OFFSET += 2 + data_length
-            return True
+            return True, '总共%d records in total' % anwser_rrs
 
     # is_pointer: an name offset or not
     def get_name(self, response, name_offset, is_pointer = False):
@@ -131,7 +128,7 @@ class Python_Dns_Transfer_BaseVerify:
         self.OFFSET += 2    # 0x00
         return name
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -144,10 +141,7 @@ class Python_Dns_Transfer_BaseVerify:
         try:
             cmd_res = os.popen('nslookup -type=ns %s' %(self.domain)).read()    # fetch DNS Server List
             dns_servers = re.findall('nameserver = ([\w\.]+)', cmd_res)
-            if len(dns_servers) == 0:
-                print('不存在DNS域传送漏洞')
-                return False
-            else:
+            if len(dns_servers) != 0:
                 for server in dns_servers:
                     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     s.connect((server, 53))
@@ -158,16 +152,16 @@ class Python_Dns_Transfer_BaseVerify:
                     res_len = struct.unpack('!H', response[:2])[0]    # Response Content Length
                     while len(response) < res_len:
                         response += s.recv(4096)
-                    s.close()
                     if self.decode(response[2:]):
                         return True
-                    else:
-                        return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
+        finally:
+            try:
+                s.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     Python_Dns_Transfer = Python_Dns_Transfer_BaseVerify('http://vulhub.org')

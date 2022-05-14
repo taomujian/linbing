@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import time
 import socket
+import asyncio
 import binascii
 from urllib.parse import urlparse
 
@@ -15,14 +15,14 @@ class Javarmi_Rce_BaseVerify:
             'type': 'RCE'
         }
         self.url = url
-        self.timeout = 20
+        self.timeout = 3
         url_parse = urlparse(self.url)
         self.host = url_parse.hostname
         self.port = url_parse.port
         if not self.port:
             self.port = '1099'
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -150,26 +150,23 @@ class Javarmi_Rce_BaseVerify:
             send_data_second = binascii.a2b_hex(send_packet_second)
             send_data_third = binascii.a2b_hex(send_packet_third)
             sock.send(send_data_first)
-            time.sleep(1)
+            await asyncio.sleep(0.5)
             sock.send(send_data_second)
-            time.sleep(1)
+            await asyncio.sleep(0.5)
             sock.send(send_data_third)
             packet=sock.recv(10240)
-            time.sleep(1)
+            await asyncio.sleep(0.5)
             packet1 = sock.recv(10240)
-            sock.close()
-            if "8888" in packet1:
-                print('存在Java RMI rce漏洞')
-                return False
-            else:
-                print('不存在Java RMI rce漏洞')
+            if "8888" not in packet1:
                 return True
         except Exception as e:
-            print(e)
-            print('不存在Java RMI rce漏洞')
-            return False
-        finally:
+            # print(e)
             pass
+        finally:
+            try:
+                sock.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     Javarmi_Rce = Javarmi_Rce_BaseVerify('https://blog.csdn.net')

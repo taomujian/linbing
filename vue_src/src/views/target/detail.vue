@@ -148,7 +148,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <pagination v-show="path_total>=0" :total="path_total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
+        <pagination v-show="path_total>=0" :total="port_total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
       </el-tab-pane>
       <el-tab-pane label="目录" name="path" :disabled="path_flag">
         <span slot="label">

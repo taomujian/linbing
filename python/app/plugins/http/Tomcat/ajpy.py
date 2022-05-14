@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from io import StringIO
 import struct
 
 def pack_string(s):

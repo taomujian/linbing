@@ -7,20 +7,20 @@ class File_Read_BaseVerify:
     def __init__(self, url):
         self.info = {
             'name': 'Fastcgi文件读取漏洞',
-            'description': 'Fastcgi文件读取漏洞,影响范围为: Apache Solr < 7.1, Apache Lucene < 7.1',
+            'description': 'Fastcgi文件读取漏洞',
             'date': '',
             'exptype': 'check',
             'type': 'File Read'
         }
         self.url = url
-        self.timeout = 30
+        self.timeout = 3
         url = urlparse(self.url)
         self.host = url.hostname
         self.port = url.port
         if not self.port:
             self.port = '9000'
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -54,13 +54,14 @@ class File_Read_BaseVerify:
             ret = sock.recv(1024)
             if ret.find(':root:') > 0:
                 return True
-            else:
-                return False
         except Exception as e:
+            # print(e)
             pass
-            return False
         finally:
-            sock.close()
+            try:
+                sock.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     FILE_READ = File_Read_BaseVerify('http://127.0.0.1')

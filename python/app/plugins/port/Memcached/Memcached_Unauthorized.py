@@ -19,7 +19,7 @@ class Memcached_Unauthorized_BaseVerify:
         if not self.port:
             self.port = '11211'
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -34,17 +34,16 @@ class Memcached_Unauthorized_BaseVerify:
             s.connect((self.host, int(self.port)))
             s.send('stats\r\n'.encode('utf-8'))
             if 'version' in s.recv(1024).decode('utf-8'):
-                print('存在Memcached未授权访问')
+                # print('存在Memcached未授权访问')
                 return True
-            else:
-                print('不存在Memcached未授权访问')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在Memcached未授权访问')
-            return False
+            # print(e)
+            pass
         finally:
-            s.close()
+            try:
+                s.close()
+            except:
+                pass
 
 if  __name__ == "__main__":
     Memcached_Unauthorized = Memcached_Unauthorized_BaseVerify('http://222.211.90.4:22222')

@@ -7,7 +7,7 @@ const scanRouter = {
   name: 'scan',
   redirect: '/scan/index',
   component: Layout,
-  meta: { title: 'ScanManager', icon: 'el-icon-view', noCache: true },
+  meta: { title: 'ScanManager', icon: 'el-icon-view', noCache: true, breadcrumb: false },
   children: [
     {
       path: 'index',

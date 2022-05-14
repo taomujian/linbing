@@ -32,13 +32,15 @@ class CVE_2020_2551_BaseVerify:
             if b'GIOP' in res:
                 return True
         except Exception as e:
+            # print(e)
             pass
         finally:
-            if sock!=None:
+            try:
                 sock.close()
-        return False
+            except:
+                pass
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -50,16 +52,10 @@ class CVE_2020_2551_BaseVerify:
         
         try:
             if self.doSendOne(bytes.fromhex('47494f50010200030000001700000002000000000000000b4e616d6553657276696365')):
-                print('存在CVE-2020-2551漏洞')
+                # print('存在CVE-2020-2551漏洞')
                 return True
-            else:
-                print('不存在CVE-2020-2551')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在CVE-2020-2551')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

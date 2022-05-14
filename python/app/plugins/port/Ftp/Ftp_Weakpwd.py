@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import time
 import socket
 import ftplib
+import asyncio
 from urllib.parse import urlparse
 
 class Ftp_Weakpwd_BaseVerify:
@@ -21,8 +21,36 @@ class Ftp_Weakpwd_BaseVerify:
         self.port = url_parse.port
         if not self.port:
             self.port = '21'
+    
+    def handle(self, host, port, user, pwd):
 
-    def check(self):
+        """
+        发送请求,判断内容
+
+        :param str host: ip地址
+        :param str port: 端口号
+        :param str user: 用户名
+        :param str pwd: 密码
+
+        :return bool True or False: 是否存在漏洞
+        """
+
+        try:
+            ftp = ftplib.FTP()
+            ftp.connect(host, port, timeout = 3)
+            ftp.login(user, pwd)
+            result = "user: %s pwd: %s" %(user, pwd)
+            return True, '存在FTP弱口令,账号密码为: ' + result
+        except Exception as e:
+            # print(e)
+            pass
+        finally:
+            try:
+                ftp.close()
+            except:
+                pass
+
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -32,27 +60,21 @@ class Ftp_Weakpwd_BaseVerify:
         :return bool True or False: 是否存在漏洞
         """
         
-        for user in open('app/username.txt', 'r', encoding = 'utf-8').readlines():
+        tasks = []
+        for user in open('app/data/db/username.txt', 'r', encoding = 'utf-8').readlines():
             user = user.strip()
-            for pwd in open('app/password.txt', 'r', encoding = 'utf-8').readlines():
+            for pwd in open('app/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
                 if pwd != '':
                     pwd = pwd.strip()
                 socket.setdefaulttimeout(2)
-                ftp = ftplib.FTP()
-                time.sleep(1)
-                try:
-                    ftp.connect(self.host,self.port)
-                    ftp.login(user, pwd)
-                    print('存在FTP弱口令,账号密码为:', user, pwd)
-                    return True
-                except Exception as e:
-                    ftp.close()
-                finally:
-                    pass
+                task = asyncio.create_task(asyncio.to_thread(self.handle, self.host, self.port, user, pwd))
+                tasks.append(task)
 
-        print('不存在FTP弱口令')
-        return False
+        results = await asyncio.gather(*tasks)
+        for result in results:
+            if result:
+                return True, result[1]
 
 if  __name__ == "__main__":
-    Ftp_Weakpwd = Ftp_Weakpwd_BaseVerify('http://baidu.com')
-    Ftp_Weakpwd.check()
+    Ftp_Weakpwd = Ftp_Weakpwd_BaseVerify('http://127.0.0.1:7001')
+    print(asyncio.run(Ftp_Weakpwd.check()))

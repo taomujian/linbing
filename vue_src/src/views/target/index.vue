@@ -134,11 +134,8 @@
             <el-input-number v-model="scanTemp.rate" label="默认为5000" />
           </el-form-item>
         </div>
-        <el-form-item label="最小端口">
-          <el-input-number v-model="scanTemp.min_port" :min="1" :max="65535" label="最小为1" />
-        </el-form-item>
-        <el-form-item label="最大端口">
-          <el-input-number v-model="scanTemp.max_port" :min="1" :max="65535" label="最大为65535" />
+        <el-form-item label="扫描端口">
+          <el-input v-model="scanTemp.port" type="textarea" label="默认为1-65535" />
         </el-form-item>
         <el-form-item label="POC并发量">
           <el-input-number v-model="scanTemp.concurren_number" :min="1" :max="200" label="默认为50,最高200" />
@@ -242,8 +239,7 @@ export default {
       }],
       scanTemp: {
         scanner: 'nmap',
-        min_port: '1',
-        max_port: '65535',
+        port: '1-65535',
         rate: '5000',
         concurren_number: '50'
       },
@@ -395,8 +391,7 @@ export default {
     resetScanTemp() {
       this.scanTemp = {
         scanner: 'nmap',
-        min_port: '1',
-        max_port: '65535',
+        port: '1-65535',
         rate: '5000',
         concurren_number: '50'
       }

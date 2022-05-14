@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class Jenkins_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class Jenkins_Unauthorized_BaseVerify:
             "User-Agent": get_useragent()
         }
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -32,25 +32,19 @@ class Jenkins_Unauthorized_BaseVerify:
         if not self.url.startswith("http") and not self.url.startswith("https"):
             self.url = "http://" + self.url
         try:
-            response1 = request.get(self.url + "/script", headers = self.headers)
-            response2 = request.get(self.url +"/ajaxBuildQueue", headers = self.headers)
-            if (response1.status_code==200 and "Jenkins.instance.pluginManager.plugins" in response1.text  and response2.status_code==200):
-                print('存在Jenkins未授权漏洞')
+            req1 = await request.get(self.url + "/script", headers = self.headers)
+            req2 = await request.get(self.url +"/ajaxBuildQueue", headers = self.headers)
+            if (req1.status == 200 and "Jenkins.instance.pluginManager.plugins" in await req1.text()  and req2.status==200):
+                # print('存在Jenkins未授权漏洞')
                 return True
             else:
-                response3 = request.get(self.url +"/jenkins/script", headers = self.headers)
-                response4 = request.get(self.url +"/jenkins/ajaxBuildQueue", headers = self.headers)
-                if (response3.status_code==200 and "Jenkins.instance.pluginManager.plugins" in response3.text  and response4.status_code==200):
-                    print('存在Jenkins未授权漏洞')
+                req3 = await request.get(self.url +"/jenkins/script", headers = self.headers)
+                req4 = await request.get(self.url +"/jenkins/ajaxBuildQueue", headers = self.headers)
+                if (req3.status==200 and "Jenkins.instance.pluginManager.plugins" in await req3.text()  and req4.status==200):
+                    # print('存在Jenkins未授权漏洞')
                     return True
-                else:
-                    print('不存在Jenkins未授权漏洞')
-                    return False
         except Exception as e:
-            print(e)
-            print('不存在Jenkins未授权漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

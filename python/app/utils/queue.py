@@ -5,8 +5,8 @@ import configparser
 from rq import Queue
 from redis import Redis
 from app.scan.scan import Scan
-from app.lib.utils.encode import md5
-from app.lib.utils.common import parse_target
+from app.lib.encode import md5
+from app.lib.common import parse_target
 
 config = configparser.ConfigParser()
 config.read('conf.ini', encoding = 'utf-8')

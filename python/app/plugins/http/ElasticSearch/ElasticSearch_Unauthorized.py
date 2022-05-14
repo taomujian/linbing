@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class ElasticSearch_Unauthorized_BaseVerify:
     def __init__(self, url):
@@ -19,7 +19,7 @@ class ElasticSearch_Unauthorized_BaseVerify:
             'User-Agent': get_useragent()
         }
 
-    def check(self):
+    async def check(self):
 
         """
         检测是否存在漏洞
@@ -30,18 +30,13 @@ class ElasticSearch_Unauthorized_BaseVerify:
         """
 
         try:
-            resp = request.get(self.url + '/_cat', headers = self.headers)
-            if '/_cat/master' in resp.text.lower() :
-                print('存在ElasticSearch未授权访问漏洞')
+            req = await request.get(self.url + '/_cat', headers = self.headers)
+            result = await req.text()
+            if '/_cat/master' in result.lower() :
+                # print('存在ElasticSearch未授权访问漏洞')
                 return True
-            else:
-                print('不存在ElasticSearch未授权访问漏洞')
-                return False
         except Exception as e:
-            print(e)
-            print('不存在ElasticSearch未授权访问漏洞')
-            return False
-        finally:
+            # print(e)
             pass
 
 if  __name__ == "__main__":

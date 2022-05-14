@@ -19,9 +19,8 @@ class Redis_Unauthorized_BaseVerify:
         if not url_parse.port:
             self.port = '6379'
         self.osname = 'Unknown'
-        self.conn = redis.Redis(host = self.host, port = self.port, decode_responses = True)
 
-    def check(self):
+    async def check(self):
     
         """
         检测是否存在漏洞
@@ -32,11 +31,11 @@ class Redis_Unauthorized_BaseVerify:
         """
         
         try:
+            self.conn = redis.Redis(host = self.host, port = self.port, decode_responses = True)
             self.conn.set('qwer', 12)
             return True
         except Exception as e:
-            return False
-        finally:
+            # print(e)
             pass
 
 if __name__ == '__main__':
