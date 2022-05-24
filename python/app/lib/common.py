@@ -97,18 +97,17 @@ def parse_target(target):
         if url_result == []:
             ip_result = re.findall(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b", target)
             if ip_result == []:
-                result = tldextract.extract(target)
-                main_domain = result.domain + '.' + result.suffix
                 domain_regex = re.compile(r'(?:[A-Z0-9_](?:[A-Z0-9-_]{0,247}[A-Z0-9])?\.)+(?:[A-Z]{2,6}|[A-Z0-9-]{2,}(?<!-))\Z', re.IGNORECASE)
                 domain_result = domain_regex.findall(target)
                 if domain_result:
                     scan_ip = socket.gethostbyname(domain_result[0])
                 else:
-                    net = IP(target)
-                    #print(net.len())
-                    scan_ip = net
+                    scan_ip = target
             else:
-                scan_ip = ip_result[0]
+                if '/' in target:
+                    scan_ip = target
+                else:
+                    scan_ip = ip_result[0]
         else:
             url_parse = urlparse(target)
             result = tldextract.extract(target)
