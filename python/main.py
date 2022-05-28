@@ -523,7 +523,13 @@ async def target_new(request : VueRequest):
         request = json.loads(request)
         target_data = request['target']
         target_list = target_data.split(';')
+        port = request['port']
         token = request['token']
+        rate = request['rate']
+        concurren_number = request['concurren_number']
+        masscan_cmd = request['masscan_cmd']
+        nmap_cmd = request['nmap_cmd']
+        scanner = request['scanner']
         query_str = {
             'type': 'token',
             'data': token
@@ -538,7 +544,7 @@ async def target_new(request : VueRequest):
             response['message'] = '认证失败'
             return response
         else:
-            high_queue.enqueue_call(queue_target_list, args = (username_result['username'], target_list, request['description'], mysqldb,), timeout = 7200000)
+            high_queue.enqueue_call(queue_target_list, args = (username_result['username'], target_list, request['description'], port, scanner, rate, concurren_number, masscan_cmd, nmap_cmd, mysqldb,), timeout = 7200000)
             response['code'] = 'L1000'
             response['message'] = '请求成功'
             return response
@@ -674,7 +680,7 @@ async def scan_set(request : VueRequest):
             response['message'] = '认证失败'
             return response
         else:
-            result = mysqldb.scan_set(username_result['username'], target, scan_data['scanner'], scan_data['port'], scan_data['rate'], scan_data['concurren_number'])
+            result = mysqldb.scan_set(username_result['username'], target, scan_data['scanner'], scan_data['masscan_cmd'], scan_data['nmap_cmd'], scan_data['port'], scan_data['rate'], scan_data['concurren_number'])
             if result == 'L1000':
                 response['code'] = 'L1000'
                 response['message'] = '请求成功'

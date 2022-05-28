@@ -6,7 +6,6 @@ import random
 import string
 import socket
 import tldextract
-from IPy import IP
 from urllib.parse import urlparse
 from app.lib.request import request
 
@@ -74,12 +73,46 @@ async def get_live(url, num):
                 req = await request.get(url, headers = headers, allow_redirects = True)
                 return req.real_url
             else:
-                req = request.get(url, headers = headers, allow_redirects = True)
+                req = await request.get(url, headers = headers, allow_redirects = True)
                 return req.real_url
         except Exception as e:
             # print(e)
             pass
 
+async def get_title(url):
+    
+    """
+    获取网站的title与banner
+
+    :param str url: 目标url
+
+    :return tuple title,banner: 识别的结果
+    """
+
+    title = ''
+    server = ''
+    headers = ''
+    body = ''
+    try:
+        req = await request.get(url, allow_redirects = True, verify_ssl = False)
+        content = await req.text()
+        response = re.findall('<title>(.*?)</title>', content, re.S)
+        if content:
+            #将页面解码为utf-8，获取中文标题
+            if response:
+                title = response[0]
+        if 'server' in req.headers.keys():
+            server = req.headers['server']
+        for key in req.headers.keys():
+            value = req.headers[key]
+            headers = headers + key + ': ' + value + '\n'
+        body = await req.text()
+    except Exception as e:
+        print(e)
+        pass
+    finally:
+        return title, server, headers, body
+    
 def parse_target(target):
     
     """

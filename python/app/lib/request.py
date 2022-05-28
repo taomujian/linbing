@@ -44,7 +44,7 @@ class request:
         timeout = result[1]
         async with aiohttp.ClientSession() as session:
             async with session.get(url, params = params, data = data, json = json, headers = headers, proxy = proxy, cookies = cookies, timeout = timeout, verify_ssl = verify_ssl, allow_redirects = allow_redirects) as response:
-                result = await response.text()
+                await response.text()
                 return response
 
     @classmethod

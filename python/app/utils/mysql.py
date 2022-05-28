@@ -356,7 +356,7 @@ class Mysql_db:
         :return:
         
         """
-        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', scanner varchar(255) default 'nmap', port varchar(255) default '1-65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
+        sql = "create table if not exists target (id integer auto_increment primary key, username varchar(255), target varchar(255) unique key, description varchar(10000) default '', finger varchar(255) default '', target_ip varchar(255) default '', create_time varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '未开始', scan_schedule varchar(255) default '未开始', vulner_number varchar(255) default '0', scanner varchar(255) default 'massan', nmap_cmd varchar(255) default '-sS -sV -Pn -T4 --open', masscan_cmd varchar(255) default '-sS -Pn -n --randomize-hosts -v --send-eth --open', port varchar(255) default '1-65535', rate varchar(255) default '5000', concurren_number varchar(255) default '50') engine = innodb default charset = utf8;"
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -373,9 +373,9 @@ class Mysql_db:
         创建目标扫描任务的表
 
         :param:
-        
+
         :return:
-        
+
         """
 
         sql = "create table if not exists target_scan (id integer auto_increment primary key, username varchar(255), target varchar(255), target_ip varchar(255) default '', scan_id varchar(255) default '', scan_time varchar(255) default '', scan_status varchar(255) default '', scan_schedule varchar(255) default '', scan_option longtext, vulner_number varchar(255) default '0') engine = innodb default charset = utf8;"
@@ -829,7 +829,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def save_target(self, username, target, description, target_ip):
+    def save_target(self, username, target, description, port, scanner, rate, concurren_number, masscan_cmd, nmap_cmd, target_ip):
         
         """
         保存目标
@@ -837,14 +837,27 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str target: 目标
         :param: str description: 描述字符串
+        :param str port: 默认端口
+        :param str scanner: 扫描器
+        :param str rate: 扫描速率
+        :param str concurren_number: POC并发数
+        :param str masscan_cmd: masscan扫描参数
+        :param str nmap_cmd: nmap扫描参数
         :param: str target_ip: 目标ip
     
         :return: str 'LXXXXX': 状态码
         """
 
         datetime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql =  "insert target (username, target, description, target_ip, create_time) values (%s, %s, %s, %s, %s) on duplicate key update target = %s, description = %s, target_ip = %s"
-        values = [username, target, description, target_ip, datetime, target, description, target_ip]
+        if masscan_cmd:
+            sql =  "insert target (username, target, description, port, scanner, rate, concurren_number, masscan_cmd, target_ip, create_time) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update target = %s, description = %s, port = %s, scanner = %s, rate = %s, concurren_number = %s, masscan_cmd = %s, target_ip = %s"
+            values = [username, target, description, port, scanner, rate, concurren_number, masscan_cmd, target_ip, datetime, target, description, port, scanner, rate, concurren_number, masscan_cmd, target_ip]
+        elif nmap_cmd:
+            sql =  "insert target (username, target, description, port, scanner, rate, concurren_number, nmap_cmd, target_ip, create_time) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update target = %s, description = %s, port = %s, scanner = %s, rate = %s, concurren_number = %s, nmap_cmd = %s, target_ip = %s"
+            values = [username, target, description, port, scanner, rate, concurren_number, nmap_cmd, target_ip, datetime, target, description, port, scanner, rate, concurren_number, nmap_cmd, target_ip]
+        else:
+            sql =  "insert target (username, target, description, port, scanner, rate, concurren_number, target_ip, create_time) values (%s, %s, %s, %s, %s, %s, %s, %s, %s) on duplicate key update target = %s, description = %s, port = %s, scanner = %s, rate = %s, concurren_number = %s, target_ip = %s"
+            values = [username, target, description, port, scanner, rate, concurren_number, target_ip, datetime, target, description, port, scanner, rate, concurren_number, target_ip]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1715,7 +1728,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
 
-    def scan_set(self, username, target, scanner, port, rate, concurren_number):
+    def scan_set(self, username, target, scanner, masscan_cmd, nmap_cmd, port, rate, concurren_number):
         
         """
         设置扫描选项
@@ -1723,13 +1736,23 @@ class Mysql_db:
         :param: str username: 用户名
         :param: str target: 目标
         :param: str scanner: 选择的端口扫描器
+        :param: str masscan_cmd: masscan运行参数
+        :param: str nmap_cmd: nmap运行参数
         :param: str port: 扫描范围的最大端口
         
         :return: str 'LXXXXX': 状态码
         """
-
-        sql =  "update target set scanner = %s, port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
-        values = [scanner, port, rate, concurren_number, username, target]
+        
+        if masscan_cmd:
+            sql =  "update target set scanner = %s, masscan_cmd = %s, port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
+            values = [scanner, masscan_cmd, port, rate, concurren_number, username, target]
+        
+        elif nmap_cmd:
+            sql =  "update target set scanner = %s, nmap_cmd = %s, port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
+            values = [scanner, nmap_cmd, port, rate, concurren_number, username, target]
+        else:
+            sql =  "update target set scanner = %s, port = %s, rate = %s, concurren_number = %s where username = %s and target = %s"
+            values = [scanner, port, rate, concurren_number, username, target]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
@@ -1751,7 +1774,7 @@ class Mysql_db:
         :param: str target: 目标
         :return: str 'LXXXXX': 状态码
         """
-        sql = "select scanner, port, rate, concurren_number from target where username = %s and target = %s"
+        sql = "select scanner, port, rate, masscan_cmd, nmap_cmd, concurren_number from target where username = %s and target = %s"
         values = [username, target]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)

@@ -95,7 +95,7 @@
     <pagination v-show="page.total>=0" :total="page.total" :page.sync="page.pageNum" :limit.sync="page.pageSize" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="editFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="targetTemp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :rules="targetRules" :model="targetTemp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item label="目标" prop="target">
           <div v-if="dialogStatus === 'update'">
             <el-input v-model="targetTemp.target" :autosize="{ minRows: 2, maxRows: 4}" :disabled="true" type="textarea" placeholder="请输入目标,多个目标时以每行一个目标为格式输入,格式可以是url,ip,域名,网段..." @keyup.enter.native="handleQuery" />
@@ -106,6 +106,35 @@
         </el-form-item>
         <el-form-item label="描述" prop="description">
           <el-input v-model="targetTemp.description" maxlength="50" show-word-limit :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="请输入描述..." />
+        </el-form-item>
+        <el-form-item label="端口扫描器">
+          <el-select v-model="targetTemp.scanner" filterable clearable placeholder="默认为masscan">
+            <el-option
+              v-for="item in scanner"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <div v-if="targetTemp.scanner === 'masscan'">
+          <el-form-item label="扫描速率">
+            <el-input-number v-model="targetTemp.rate" label="默认为5000" />
+          </el-form-item>
+        </div>
+        <el-form-item label="扫描端口">
+          <el-input v-model="targetTemp.port" type="textarea" label="默认为1-65535" />
+        </el-form-item>
+        <el-form-item label="POC并发量">
+          <el-input-number v-model="targetTemp.concurren_number" :min="1" :max="200" label="默认为50,最高200" />
+        </el-form-item>
+        <el-form-item label="其他运行参数">
+          <div v-if="targetTemp.scanner === 'masscan'">
+            <el-input v-model="targetTemp.masscan_cmd" type="textarea" placeholder="默认为-sS -Pn -n --randomize-hosts -v --send-eth --open" />
+          </div>
+          <div v-else>
+            <el-input v-model="targetTemp.nmap_cmd" type="textarea" placeholder="默认为-sS -sV -Pn -T4 --open" />
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -118,9 +147,9 @@
       </div>
     </el-dialog>
     <el-dialog :title="scanTitle" :visible.sync="scanFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="scanTemp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+      <el-form ref="dataForm" :rules="scanRules" :model="scanTemp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
         <el-form-item label="端口扫描器">
-          <el-select v-model="scanTemp.scanner" filterable clearable placeholder="默认为nmap">
+          <el-select v-model="scanTemp.scanner" filterable clearable placeholder="默认为masscan">
             <el-option
               v-for="item in scanner"
               :key="item.value"
@@ -139,6 +168,14 @@
         </el-form-item>
         <el-form-item label="POC并发量">
           <el-input-number v-model="scanTemp.concurren_number" :min="1" :max="200" label="默认为50,最高200" />
+        </el-form-item>
+        <el-form-item label="其他运行参数">
+          <div v-if="scanTemp.scanner === 'masscan'">
+            <el-input v-model="scanTemp.masscan_cmd" type="textarea" placeholder="默认为-sS -Pn -n --randomize-hosts -v --send-eth --open" />
+          </div>
+          <div v-else>
+            <el-input v-model="scanTemp.namp_cmd" type="textarea" placeholder="默认为-sS -sV -Pn -T4 --open" />
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -227,7 +264,13 @@ export default {
       scheduleOptions: ['全部', '未开始', '子域名扫描中', '端口扫描中', '目录扫描中', 'POC扫描中', '扫描结束', '扫描失败'],
       targetTemp: {
         target: '',
-        description: ''
+        description: '',
+        scanner: 'masscan',
+        port: '1-65535',
+        rate: '5000',
+        concurren_number: '50',
+        masscan_cmd: '',
+        nmap_cmd: ''
       },
       scanTarget: '',
       scanner: [{
@@ -238,10 +281,12 @@ export default {
         label: 'masscan'
       }],
       scanTemp: {
-        scanner: 'nmap',
+        scanner: 'masscan',
         port: '1-65535',
         rate: '5000',
-        concurren_number: '50'
+        concurren_number: '50',
+        masscan_cmd: '',
+        nmap_cmd: ''
       },
       mode: 'transfer', // transfer addressList
       poc_list: [],
@@ -284,9 +329,15 @@ export default {
         update: '编辑',
         create: '新建'
       },
-      rules: {
+      targetRules: {
         target: [{ required: true, message: '请输入目标', trigger: 'change' }],
-        description: [{ required: false, message: '请输入目标描述', trigger: 'change' }]
+        description: [{ required: false, message: '请输入目标描述', trigger: 'change' }],
+        port: [{ required: true, message: '请输入扫描端口范围,默认为1-65535', trigger: 'change' }]
+      },
+      scanRules: {
+        target: [{ required: true, message: '请输入目标', trigger: 'change' }],
+        description: [{ required: false, message: '请输入目标描述', trigger: 'change' }],
+        port: [{ required: true, message: '请输入扫描端口范围,默认为1-65535', trigger: 'change' }]
       }
     }
   },
@@ -385,15 +436,23 @@ export default {
     resetTargetTemp() {
       this.targetTemp = {
         target: '',
-        description: ''
+        description: '',
+        scanner: 'masscan',
+        port: '1-65535',
+        rate: '5000',
+        concurren_number: '50',
+        masscan_cmd: '',
+        nmap_cmd: ''
       }
     },
     resetScanTemp() {
       this.scanTemp = {
-        scanner: 'nmap',
+        scanner: 'masscan',
         port: '1-65535',
         rate: '5000',
-        concurren_number: '50'
+        concurren_number: '50',
+        masscan_cmd: '',
+        nmap_cmd: ''
       }
     },
     handleCreate() {
@@ -422,6 +481,12 @@ export default {
             let data = {
               'target': this.targetTemp.target.trim().split(/[(\r\n)\r\n]+/).join(';'),
               'description': this.targetTemp.description.trim(),
+              'scanner': this.targetTemp.scanner,
+              'port': this.targetTemp.port,
+              'rate': this.targetTemp.rate,
+              'concurren_number': this.targetTemp.concurren_number,
+              'masscan_cmd': this.targetTemp.masscan_cmd,
+              'nmap_cmd': this.targetTemp.nmap_cmd,
               'token': getToken()
             }
             data = JSON.stringify(data)

@@ -13,7 +13,7 @@ config.read('conf.ini', encoding = 'utf-8')
 redis_conn = Redis(host = config.get('redis', 'ip'), password = config.get('redis', 'password'), port = config.get('redis', 'port'))
 high_queue = Queue("high", connection = redis_conn)
 
-def queue_target_list(username, target_list, description, mysqldb):
+def queue_target_list(username, target_list, description, port, scanner, rate, concurren_number, masscan_cmd, nmap_cmd, mysqldb):
 
     """
     保存目标
@@ -21,6 +21,12 @@ def queue_target_list(username, target_list, description, mysqldb):
     :param str username: 用户名
     :param list target_list: 目标列表
     :param str description: 描述
+    :param str port: 默认端口
+    :param str scanner: 扫描器
+    :param str rate: 扫描速率
+    :param str concurren_number: POC并发数
+    :param str masscan_cmd: masscan扫描参数
+    :param str nmap_cmd: nmap扫描参数
     :param object mysqldb: 进行mysql数据交互的实例化对象
 
     :return:
@@ -32,7 +38,7 @@ def queue_target_list(username, target_list, description, mysqldb):
         if not scan_ip:
             scan_ip = target
         target = target
-        mysqldb.save_target(username, target, description, scan_ip)
+        mysqldb.save_target(username, target, description, port, scanner, rate, concurren_number, masscan_cmd, nmap_cmd, scan_ip)
 
 def queue_scan_list(username, target_list, option_list, mysqldb):
 

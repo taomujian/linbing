@@ -295,9 +295,9 @@ class Scan:
             ip_list = list(set(ip_list))
             for ip in ip_list:
                 if scan_set['scanner'] == 'nmap':
-                    scan_list = scan_list + self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], kwargs['domain'], ip, kwargs['scan_id'], scan_set['port'])
+                    scan_list = scan_list + self.port_scan.nmap_scan(kwargs['username'], kwargs['target'], ip, kwargs['scan_id'], scan_set['nmap_cmd'], scan_set['port'])
                 else:
-                    scan_list = scan_list + self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], kwargs['domain'], ip, kwargs['scan_id'], scan_set['port'], scan_set['rate'])
+                    scan_list = scan_list + self.port_scan.masscan_scan(kwargs['username'], kwargs['target'], ip, kwargs['scan_id'], scan_set['masscan_cmd'], scan_set['port'], scan_set['rate'])
             if '3' in scan_option:
                 scan_option.remove('3')
                 self.mysqldb.update_scan_option(kwargs['username'], kwargs['scan_id'], ','.join(scan_option))
