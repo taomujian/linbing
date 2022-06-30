@@ -38,9 +38,8 @@ class CVE_2019_19781_BaseVerify:
                 'NSC_NONCE': 'nsroot'
             }
             req = await request.post(url = newbm_url, headers = headers, data = self.payload)
-            if req.status == 200 and 'parent.window.ns_reload' in req.content:
+            if req.status == 200 and 'parent.window.ns_reload' in await req.text():
                 return True
-            
         except Exception as e:
             # print(e)
             pass

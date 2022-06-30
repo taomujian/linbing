@@ -82,4 +82,8 @@
 
 #### 启动gunicorn
 
-> 进入到/root/python/目录下,nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
+> 进入到/root/python/目录下执行以下命令
+
+> nohup python3 worker.py > log.log 2>&1 &
+
+> nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &

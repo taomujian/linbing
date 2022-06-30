@@ -39,7 +39,7 @@ class Ssh_Weakpwd_BaseVerify:
             ssh = paramiko.SSHClient()
             paramiko.util.log_to_file('/dev/null')
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname = host, port = port, username = user, password = pwd, timeout = 3, allow_agent = False, look_for_keys = False)
+            ssh.connect(hostname = host, port = port, username = user, password = pwd, timeout = 5, banner_timeout = 5, auth_timeout = 5, allow_agent = False, look_for_keys = False)
             stdin, stdout, stderr = ssh.exec_command('whoami', timeout = 1)
             resultname = stdout.read().decode('utf-8').split("\n")[0]
             if resultname == user:

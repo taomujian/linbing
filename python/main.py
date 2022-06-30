@@ -68,8 +68,6 @@ high_queue.delete(delete_jobs=True)
 
 dns_thread_list = []
 
-os.popen('nohup python3 worker.py > log.log 2>&1 &')
-
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []

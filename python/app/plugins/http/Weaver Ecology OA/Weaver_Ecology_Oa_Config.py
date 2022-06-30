@@ -36,10 +36,9 @@ class Weaver_Ecology_Oa_Config_BaseVerify:
             if check_req.status == 200:
                 cipherX = pyDes.des('        ')
                 cipherX.setKey('1z2x3c4v5b6n')
-                result = cipherX.decrypt(check_req.content.strip()).strip().decode('utf-8')
+                result = cipherX.decrypt(await check_req.content.read(1000)).decode('utf-8')
                 # print("存在泛微config信息泄露漏洞")
                 return True, result
-            
         except Exception as e:
             # print(e)
             pass

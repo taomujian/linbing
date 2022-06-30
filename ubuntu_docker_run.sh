@@ -11,5 +11,6 @@ if [ "$PIDS" = "" ]; then
     redis-server /etc/redis/redis.conf
     cd /root/python
     nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
+    nohup python3 worker.py > log.log 2>&1 &
     tail -f /dev/null
 fi

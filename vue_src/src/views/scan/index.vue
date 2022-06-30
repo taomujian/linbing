@@ -156,6 +156,8 @@ export default {
           this.list = response.data.result
           this.page.total = response.data.total
         }
+        this.websocketclose()
+        this.initWebSocket()
         setTimeout(() => {
           this.listLoading = false
         }, 0.5 * 1000)

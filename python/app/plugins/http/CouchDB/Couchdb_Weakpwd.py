@@ -36,7 +36,8 @@ class Couchdb_Weakpwd_BaseVerify:
         
         try:
             req = await request.post(url, headers = self.headers, data = data)
-            if req.status == 200 and 'AuthSession' in req.headers['Set-Cookie'] and req.json()['ok'] == True:
+            result = await req.json()
+            if req.status == 200 and 'AuthSession' in req.headers['Set-Cookie'] and result['ok'] == True:
                 result = "user: %s pwd: %s" %(user, pwd)
                 return True, '存在CouchDB弱口令漏洞,弱口令为: ' + result
         except Exception as e:

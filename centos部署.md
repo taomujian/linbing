@@ -12,23 +12,23 @@
 
 > mkdir /root/python
 
-### 安装python3.8
+### 安装python3.10
 
-> wget <https://www.python.org/ftp/python/3.8.1/Python-3.8.1.tgz>
+> wget <https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz>
 
-> tar -zxvf Python-3.8.1.tgz
+> tar -zxvf Python-3.10.4.tgz
 
-> cd Python-3.8.1 && ./configure prefix=/usr/local/python3.8 --enable-shared --enable-optimizations LDFLAGS="-Wl,--rpath=/usr/local/python3.8/lib" make && make install
+> cd Python-3.10.4 && ./configure prefix=/usr/local/python3.10 --enable-shared --enable-optimizations LDFLAGS="-Wl,--rpath=/usr/local/python3.10/lib" make && make install
 
 > rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3
 
-> ln -s /usr/local/python3.8/bin/python3.8 /usr/bin/python3 && ln -s /usr/local/python3.8/bin/pip3.8 /usr/bin/pip3
+> ln -s /usr/local/python3.10/bin/python3.10 /usr/bin/python3 && ln -s /usr/local/python3.10/bin/pip3.10 /usr/bin/pip3
 
 ### 安装python3依赖库
 
 > pip3 install -r /root/python/requirements.txt
 
-> 如果你使用的是低于python3.8版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
+> 如果你使用的是低于python3.10版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
 
 ### nginx
 
@@ -87,4 +87,8 @@
 
 #### 启动gunicorn
 
-> 进入到/root/python/目录下,nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &
+> 进入到/root/python/目录下执行以下命令
+
+> nohup python3 worker.py > log.log 2>&1 &
+
+> nohup gunicorn -c gunicorn.conf main:app -k uvicorn.workers.UvicornWorker > gunicorn.log 2>&1 &

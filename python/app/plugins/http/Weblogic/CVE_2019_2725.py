@@ -10,8 +10,8 @@ class CVE_2019_2725_BaseVerify:
             'name': 'CVE-2019-2725',
             'description': 'Weblogic Deserialize Vulnerability, Weblogic 10.3.6.0.0 and 12.1.3.0.0',
             'date': '2019-04-26',
-            'type': 'Deserialize',
-            'exptype': 'check,cmd,read,reverse,webshell'
+            'exptype': 'check',
+            'type': 'Deserialize'
         }
         self.url = url
         self.osname = 'Unknown'

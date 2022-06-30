@@ -1818,7 +1818,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def get_scan_option(self, username, scan_id):
+    def get_scan_option(self, username, target, scan_id):
 
         """
         获取扫描选项
@@ -1829,8 +1829,8 @@ class Mysql_db:
         :return: str 'LXXXXX': 状态码
         """
 
-        sql = "select scan_option from target_scan where username = %s and scan_id = %s"
-        values = [username, scan_id]
+        sql = "select scan_option from target_scan where username = %s and target = %s and scan_id = %s"
+        values = [username, target, scan_id]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:
