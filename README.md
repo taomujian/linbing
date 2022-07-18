@@ -99,6 +99,7 @@
 ## 从dockerhub中获取镜像
 
 > docker pull taomujian/linbing:latest
+
 > docker run -it -d -p 11000:11000 -p 8800:8800 taomujian/linbing
 
 ## 访问
