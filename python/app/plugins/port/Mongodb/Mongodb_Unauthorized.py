@@ -30,7 +30,8 @@ class Mongodb_Unauthorized_BaseVerify:
         """
         
         try:
-            conn = MongoClient(self.host, int(self.port), socketTimeoutMS = 3000)
+            conn = MongoClient(self.host, int(self.port), socketTimeoutMS = 3000, connectTimeoutMS = 3000, serverSelectionTimeoutMS = 3000, waitQueueTimeoutMS = 3000)
+            conn.list_database_names()
             dbname = conn.database_names()
             return True
         except Exception as e:

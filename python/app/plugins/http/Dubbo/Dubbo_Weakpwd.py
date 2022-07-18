@@ -2,8 +2,8 @@
 
 import base64
 import asyncio
-from app.lib.common import get_useragent
 from app.lib.request import request
+from app.lib.common import get_useragent
 
 class Dubbo_Weakpwd_BaseVerify:
     def __init__(self, url):

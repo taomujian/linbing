@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import asyncio
-from app.lib.common import get_useragent
 from app.lib.request import request
+from app.lib.common import get_useragent
 
 class Couchdb_Weakpwd_BaseVerify:
     def __init__(self, url):

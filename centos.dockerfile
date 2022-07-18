@@ -17,7 +17,7 @@ RUN mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backu
 && curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo \
 && curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo \
 && sed -i -e '/mirrors.cloud.aliyuncs.com/d' -e '/mirrors.aliyuncs.com/d' /etc/yum.repos.d/CentOS-Base.repo \
-&& yum clean all && yum makecache && yum update -y && yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 \
+&& yum clean all && yum makecache && yum update -y && yum install -y epel-release bind-utils mariadb-server gcc gcc-c++ wget bzip2 \
 && wget https://ftp.gnu.org/gnu/gcc/gcc-9.2.0/gcc-9.2.0.tar.xz && tar xvf gcc-9.2.0.tar.xz \
 && yum install -y -q zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap masscan nginx -y initscripts postgresql-devel python3-devel redis \
 && mkdir /root/python && cd gcc-9.2.0 && ./contrib/download_prerequisites && mkdir build && cd build && ../configure --prefix=/usr/local --disable-multilib --enable-languages=c,c++ && make && make install \

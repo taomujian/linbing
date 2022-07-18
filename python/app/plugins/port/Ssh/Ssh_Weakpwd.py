@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
+import sys
 import asyncio
 import paramiko
+import logging
 from urllib.parse import urlparse
+
+logging.disable('ERROR')
 
 class Ssh_Weakpwd_BaseVerify:
     def __init__(self, url):
@@ -40,23 +44,12 @@ class Ssh_Weakpwd_BaseVerify:
             paramiko.util.log_to_file('/dev/null')
             ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             ssh.connect(hostname = host, port = port, username = user, password = pwd, timeout = 5, banner_timeout = 5, auth_timeout = 5, allow_agent = False, look_for_keys = False)
-            stdin, stdout, stderr = ssh.exec_command('whoami', timeout = 1)
-            resultname = stdout.read().decode('utf-8').split("\n")[0]
-            if resultname == user:
-                result = "user: %s pwd: %s" %(user, pwd)
-                ssh.close()
-                return True, '存在SSH弱口令,账号密码为: ' + result
-            else:
-                ssh.close()
-                return False
+            result = "user: %s pwd: %s" %(user, pwd)
+            ssh.close()
+            return True, '存在SSH弱口令,账号密码为: ' + result
         except Exception as e:
             # print(e)
             pass
-        finally:
-            try:
-                ssh.close()
-            except:
-                pass
 
     async def check(self):
     
@@ -83,17 +76,5 @@ class Ssh_Weakpwd_BaseVerify:
                 return True, result[1]
 
 if  __name__ == "__main__":
-    import time
-    from concurrent.futures import ThreadPoolExecutor
-    executor = ThreadPoolExecutor(39)
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    # loop = asyncio.get_running_loop()
-    loop.set_default_executor(executor)
-    time_start = time.time()  # 记录开始时间
     Ssh_Weakpwd = Ssh_Weakpwd_BaseVerify('http://127.0.0.1:7001')
-    # print(asyncio.run(Ssh_Weakpwd.check()))
-    print(loop.run_until_complete(Ssh_Weakpwd.check()))
-    time_end = time.time()  # 记录结束时间
-    time_sum = time_end - time_start  # 计算的时间差为程序的执行时间，单位为秒/s
-    print(time_sum)
+    print(asyncio.run(Ssh_Weakpwd.check()))

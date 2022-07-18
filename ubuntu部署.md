@@ -4,23 +4,21 @@
 
 > sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && apt-get clean && apt update
 
+### 安装python3.10
+
+> wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && tar -zxvf Python-3.10.4.tgz && cd Python-3.10.4 && ./configure && make && make install && rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3 && ln -s /usr/local/bin/python3.10 /usr/bin/python3 && ln -s /usr/local/bin/pip3.10 /usr/bin/pip3
+
 ### 安装依赖
 
 > DEBIAN_FRONTEND noninteractive apt install -y postfix
 
-> apt install -y mariadb-server python3.8 python3.8-dev python3-pip nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
+> apt install -y mariadb-server python3-pip nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
 
 > mkdir /root/python
-
-### 设置python3.8为python3
-
-> update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 && update-alternatives --config python3
 
 ### 安装python3依赖库
 
 > pip3 install -r /root/python/requirements.txt
-
-> 如果你使用的是低于python3.8版本的python3,请把run.py文件中第16行注释去掉,并注释掉第17行
 
 ### nginx
 

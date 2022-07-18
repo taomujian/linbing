@@ -3,8 +3,8 @@
 import re
 import urllib
 import asyncio
-from app.lib.common import get_useragent
 from app.lib.request import request
+from app.lib.common import get_useragent
 
 class Phpmyadmin_Weakpwd_BaseVerify:
     def __init__(self, url):

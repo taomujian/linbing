@@ -122,7 +122,7 @@ class Scan:
 
         :return:
         """
-        
+
         executor = ThreadPoolExecutor(500)
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
@@ -131,7 +131,6 @@ class Scan:
         semaphore = asyncio.Semaphore(concurren_number)
 
         for ip_port in scan_list:
-            print('开始POC扫描: ', ip_port)
             tasks = []
             port_result = {'finger': '', 'protocol': ''}
             if 'http' in ip_port:
@@ -219,14 +218,8 @@ class Scan:
                         else:
                             continue
 
-            # await asyncio.gather(*tasks, return_exceptions = True)
-            for task in tasks:
-                try:
-                    await asyncio.wait_for(task, timeout = 15)
-                except asyncio.exceptions.TimeoutError as e:
-                    pass
+        await asyncio.gather(*tasks, return_exceptions = True)
 
-            time.sleep(1)
 
     def run(self, kwargs):
         

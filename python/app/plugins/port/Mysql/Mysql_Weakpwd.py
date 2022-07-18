@@ -71,16 +71,4 @@ class Mysql_Weakpwd_BaseVerify:
                 return True, result[1]
 
 if  __name__ == "__main__":
-    import time
-    from concurrent.futures import ThreadPoolExecutor
-    executor = ThreadPoolExecutor(10000)
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    # loop = asyncio.get_running_loop()
-    loop.set_default_executor(executor)
-    time_start = time.time()  # 记录开始时间
-    Mysql_Weakpwd = Mysql_Weakpwd_BaseVerify('http://127.0.0.1:6379')
-    loop.run_until_complete(Mysql_Weakpwd.check())
-    time_end = time.time()  # 记录结束时间
-    time_sum = time_end - time_start  # 计算的时间差为程序的执行时间，单位为秒/s
-    print(time_sum)
+    Mysql_Weakpwd = Mysql_Weakpwd_BaseVerify('http://127.0.0.1:3306')

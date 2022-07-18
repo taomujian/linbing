@@ -31,7 +31,7 @@ class Redis_Unauthorized_BaseVerify:
         """
         
         try:
-            self.conn = redis.Redis(host = self.host, port = self.port, decode_responses = True)
+            self.conn = redis.Redis(host = self.host, port = self.port, decode_responses = True, socket_timeout = 3, socket_connect_timeout = 3)
             self.conn.set('qwer', 12)
             return True
         except Exception as e:

@@ -127,7 +127,7 @@ class Rsync_Weakpwd_BaseVerify:
 
         :return bool True or False: 是否存在漏洞
         """
-
+        
         try:
             tasks = []
             for path_name in await self.get_all_pathname():
