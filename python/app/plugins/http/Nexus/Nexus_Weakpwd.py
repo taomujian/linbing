@@ -58,9 +58,9 @@ class Nexus_Weakpwd_BaseVerify:
         if '<title>Nexus Repository Manager</title>' in await finger_req.text():
             url = self.url + "/service/rapture/session"
             tasks = []
-            for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+            for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                 user = user.strip()
-                for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                     if pwd != '':
                         pwd = pwd.strip()
                     data = {'username':base64.b64encode(user.encode()).decode(), 'password':base64.b64encode(pwd.encode()).decode()}

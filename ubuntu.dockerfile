@@ -15,10 +15,12 @@ EXPOSE 1100
 
 # 更新apt源及安装依赖
 RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list && apt-get clean && apt update \
-&& apt install -y mariadb-server wget nmap masscan nginx dnsutils libxml2-dev build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev \
+&& apt install -y mariadb-server wget nmap build-essential nghttp2 libnghttp2-dev libssl-dev libpcap-dev nginx dnsutils libxml2-dev build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev \
 libxslt1-dev zlib1g-dev libffi-dev libsqlite3-dev libpq-dev uuid-dev libcap-dev redis-server libpcre3-dev python3-dev inetutils-ping --fix-missing \
 && mkdir /root/python && useradd -s /sbin/nologin -M nginx && sed -i "s|bind 127.0.0.1 ::1|bind 127.0.0.1|" /etc/redis/redis.conf \
 && sed -i "s|# requirepass foobared|requirepass '${REDIS_PASS}'|" /etc/redis/redis.conf
+
+RUN apt-get --assume-yes install git make gcc && git clone https://github.com/robertdavidgraham/masscan && cd masscan && make && make install
 
 RUN wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && tar -zxvf Python-3.10.4.tgz && cd Python-3.10.4 && ./configure \
 && make && make install && rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3 && ln -s /usr/local/bin/python3.10 /usr/bin/python3 && ln -s /usr/local/bin/pip3.10 /usr/bin/pip3

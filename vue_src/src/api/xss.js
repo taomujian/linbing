@@ -18,7 +18,7 @@ export function authList(data) {
 
 export function generateAuth(data) {
   return request({
-    url: '/api/generate/auth',
+    url: '/api/xss/generate/auth',
     method: 'post',
     data
   })
@@ -26,7 +26,7 @@ export function generateAuth(data) {
 
 export function updateAuth(data) {
   return request({
-    url: '/api/update/auth',
+    url: '/api/xss/update/auth',
     method: 'post',
     data
   })
@@ -34,7 +34,7 @@ export function updateAuth(data) {
 
 export function deletexssLog(data) {
   return request({
-    url: '/api/delete/xss/log',
+    url: '/api/xss/log/delete',
     method: 'post',
     data
   })
@@ -42,7 +42,7 @@ export function deletexssLog(data) {
 
 export function deleteAuth(data) {
   return request({
-    url: '/api/delete/auth',
+    url: '/api/xss/delete/auth',
     method: 'post',
     data
   })

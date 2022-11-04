@@ -2037,25 +2037,25 @@ class Mysql_db:
             result['domain'] = {
                 'result': domain_result,
                 'total': domain_total_result,
-                'label_toal': domain_label_total_result
+                'label_total': domain_label_total_result
             }
 
             result['port'] = {
                 'result': port_result,
                 'total': port_total_result,
-                'label_toal': port_label_total_result
+                'label_total': port_label_total_result
             }
 
             result['path'] = {
                 'result': path_result,
                 'total': path_total_result,
-                'label_toal': path_label_total_result
+                'label_total': path_label_total_result
             }
 
             result['vulner'] = {
                 'result': vulner_result,
                 'total': vulner_total_result,
-                'label_toal': vulner_label_total_result
+                'label_total': vulner_label_total_result
             }
 
             return result

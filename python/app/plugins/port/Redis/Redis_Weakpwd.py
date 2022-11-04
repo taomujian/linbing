@@ -60,7 +60,7 @@ class Redis_Weakpwd_BaseVerify:
         """
 
         tasks = []
-        for pwd in open('app/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
+        for pwd in open('static/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
             if pwd != '':
                 pwd = pwd.strip()
             task = asyncio.create_task(asyncio.to_thread(self.handle, self.host, self.port, pwd))

@@ -57,9 +57,9 @@ class Oracle_Weakpwd_BaseVerify:
         """
         
         tasks = []
-        for user in open('app/data/db/username.txt', 'r', encoding = 'utf-8').readlines():
+        for user in open('static/data/db/username.txt', 'r', encoding = 'utf-8').readlines():
             user = user.strip()
-            for pwd in open('app/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
+            for pwd in open('static/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
                 if pwd != '':
                     pwd = pwd.strip()
                 task = asyncio.create_task(asyncio.to_thread(self.handle, self.host, self.port, user, pwd))

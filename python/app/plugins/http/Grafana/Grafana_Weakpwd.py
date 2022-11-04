@@ -80,9 +80,9 @@ class Grafana_Weakpwd_BaseVerify:
                 break
         if valid_url != "":
             tasks = []
-            for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+            for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                 user = user.strip()
-                for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                     if pwd != '':
                         pwd = pwd.strip()
                     post_data = r'{"user":"%s","email":"","password":"%s"}'%(user, pwd)

@@ -59,9 +59,9 @@ class Zabbix_Weakpwd_BaseVerify:
             urls.append(self.url + '/index.php')
             urls.append(self.url + '/zabbix/index.php')
             tasks = []
-            for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+            for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                 user = user.strip()
-                for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                     if pwd != '':
                         pwd = pwd.strip()
                     for url in urls:

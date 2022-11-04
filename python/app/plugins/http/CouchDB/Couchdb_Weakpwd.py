@@ -58,9 +58,9 @@ class Couchdb_Weakpwd_BaseVerify:
         if 'couchdb' in await finger_req.text() and 'Welcome' in await finger_req.text():
             url = self.url + "/_session"
             tasks = []
-            for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+            for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                 user = user.strip()
-                for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                     if pwd != '':
                         pwd = pwd.strip()
                     data = {

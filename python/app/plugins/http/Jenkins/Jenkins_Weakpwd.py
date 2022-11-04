@@ -57,9 +57,9 @@ class Jenkins_Weakpwd_BaseVerify:
         if 'Welcome to Jenkins!' in await finger_req.text():
             url = self.url + "/j_acegi_security_check"
             tasks = []
-            for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+            for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                 user = user.strip()
-                for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                     if pwd != '':
                         pwd = pwd.strip()
                     data = {

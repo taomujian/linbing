@@ -73,9 +73,9 @@ class Phpmyadmin_Weakpwd_BaseVerify:
                     check_url = url
             if check_url:
                 tasks = []
-                for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+                for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                     user = user.strip()
-                    for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                    for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                         if pwd != '':
                             pwd = pwd.strip()
                         task = asyncio.create_task(self.handle(check_url, user, pwd))

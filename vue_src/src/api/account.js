@@ -18,7 +18,7 @@ export function accountAdd(data) {
 
 export function queryAccount(data) {
   return request({
-    url: '/api/query/account',
+    url: '/api/account/query',
     method: 'post',
     data
   })
@@ -50,7 +50,7 @@ export function accountDescription(data) {
 
 export function deleteAccount(data) {
   return request({
-    url: '/api/delete/account',
+    url: '/api/account/delete',
     method: 'post',
     data
   })

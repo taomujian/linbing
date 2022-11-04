@@ -256,14 +256,14 @@ export default {
     initWebSocket() {
       // 初始化weosocket
       const { protocol, host } = location
-      this.websocket = new WebSocket(`${protocol === 'https' ? 'wss' : 'ws'}://${host}/ws/scan/status`)
+      this.websocket = new WebSocket(`${protocol === 'https' ? 'wss' : 'ws'}://${host}/api/ws/scan/status`)
       this.websocket.onmessage = this.websocketonmessage
       // 连接建立时触发
       this.websocket.onopen = this.websocketonopen
       // 通信发生错误时触发
       this.websocket.onerror = this.websocketonerror
       // 连接关闭时触发
-      this.websocket.onclose = this.websocketclose
+      // this.websocket.onclose = this.websocketclose
     },
     // 连接建立时触发
     websocketonopen() {

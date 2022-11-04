@@ -321,16 +321,16 @@ export default {
         this.vulnerlist = response.data.vulner.result
         this.getSpanArr()
         this.domain_total = response.data.domain.total
-        this.domain_label_total = response.data.domain.label_toal
+        this.domain_label_total = response.data.domain.label_total
 
         this.port_total = response.data.port.total
-        this.port_label_total = response.data.port.label_toal
+        this.port_label_total = response.data.port.label_total
 
         this.path_total = response.data.path.total
-        this.path_label_total = response.data.path.label_toal
+        this.path_label_total = response.data.path.label_total
 
         this.vulner_total = response.data.vulner.total
-        this.vulner_label_total = response.data.vulner.label_toal
+        this.vulner_label_total = response.data.vulner.label_total
         this.loading = false
       })
     },

@@ -8,7 +8,7 @@
 
 > yum install -y -q postfix
 
-> yum install -y epel-release mariadb-server gcc gcc-c++ wget bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel redis
+> yum install -y epel-release mariadb-server gcc gcc-c++ wget libpcap-devel bzip2 zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel make libffi-devel nmap  masscan  nginx initscripts postgresql-devel python3-devel redis
 
 > mkdir /root/python
 
@@ -23,6 +23,10 @@
 > rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3
 
 > ln -s /usr/local/python3.10/bin/python3.10 /usr/bin/python3 && ln -s /usr/local/python3.10/bin/pip3.10 /usr/bin/pip3
+
+### 安装masscan
+
+> yum -y install git make gcc && git clone https://github.com/robertdavidgraham/masscan && cd masscan && make && make install
 
 ### 安装python3依赖库
 

@@ -10,7 +10,7 @@ export function dnslogList(data) {
 
 export function generateDomain(data) {
   return request({
-    url: '/api/generate/domain',
+    url: '/api/dns/generate/domain',
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function generateDomain(data) {
 
 export function deletednsLog(data) {
   return request({
-    url: '/api/delete/dns/log',
+    url: '/api/dns/log/delete',
     method: 'post',
     data
   })

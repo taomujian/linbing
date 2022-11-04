@@ -18,7 +18,7 @@ export function vulnerList(data) {
 
 export function deleteVulner(data) {
   return request({
-    url: '/api/delete/vulner',
+    url: '/api/vulner/delete',
     method: 'post',
     data
   })

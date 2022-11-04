@@ -37,30 +37,13 @@ module.exports = {
       errors: true
     },
     proxy: {
-      /* [process.env.VUE_APP_BASE_API]: {
-        target: process.env.VUE_APP_BASE_API,
-        ws: true,
-        secure: false,
-        changeOrigin: true,
-        pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
-        }
-      } */
       '/api': {
         target: process.env.VUE_APP_BASE_API,
         changeOrigin: true,
         secure: false,
+        ws: true,
         pathRewrite: {
           '^/api': '/api'
-        }
-      },
-      '/ws': {
-        target: process.env.VUE_APP_BASE_API,
-        changeOrigin: true,
-        ws: true,
-        secure: false,
-        pathRewrite: {
-          '^/ws': '/ws'
         }
       }
     }

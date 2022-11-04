@@ -18,7 +18,7 @@ export function portDownload(data) {
 
 export function deletePort(data) {
   return request({
-    url: '/api/delete/port',
+    url: '/api/port/delete',
     method: 'post',
     data
   })

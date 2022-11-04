@@ -10,7 +10,7 @@ export function newTarget(data) {
 
 export function queryTarget(data) {
   return request({
-    url: '/api/query/target',
+    url: '/api/target/query',
     method: 'post',
     data
   })
@@ -42,7 +42,7 @@ export function targetList(data) {
 
 export function deleteTarget(data) {
   return request({
-    url: '/api/delete/target',
+    url: '/api/target/delete',
     method: 'post',
     data
   })

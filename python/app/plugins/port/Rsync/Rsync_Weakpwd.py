@@ -133,9 +133,9 @@ class Rsync_Weakpwd_BaseVerify:
             for path_name in await self.get_all_pathname():
                 ret = self.is_path_not_auth(path_name)
                 if ret == 1:
-                    for user in open('app/data/db/username.txt', 'r', encoding = 'utf-8').readlines():
+                    for user in open('static/data/db/username.txt', 'r', encoding = 'utf-8').readlines():
                         user = user.strip()
-                        for pwd in open('app/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
+                        for pwd in open('static/data/db/password.txt', 'r', encoding = 'utf-8').readlines():
                             if pwd != '':
                                 pwd = pwd.strip()
                             task = asyncio.create_task(asyncio.to_thread(self.handle, path_name, user, pwd))

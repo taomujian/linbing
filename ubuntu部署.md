@@ -8,11 +8,15 @@
 
 > wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz && tar -zxvf Python-3.10.4.tgz && cd Python-3.10.4 && ./configure && make && make install && rm -rf /usr/bin/python3 && rm -rf /usr/bin/pip3 && ln -s /usr/local/bin/python3.10 /usr/bin/python3 && ln -s /usr/local/bin/pip3.10 /usr/bin/pip3
 
+### 安装masscan
+
+> apt-get --assume-yes install git make gcc && git clone https://github.com/robertdavidgraham/masscan && cd masscan && make && make install
+
 ### 安装依赖
 
 > DEBIAN_FRONTEND noninteractive apt install -y postfix
 
-> apt install -y mariadb-server python3-pip nmap masscan nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
+> apt install -y mariadb-server python3-pip nmap nginx libpq-dev uuid-dev libcap-dev libpcre3-dev python3-dev inetutils-ping redis-server
 
 > mkdir /root/python
 

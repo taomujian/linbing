@@ -58,9 +58,9 @@ class Dubbo_Weakpwd_BaseVerify:
             req = await request.get(self.url, headers = self.headers)
             if req.headers["www-authenticate"] == "Basic realm=\"dubbo\"":
                 tasks = []
-                for user in open('app/data/username.txt', 'r', encoding = 'utf-8').readlines():
+                for user in open('static/data/username.txt', 'r', encoding = 'utf-8').readlines():
                     user = user.strip()
-                    for pwd in open('app/data/password.txt', 'r', encoding = 'utf-8').readlines():
+                    for pwd in open('static/data/password.txt', 'r', encoding = 'utf-8').readlines():
                         if pwd != '':
                             pwd = pwd.strip()
                         task = asyncio.create_task(self.handle(user, pwd))
