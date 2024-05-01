@@ -59,7 +59,8 @@ class CVE_2016_3088_BaseVerify:
 
         try:
             req = await request.get(file_path, headers = self.headers)
-            if req.status == 200 or req.status != 404:
+            content = await req.text()
+            if (req.status == 200 or req.status != 404) and 'getRuntime().exec' in content:
                 return True
         except Exception as e:
             # print(e)

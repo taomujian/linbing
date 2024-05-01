@@ -69,12 +69,23 @@ async def get_live(url, num):
         try:
             # 判断没有http协议类型的网站是http还是https,并判断是否存活
             if not url.startswith("http") and not url.startswith("https"):
-                url = 'http://' + url
-                req = await request.get(url, headers = headers, allow_redirects = True)
-                return req.real_url
+                http_url = 'http://{0}'.format(url)
+                https_url = 'https://{0}'.format(url)
+                
+                try:
+                    http_req = await request.get(http_url,  headers = headers, allow_redirects = True)
+                    return str(http_req.real_url)
+                except Exception as e:
+                    pass
+                
+                try:
+                    https_req = await request.get(https_url,  headers = headers, allow_redirects = True)
+                    return str(https_req.real_url)
+                except Exception as e:
+                    pass
             else:
                 req = await request.get(url, headers = headers, allow_redirects = True)
-                return req.real_url
+                return str(req.real_url)
         except Exception as e:
             # print(e)
             pass
