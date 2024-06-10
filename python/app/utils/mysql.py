@@ -1622,7 +1622,7 @@ class Mysql_db:
             cursor.close()
             self.close_conn
     
-    def get_scan_target(self, username):
+    def get_scan_target(self, username, list_query):
         
         """
         获取所有未开始扫描的目标
@@ -1631,8 +1631,8 @@ class Mysql_db:
         :return: 'LXXXXX': 状态码
         """
 
-        sql = "select target from target where username = %s and scan_status = '未开始'"
-        values = [username]
+        sql = "select target from target where username = %s and if (%s = '', 0 = 0, target like %s) and if (%s = '', 0 = 0, description like %s) and if (%s = '', 0 = 0, scan_status = %s) and if (%s = '', 0 = 0, scan_schedule = %s) order by id desc"
+        values = [username, list_query['target'], '%' + list_query['target'] + '%', list_query['description'], '%' + list_query['description'] + '%', list_query['scan_status'], list_query['scan_status'], list_query['scan_schedule'], list_query['scan_schedule']]
         conn = self.get_conn()
         cursor = conn.cursor(cursor = pymysql.cursors.DictCursor)
         try:

@@ -20,7 +20,7 @@
         添加目标
       </el-button>
       <el-button class="button-long" type="primary" icon="el-icon-video-play" @click="handleScanAll">
-        扫描所有未开始目标
+        扫描所有目标
       </el-button>
     </div>
 
@@ -693,7 +693,8 @@ export default {
         let data = {
           'target': 'all',
           'scan_option': this.toData,
-          'token': getToken()
+          'token': getToken(),
+          'listQuery': JSON.stringify(this.listQuery)
         }
         data = JSON.stringify(data)
         const params = { 'data': Encrypt(data) }

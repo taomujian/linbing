@@ -15,7 +15,7 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="代理IP" sortable prop="proxy" align="center">
+      <el-table-column label="Web请求代理IP" sortable prop="proxy" align="center">
         <template slot-scope="{row}">
           <span>{{ row.proxy }}</span>
         </template>

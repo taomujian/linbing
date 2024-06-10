@@ -220,7 +220,6 @@ class Scan:
 
         await asyncio.gather(*tasks, return_exceptions = True)
 
-
     def run(self, kwargs):
         
         """

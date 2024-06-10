@@ -105,7 +105,8 @@ async def start_scan(request : VueRequest):
         else:
             target_list = []
             if request['target'] == 'all':
-                target_list = mysqldb.get_scan_target(username_result['username'])
+                list_query = json.loads(request['listQuery'])
+                target_list = mysqldb.get_scan_target(username_result['username'], list_query)
             else:
                 target_list.append({'target': target})
             
@@ -282,7 +283,6 @@ async def cancel_scan(request : VueRequest):
         response['code'] = 'L1001'
         response['message'] = '系统异常'
         return response
-
 
 @router.post('/list')
 async def scan_list(request : VueRequest):
